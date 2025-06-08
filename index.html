@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>谁杀死了比尔？</title>
+  <style>
+    :root {
+      --primary-color: #ff6600;
+      --secondary-color: #ff8533;
+      --bg-color: #2d2d2d;
+      --text-color: #ffffff;
+      --border-color: rgba(255, 255, 255, 0.2);
+      --card-bg: rgba(45, 45, 45, 0.95);
+      --hover-color: #ff9966;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      background-image: url('游戏背景图设计.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-attachment: fixed;
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    #game-container {
+      background-color: var(--card-bg);
+      padding: 2.5rem;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      width: 90%;
+      max-width: 900px;
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-color);
+      transition: transform 0.3s ease;
+    }
+
+    #game-container:hover {
+      transform: translateY(-5px);
+    }
+
+    .rules-section {
+      background-color: rgba(0, 0, 0, 0.2);
+      padding: 1.8rem;
+      border-radius: 15px;
+      margin-bottom: 2rem;
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+
+    .rules-section:hover {
+      background-color: rgba(0, 0, 0, 0.3);
+    }
+
+    .rules-section h2 {
+      color: var(--primary-color);
+      margin-bottom: 1.2rem;
+      font-size: 1.6rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .rules-section ul {
+      color: #ddd;
+      line-height: 1.8;
+      padding-left: 1.8rem;
+      margin: 0;
+    }
+
+    .rules-section li {
+      margin-bottom: 0.8rem;
+      position: relative;
+    }
+
+    .rules-section li::before {
+      content: "•";
+      color: var(--primary-color);
+      position: absolute;
+      left: -1.2rem;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--primary-color);
+      margin-bottom: 2rem;
+      font-size: 2.8rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      letter-spacing: 2px;
+    }
+
+    #chat-history {
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 15px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .message {
+      margin: 1rem 0;
+      padding: 1rem;
+      border-radius: 12px;
+      max-width: 80%;
+      word-wrap: break-word;
+      animation: fadeIn 0.3s ease;
+      display: inline-block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .user-message {
+      background-color: var(--primary-color);
+      color: var(--text-color);
+      margin-left: auto;
+      text-align: right;
+    }
+
+    .system-message {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--text-color);
+      margin-right: auto;
+      text-align: left;
+    }
+
+    #chat-history::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #chat-history::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+    }
+
+    #chat-history::-webkit-scrollbar-thumb {
+      background: var(--primary-color);
+      border-radius: 4px;
+    }
+
+    #chat-history::-webkit-scrollbar-thumb:hover {
+      background: var(--hover-color);
+    }
+
+    #question-input {
+      width: 100%;
+      padding: 1.2rem;
+      margin: 1.2rem 0;
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      color: var(--text-color);
+      background-color: rgba(0, 0, 0, 0.2);
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+    }
+
+    #question-input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 15px rgba(255, 102, 0, 0.3);
+    }
+
+    #submit-btn {
+      background-color: var(--primary-color);
+      color: var(--text-color);
+      border: none;
+      padding: 1.2rem 2.5rem;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      width: 100%;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    #submit-btn:hover {
+      background-color: var(--hover-color);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 102, 0, 0.3);
+    }
+
+    #submit-btn:active {
+      transform: translateY(0);
+    }
+
+    #timer {
+      text-align: center;
+      font-size: 1.4rem;
+      margin: 1.2rem 0;
+      color: var(--primary-color);
+      font-weight: bold;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+      padding: 0.8rem;
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+    }
+
+    #clue-collection {
+      margin-top: 1.8rem;
+      padding: 1.5rem;
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 15px;
+      border: 1px solid var(--border-color);
+    }
+
+    #clue-collection h3 {
+      color: var(--primary-color);
+      margin-bottom: 1.2rem;
+      font-size: 1.4rem;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .clue-item {
+      padding: 1rem;
+      margin: 0.8rem 0;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+
+    .clue-item:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+      transform: translateX(5px);
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+      #game-container {
+        padding: 1.5rem;
+        width: 95%;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .rules-section h2 {
+        font-size: 1.3rem;
+      }
+
+      #timer {
+        font-size: 1.2rem;
+      }
+
+      .message {
+        max-width: 95%;
+      }
+    }
+
+    /* 游戏结束界面样式 */
+    #gameOverOverlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      padding: 2rem;
+    }
+
+    #gameOverTitle {
+      font-size: 3rem;
+      color: var(--primary-color);
+      margin-bottom: 2rem;
+      text-align: center;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .result-message {
+      font-size: 1.8rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      padding: 1rem 2rem;
+      border-radius: 15px;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .result-message.victory {
+      color: #4CAF50;
+      border: 2px solid #4CAF50;
+    }
+
+    .result-message.defeat {
+      color: #f44336;
+      border: 2px solid #f44336;
+    }
+
+    #gameOverDescription {
+      font-size: 1.2rem;
+      color: #ddd;
+      text-align: center;
+      max-width: 600px;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    #restartBtn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    #restartBtn:hover {
+      background-color: var(--hover-color);
+      transform: translateY(-2px);
+    }
+
+    /* 开始界面样式 */
+    #startOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      padding: 2rem;
+    }
+
+    #startTitle {
+      font-size: 3rem;
+      color: var(--primary-color);
+      margin-bottom: 2rem;
+      text-align: center;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    #startBtn {
+      background-color: var(--primary-color);
+      color: var(--text-color);
+      border: none;
+      padding: 1.2rem 2.5rem;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    #startBtn:hover {
+      background-color: var(--hover-color);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 102, 0, 0.3);
+    }
+
+    #startBtn:active {
+      transform: translateY(0);
+    }
+
+    #game-container {
+      display: none;
+    }
+
+    /* 音乐控制按钮样式 */
+    #music-control {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1001;
+      background-color: var(--primary-color);
+      border: none;
+      width: auto;
+      height: 40px;
+      padding: 0 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease;
+      gap: 8px;
+    }
+
+    #music-control:hover {
+      background-color: var(--hover-color);
+      transform: scale(1.1);
+    }
+
+    #music-control img {
+      width: 24px;
+      height: 24px;
+    }
+
+    #music-control span {
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    /* 音量控制样式 */
+    .volume-control {
+      position: fixed;
+      top: 70px;
+      right: 20px;
+      z-index: 1001;
+      background-color: var(--card-bg);
+      padding: 10px;
+      border-radius: 10px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid var(--border-color);
+    }
+
+    .volume-control.show {
+      display: flex;
+    }
+
+    .volume-control label {
+      color: var(--text-color);
+      font-size: 14px;
+    }
+
+    #volume-slider {
+      width: 100px;
+      height: 4px;
+      -webkit-appearance: none;
+      background: var(--border-color);
+      border-radius: 2px;
+      outline: none;
+    }
+
+    #volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px;
+      height: 12px;
+      background: var(--primary-color);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    #volume-slider::-webkit-slider-thumb:hover {
+      background: var(--hover-color);
+      transform: scale(1.2);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 音乐控制按钮 -->
+  <button id="music-control" title="播放音乐">
+    <img
+      src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0xMiAzdjE4TTggN3YxME0xNiA3djEwIi8+PC9zdmc+"
+      alt="音乐">
+  </button>
+
+  <!-- 音量控制 -->
+  <div class="volume-control">
+    <label>音量控制</label>
+    <input type="range" id="volume-slider" min="0" max="100" value="50">
+  </div>
+
+  <!-- 开始界面 -->
+  <div id="startOverlay">
+    <h1 id="startTitle">谁杀死了比尔？</h1>
+    <button id="startBtn">开始游戏</button>
+  </div>
+
+  <!-- 游戏主界面 -->
+  <div id="game-container">
+    <div class="rules-section">
+      <h2>游戏规则</h2>
+      <ul>
+        <li>目标：通过提问找出杀害比尔的凶手</li>
+        <li>回答方式：系统仅会回复"是"或"不是"</li>
+        <li>线索判断：你的问题需包含案件线索关键词</li>
+        <li>时间限制：20分钟内找出凶手</li>
+        <li>线索收集：系统会自动记录你发现的重要线索</li>
+      </ul>
+    </div>
+
+    <h1>谁杀死了比尔？</h1>
+    <div id="timer">剩余时间: 20:00</div>
+    <div id="chat-history"></div>
+    <input type="text" id="question-input" placeholder="请输入你的问题...">
+    <button id="submit-btn">提交问题</button>
+    <div id="clue-collection">
+      <h3>已收集的线索</h3>
+      <div id="clues-list"></div>
+    </div>
+  </div>
+
+  <!-- 游戏结束界面 -->
+  <div id="gameOverOverlay">
+    <h2 id="gameOverTitle">游戏结束</h2>
+    <div id="resultMessage" class="result-message">很遗憾，你没有找出凶手。</div>
+    <p id="gameOverDescription">凶手是咖啡店老板。他利用比尔的咖啡习惯，在咖啡中下毒。如果你想要再次挑战，可以点击下方按钮重新开始游戏。</p>
+    <button id="restartBtn">重新开始</button>
+  </div>
+
+  <audio id="bgm" src="S.E.N.S. - Feel Me.mp3" loop autoplay></audio>
+  <script src="script.js"></script>
+</body>
+
+</html>
