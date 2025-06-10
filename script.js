@@ -5,7 +5,7 @@ const gameStory = {
     location: "金叶咖啡馆",
     timeOfDeath: "晚上8:30",
 
-    // 主要角色信息
+    // 主要角色信息11
     characters: {
         "艾米丽": {
             name: "艾米丽·陈",
