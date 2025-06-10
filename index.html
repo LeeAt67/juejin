@@ -24,11 +24,13 @@
 
     body {
       font-family: 'Microsoft YaHei', Arial, sans-serif;
-      background-image: url('https://raw.githubusercontent.com/LeeAt67/juejin/main/bgp.png');
+      background-image: url('bgp.png');
       background-size: cover;
       background-repeat: no-repeat;
       background-position: center;
       background-attachment: fixed;
+      background: linear-gradient(135deg, rgba(45, 45, 45, 0.9) 0%, rgba(30, 30, 30, 0.95) 25%, rgba(20, 20, 20, 0.98) 50%, rgba(15, 15, 15, 1) 75%, rgba(10, 10, 10, 1) 100%), radial-gradient(circle at 20% 80%, rgba(255, 102, 0, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255, 133, 51, 0.08) 0%, transparent 50%);
+      /* 协调的渐变背景 */
       color: var(--text-color);
       display: flex;
       flex-direction: column;
@@ -229,9 +231,10 @@
     #clue-collection {
       margin-top: 1.8rem;
       padding: 1.5rem;
-      background-color: rgba(0, 0, 0, 0.2);
+      background-color: rgba(0, 0, 0, 0.3);
       border-radius: 15px;
       border: 1px solid var(--border-color);
+      backdrop-filter: blur(5px);
     }
 
     #clue-collection h3 {
@@ -239,20 +242,238 @@
       margin-bottom: 1.2rem;
       font-size: 1.4rem;
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    #clue-collection h3::before {
+      content: "🔍";
+      font-size: 1.2rem;
+    }
+
+    #clue-counter {
+      background: var(--primary-color);
+      color: white;
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      margin-left: auto;
     }
 
     .clue-item {
-      padding: 1rem;
+      padding: 1rem 1.2rem;
       margin: 0.8rem 0;
-      background-color: rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      border: 1px solid var(--border-color);
+      background: linear-gradient(135deg, rgba(255, 102, 0, 0.1) 0%, rgba(255, 133, 51, 0.1) 100%);
+      border-radius: 12px;
+      border-left: 4px solid var(--primary-color);
       transition: all 0.3s ease;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .clue-item::before {
+      content: "💡";
+      font-size: 1.1rem;
+      flex-shrink: 0;
     }
 
     .clue-item:hover {
-      background-color: rgba(255, 255, 255, 0.15);
-      transform: translateX(5px);
+      background: linear-gradient(135deg, rgba(255, 102, 0, 0.2) 0%, rgba(255, 133, 51, 0.2) 100%);
+      transform: translateX(8px);
+      box-shadow: 0 4px 15px rgba(255, 102, 0, 0.2);
+    }
+
+    .clue-item.important {
+      border-left: 4px solid #ff4444;
+      background: linear-gradient(135deg, rgba(255, 68, 68, 0.15) 0%, rgba(255, 102, 102, 0.15) 100%);
+    }
+
+    .clue-item.important::before {
+      content: "⚡";
+      color: #ff4444;
+    }
+
+    .clue-item .clue-time {
+      font-size: 0.8rem;
+      color: #aaa;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    .clue-category {
+      display: inline-block;
+      background: rgba(255, 102, 0, 0.2);
+      color: var(--primary-color);
+      padding: 0.2rem 0.5rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      margin-right: 0.5rem;
+      border: 1px solid rgba(255, 102, 0, 0.3);
+    }
+
+    #clues-empty {
+      text-align: center;
+      color: #888;
+      font-style: italic;
+      padding: 2rem;
+      border: 2px dashed rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      margin: 1rem 0;
+    }
+
+    #clues-empty::before {
+      content: "🕵️‍♂️";
+      display: block;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    /* 脉冲动画 */
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.05);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    /* 线索内容样式 */
+    .clue-content {
+      flex: 1;
+      word-wrap: break-word;
+    }
+
+    /* 信息按钮区样式 */
+    .info-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .info-btn {
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      color: var(--text-color);
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 10px rgba(255, 102, 0, 0.2);
+      min-width: 120px;
+    }
+
+    .info-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(255, 102, 0, 0.4);
+      background: linear-gradient(135deg, var(--hover-color) 0%, #ffaa66 100%);
+    }
+
+    .info-btn:active {
+      transform: translateY(-1px);
+    }
+
+    /* 弹窗样式 */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, var(--card-bg) 0%, rgba(60, 60, 60, 0.95) 100%);
+      margin: 5% auto;
+      padding: 2rem;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 700px;
+      max-height: 80%;
+      overflow-y: auto;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      position: relative;
+      animation: modalSlideIn 0.3s ease;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.9);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 2rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.3s ease;
+      position: absolute;
+      top: 1rem;
+      right: 1.5rem;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .close:hover,
+    .close:focus {
+      color: var(--primary-color);
+      background: rgba(255, 102, 0, 0.2);
+    }
+
+    /* 弹窗内容样式 */
+    .modal-content h2 {
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+      font-size: 1.8rem;
+      text-align: center;
+    }
+
+    .modal-content ul {
+      color: #ddd;
+      line-height: 1.8;
+      padding-left: 1.5rem;
+    }
+
+    .modal-content li {
+      margin-bottom: 0.8rem;
+    }
+
+    .modal-content p {
+      color: #ddd;
+      line-height: 1.8;
+      margin-bottom: 1rem;
     }
 
     /* 响应式设计 */
@@ -266,16 +487,39 @@
         font-size: 2rem;
       }
 
-      .rules-section h2 {
-        font-size: 1.3rem;
-      }
-
       #timer {
         font-size: 1.2rem;
       }
 
       .message {
         max-width: 95%;
+      }
+
+      .info-buttons {
+        gap: 0.5rem;
+      }
+
+      .info-btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+        min-width: 100px;
+      }
+
+      .modal-content {
+        width: 95%;
+        margin: 10% auto;
+        padding: 1.5rem;
+        max-height: 70%;
+      }
+
+      .modal-content h2 {
+        font-size: 1.5rem;
+      }
+
+      .close {
+        top: 0.5rem;
+        right: 1rem;
+        font-size: 1.5rem;
       }
     }
 
@@ -487,6 +731,7 @@
 </head>
 
 <body>
+  <audio id="bgm" src="bgm.mp3" autoplay loop hidden></audio>
   <!-- 音乐控制按钮 -->
   <button id="music-control" title="播放音乐">
     <img
@@ -513,47 +758,106 @@
 
   <!-- 游戏主界面 -->
   <div id="game-container">
-    <div class="rules-section">
-      <h2>🤖 豆包AI助手</h2>
-      <ul>
-        <li>🎯 真实AI对话：集成豆包AI智能回答系统</li>
-        <li>💬 智能推理：基于案件背景进行分析判断</li>
-        <li>📱 实时响应：AI实时处理并回答你的问题</li>
-        <li>🛡️ 备用机制：API不可用时自动切换到本地逻辑</li>
-      </ul>
+    <!-- 信息按钮区 -->
+    <div class="info-buttons">
+      <button class="info-btn" id="aiInfoBtn">🤖 AI助手</button>
+      <button class="info-btn" id="caseInfoBtn">📖 案件背景</button>
+      <button class="info-btn" id="rulesInfoBtn">🎯 游戏规则</button>
     </div>
 
-    <div class="rules-section">
-      <h2>游戏规则</h2>
-      <ul>
-        <li>目标：通过提问找出杀害比尔的凶手</li>
-        <li>回答方式：豆包AI助手基于案件背景智能回答</li>
-        <li>时间限制：20分钟内找出凶手</li>
-        <li>线索收集：系统会自动记录你发现的重要线索</li>
-        <li>胜利条件：正确指出凶手身份及相关证据</li>
-      </ul>
+    <!-- 信息弹窗 -->
+    <div id="infoModal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="closeModal">&times;</span>
+        <div id="modalBody"></div>
+      </div>
     </div>
 
     <h1>谁杀死了比尔？</h1>
-    <div id="timer">剩余时间: 20:00</div>
+    <div id="timer">剩余时间: 30:00</div>
     <div id="chat-history"></div>
-    <input type="text" id="question-input" placeholder="向豆包AI助手提问案件相关问题，例如：比尔是怎么死的？">
+    <input type="text" id="question-input" placeholder="开始你的调查吧！例如：咖啡馆里当晚都有谁？比尔的死因是什么？">
     <button id="submit-btn">提交问题</button>
     <div id="clue-collection">
-      <h3>已收集的线索</h3>
-      <div id="clues-list"></div>
+      <h3>
+        已收集的线索
+        <span id="clue-counter">0</span>
+      </h3>
+      <div id="clues-list">
+        <div id="clues-empty">
+          开始你的调查，收集重要线索！<br>
+          <small>提问相关问题时，系统会自动记录关键信息</small>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- 游戏结束界面 -->
   <div id="gameOverOverlay">
     <h2 id="gameOverTitle">游戏结束</h2>
-    <div id="resultMessage" class="result-message">很遗憾，你没有找出凶手。</div>
-    <p id="gameOverDescription">凶手是咖啡店老板。他利用比尔的咖啡习惯，在咖啡中下毒。如果你想要再次挑战，可以点击下方按钮重新开始游戏。</p>
+    <div id="resultMessage" class="result-message">很遗憾，你没有找出真凶。</div>
+    <p id="gameOverDescription">案件的真相比想象中更加复杂...每个人都有自己的秘密和动机。也许下次你能发现更多的线索，揭开这个错综复杂的谜团。如果你想要再次挑战，可以点击下方按钮重新开始游戏。</p>
     <button id="restartBtn">重新开始</button>
   </div>
+  <script>
+    // 检查本地背景图片加载状态
+    const localImg = new Image();
+    localImg.onload = function () {
+      console.log('✅ 本地背景图片加载成功');
+      document.body.style.backgroundImage = 'url("bgp.png")';
+      document.body.style.backgroundSize = 'cover';
+      document.body.style.backgroundRepeat = 'no-repeat';
+      document.body.style.backgroundPosition = 'center';
+      document.body.style.backgroundAttachment = 'fixed';
+    };
+    localImg.onerror = function () {
+      console.log('❌ 本地背景图片加载失败，尝试Gitee备用链接');
 
-  <audio id="bgm" src="https://raw.githubusercontent.com/LeeAt67/juejin/main/bgm.mp3" loop autoplay></audio>
+      // 尝试Gitee备用链接
+      const giteeImg = new Image();
+      giteeImg.onload = function () {
+        console.log('✅ Gitee备用背景图片加载成功');
+        document.body.style.backgroundImage = 'url("https://gitee.com/codechickentub/kiki/raw/master/bgp.png")';
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundRepeat = 'no-repeat';
+        document.body.style.backgroundPosition = 'center';
+        document.body.style.backgroundAttachment = 'fixed';
+      };
+      giteeImg.onerror = function () {
+        console.log('❌ Gitee备用背景也加载失败，使用渐变背景');
+        document.body.style.backgroundImage = 'linear-gradient(135deg, rgba(45, 45, 45, 0.9) 0%, rgba(30, 30, 30, 0.95) 25%, rgba(20, 20, 20, 0.98) 50%, rgba(15, 15, 15, 1) 75%, rgba(10, 10, 10, 1) 100%), radial-gradient(circle at 20% 80%, rgba(255, 102, 0, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255, 133, 51, 0.08) 0%, transparent 50%)';
+      };
+      giteeImg.src = 'https://gitee.com/codechickentub/kiki/raw/master/bgp.png';
+    };
+
+    // 先尝试本地文件
+    localImg.src = 'bgp.png';
+
+    console.log('🎮 游戏资源配置：本地文件优先，Gitee作为备用');
+
+    // 检查音频加载状态
+    const audio = document.getElementById('bgm');
+    let audioAttempted = false;
+
+    audio.addEventListener('loadstart', () => console.log('🎵 音频开始加载'));
+    audio.addEventListener('canplay', () => console.log('✅ 音频可以播放'));
+    audio.addEventListener('error', (e) => {
+      if (!audioAttempted) {
+        console.log('❌ 本地音频加载失败，尝试Gitee备用链接');
+        audioAttempted = true;
+        audio.src = 'https://gitee.com/codechickentub/kiki/raw/master/bgm.mp3';
+      } else {
+        console.log('❌ Gitee音频也加载失败');
+      }
+    });
+
+    // 处理用户交互后播放音频（现代浏览器需要用户交互才能播放音频）
+    document.addEventListener('click', function () {
+      if (audio.paused) {
+        audio.play().catch(e => console.log('音频播放失败：', e));
+      }
+    }, { once: true });
+  </script>
   <script src="script.js"></script>
 </body>
 
