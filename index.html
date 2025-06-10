@@ -503,26 +503,41 @@
   <!-- 开始界面 -->
   <div id="startOverlay">
     <h1 id="startTitle">谁杀死了比尔？</h1>
+    <div style="max-width: 600px; text-align: center; margin-bottom: 2rem; color: #ddd; line-height: 1.6;">
+      <p style="font-size: 1.2rem; color: #ff6600; margin-bottom: 1rem;">🤖 豆包AI助手体验</p>
+      <p>集成真实豆包AI！体验智能推理对话，不再是简单的"是/否"回答！</p>
+      <p style="font-size: 0.9rem; color: #aaa; margin-top: 0.5rem;">API不可用时自动使用本地逻辑</p>
+    </div>
     <button id="startBtn">开始游戏</button>
   </div>
 
   <!-- 游戏主界面 -->
   <div id="game-container">
     <div class="rules-section">
+      <h2>🤖 豆包AI助手</h2>
+      <ul>
+        <li>🎯 真实AI对话：集成豆包AI智能回答系统</li>
+        <li>💬 智能推理：基于案件背景进行分析判断</li>
+        <li>📱 实时响应：AI实时处理并回答你的问题</li>
+        <li>🛡️ 备用机制：API不可用时自动切换到本地逻辑</li>
+      </ul>
+    </div>
+
+    <div class="rules-section">
       <h2>游戏规则</h2>
       <ul>
         <li>目标：通过提问找出杀害比尔的凶手</li>
-        <li>回答方式：系统仅会回复"是"或"不是"</li>
-        <li>线索判断：你的问题需包含案件线索关键词</li>
+        <li>回答方式：豆包AI助手基于案件背景智能回答</li>
         <li>时间限制：20分钟内找出凶手</li>
         <li>线索收集：系统会自动记录你发现的重要线索</li>
+        <li>胜利条件：正确指出凶手身份及相关证据</li>
       </ul>
     </div>
 
     <h1>谁杀死了比尔？</h1>
     <div id="timer">剩余时间: 20:00</div>
     <div id="chat-history"></div>
-    <input type="text" id="question-input" placeholder="请输入你的问题...">
+    <input type="text" id="question-input" placeholder="向豆包AI助手提问案件相关问题，例如：比尔是怎么死的？">
     <button id="submit-btn">提交问题</button>
     <div id="clue-collection">
       <h3>已收集的线索</h3>
