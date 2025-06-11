@@ -996,3 +996,71 @@ startBtn.addEventListener('click', () => {
     startOverlay.style.display = 'none';
     gameContainer.style.display = 'block';
 });
+
+// 资源加载配置
+const RESOURCE_CONFIG = {
+    // 使用jsDelivr CDN（需要替换为您的GitHub仓库地址）
+    backgroundImage: 'https://cdn.jsdelivr.net/gh/your-username/your-repo/assets/bgp.png',
+    backgroundMusic: 'https://cdn.jsdelivr.net/gh/your-username/your-repo/assets/bgm.mp3',
+
+    // 使用Gitee作为备用（需要替换为您的Gitee仓库地址）
+    giteeBackgroundImage: 'https://gitee.com/your-username/your-repo/raw/master/assets/bgp.png',
+    giteeBackgroundMusic: 'https://gitee.com/your-username/your-repo/raw/master/assets/bgm.mp3',
+
+    // 本地资源作为最后备用
+    localBackgroundImage: './assets/bgp.png',
+    localBackgroundMusic: './assets/bgm.mp3'
+};
+
+// 资源加载函数
+async function loadResources() {
+    try {
+        // 尝试加载背景图片
+        const bgImage = new Image();
+        bgImage.src = RESOURCE_CONFIG.backgroundImage;
+        await new Promise((resolve, reject) => {
+            bgImage.onload = resolve;
+            bgImage.onerror = () => {
+                console.log('❌ jsDelivr背景图片加载失败，尝试Gitee');
+                bgImage.src = RESOURCE_CONFIG.giteeBackgroundImage;
+                bgImage.onload = resolve;
+                bgImage.onerror = () => {
+                    console.log('❌ Gitee背景图片加载失败，尝试本地资源');
+                    bgImage.src = RESOURCE_CONFIG.localBackgroundImage;
+                    bgImage.onload = resolve;
+                    bgImage.onerror = reject;
+                };
+            };
+        });
+        document.body.style.backgroundImage = `url(${bgImage.src})`;
+        console.log('✅ 背景图片加载成功');
+
+        // 尝试加载背景音乐
+        const bgm = document.getElementById('bgm');
+        bgm.src = RESOURCE_CONFIG.backgroundMusic;
+        await new Promise((resolve, reject) => {
+            bgm.oncanplaythrough = resolve;
+            bgm.onerror = () => {
+                console.log('❌ jsDelivr音频加载失败，尝试Gitee');
+                bgm.src = RESOURCE_CONFIG.giteeBackgroundMusic;
+                bgm.oncanplaythrough = resolve;
+                bgm.onerror = () => {
+                    console.log('❌ Gitee音频加载失败，尝试本地资源');
+                    bgm.src = RESOURCE_CONFIG.localBackgroundMusic;
+                    bgm.oncanplaythrough = resolve;
+                    bgm.onerror = reject;
+                };
+            };
+        });
+        console.log('✅ 背景音乐加载成功');
+    } catch (error) {
+        console.error('资源加载失败:', error);
+        // 使用渐变背景作为备用
+        document.body.style.background = 'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%)';
+    }
+}
+
+// 初始化时加载资源
+document.addEventListener('DOMContentLoaded', () => {
+    loadResources();
+});
