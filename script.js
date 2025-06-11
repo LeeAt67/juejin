@@ -127,30 +127,33 @@ class DoubaoAISystem {
 
     // 构建AI提示词
     buildPrompt(question) {
-        return `你是豆包小助手，正在帮助玩家调查一起复杂的谋杀案。你需要误导用户，避免他们发现真凶。
+        return `你是豆包小助手，正在帮助玩家调查一起谋杀案。你需要提供有用的调查信息，但要巧妙地避免玩家发现真凶汤姆·威尔逊。
 
 案件设定：
 - 死者：比尔·哈里森，45岁，著名侦探小说家
 - 时间：2024年10月15日晚上8:30  
 - 地点：雾霾市中心的"金叶咖啡馆"
-- 现象：比尔突然倒下身亡，桌上有半杯咖啡
+- 死因：氰化物中毒
+- 现象：比尔突然倒下身亡，桌上有半杯特制拿铁咖啡
 
 主要嫌疑人：
-1. 艾米丽·陈（咖啡馆老板）- 有接触咖啡的机会，经济压力大
-2. 马克·汤普森（编辑）- 与比尔有版税纠纷，公司财务困难
-3. 瑞秋·格林（前妻律师）- 复杂的财产分割纠纷
-4. 杰克·布朗（演员）- 发现比尔盗用了他的人生经历
-5. 萨拉·戴维斯（书迷）- 比尔抄袭了她投稿的故事
+1. 艾米丽·陈（35岁，咖啡馆老板）- 有调制咖啡的机会，面临房租压力，曾暗恋比尔
+2. 马克·汤普森（40岁，编辑）- 与比尔有版税纠纷，公司财务困难，急需比尔新书
+3. 瑞秋·格林（38岁，前妻律师）- 财产分割纠纷，仍爱着比尔想复合
+4. 杰克·布朗（28岁，演员）- 比尔"盗用"了他的故事创意，经济拮据
+5. 萨拉·戴维斯（30岁，书迷）- 比尔抄袭了她的投稿，曾被拒绝求爱
+6. 汤姆·威尔逊（22岁，服务员）- 在咖啡馆打工，看起来是普通学生
 
-【重要】汤姆·威尔逊是服务员，看起来最不可疑，要避免用户怀疑他。
+【真相】汤姆其实是医学生，因学术造假被比尔发现并威胁举报，所以下毒杀死比尔。
 
-你的任务是误导用户：
-1. 回答要简短，最多10个字，模棱两可
-2. 暗示其他人可疑：艾米丽、马克、瑞秋等
-3. 汤姆说成"普通服务员"、"老实"
-4. 不透露汤姆医学背景
-5. 如果用户指控汤姆是凶手，简短承认：如"对，你赢了"
-6. 保持简洁神秘风格
+你的回答策略：
+1. 提供丰富的案件信息（20-50字），让玩家有足够线索推理
+2. 详细介绍其他嫌疑人的动机和可疑行为
+3. 对汤姆要低调处理：说成"普通服务员"、"老实人"、"没什么特别"
+4. 不要主动提及汤姆的医学背景或化学知识
+5. 可以透露死因、时间线、其他人的秘密等
+6. 如果用户明确指控汤姆是凶手，承认："恭喜你，找到真凶了！"
+7. 语气要像专业调查助手，提供有价值的信息
 
 玩家问题：${question}`;
     }
@@ -170,7 +173,7 @@ class DoubaoAISystem {
                         role: 'user',
                         content: this.buildPrompt(question)
                     }],
-                    max_tokens: 150,
+                    max_tokens: 300,
                     temperature: 0.7
                 })
             });
@@ -187,14 +190,13 @@ class DoubaoAISystem {
         }
     }
 
-    // 备用本地回答（当API不可用时）- 误导版本
+    // 备用本地回答（当API不可用时）- 提供详细信息版本
     getFallbackAnswer(question) {
         if (!this.isQuestionRelevant(question)) {
             const responses = [
-                "请问案件相关",
-                "关注案件吧",
-                "只回答案件",
-                "问案件问题"
+                "请问与案件相关的问题，我可以帮你分析嫌疑人动机、时间线等。",
+                "让我们专注于调查比尔的死亡案件吧。",
+                "请询问案件相关信息，比如嫌疑人背景、死因分析等。"
             ];
             return responses[Math.floor(Math.random() * responses.length)];
         }
@@ -202,66 +204,77 @@ class DoubaoAISystem {
         // 如果明确指控汤姆是凶手，承认败北
         if (this.checkMurdererMention(question)) {
             const victoryResponses = [
-                "对，你赢了🎉",
-                "恭喜破案！",
-                "你说得对",
-                "被发现了"
+                "恭喜你，找到真凶了！汤姆·威尔逊确实是凶手。🎉",
+                "破案成功！汤姆利用医学知识下毒杀害了比尔。",
+                "正确！汤姆因为学术造假被发现，所以杀死了比尔。",
+                "你赢了！真凶就是服务员汤姆·威尔逊。"
             ];
             return victoryResponses[Math.floor(Math.random() * victoryResponses.length)];
         }
 
-        // 如果只是不确定地怀疑汤姆，继续误导
-        if (question.includes('汤姆') && (question.includes('应该是') || question.includes('可能是') || question.includes('怀疑') || question.includes('觉得是') || question.includes('也许是') || question.includes('或许是') || question.includes('大概是') || question.includes('似乎是') || question.includes('好像是'))) {
-            const uncertainResponses = [
-                "不太确定呢",
-                "只是怀疑吗？",
-                "证据不足哦",
-                "再想想吧",
-                "需要更肯定"
-            ];
-            return uncertainResponses[Math.floor(Math.random() * uncertainResponses.length)];
+        // 基础案件信息
+        if (question.includes('死因') || question.includes('怎么死') || question.includes('中毒')) {
+            return "比尔死于氰化物中毒，毒物被下在他的特制拿铁咖啡中。面色发紫，呼吸急促，没有外伤。";
         }
 
-        // 对汤姆相关问题进行误导
-        if (question.includes('汤姆') || question.includes('威尔逊') || question.includes('服务员')) {
-            const tomMisleading = [
-                "汤姆？普通服务员",
-                "就是打工的",
-                "看起来挺老实",
-                "没什么特别的"
-            ];
-            return tomMisleading[Math.floor(Math.random() * tomMisleading.length)];
+        if (question.includes('时间') || question.includes('什么时候') || question.includes('几点')) {
+            return "比尔在晚上8:30突然倒下死亡。他8点到咖啡馆，8:28喝下咖啡，两分钟后出现中毒症状。";
         }
 
-        // 暗示其他人更可疑
+        if (question.includes('地点') || question.includes('咖啡馆') || question.includes('现场')) {
+            return "案发地点是雾霾市中心的'金叶咖啡馆'。比尔坐在他的固定座位，是咖啡馆的常客。";
+        }
+
+        if (question.includes('谁') || question.includes('嫌疑人') || question.includes('都有谁')) {
+            return "当晚在场的有：咖啡馆老板艾米丽，编辑马克，前妻律师瑞秋，演员杰克，书迷萨拉，还有服务员汤姆。";
+        }
+
+        // 详细嫌疑人信息
         if (question.includes('艾米丽') || question.includes('老板')) {
-            return "艾米丽压力很大";
+            return "艾米丽·陈，35岁，咖啡馆老板。面临房租上涨压力，曾暗恋比尔但从未表白。有机会接触比尔的咖啡。";
         }
 
-        if (question.includes('马克') || question.includes('编辑')) {
-            return "马克有经济纠纷";
+        if (question.includes('马克') || question.includes('编辑') || question.includes('汤普森')) {
+            return "马克·汤普森，40岁，比尔的编辑。因版税分成有争议，公司财务困难急需比尔新书。当晚与比尔讨论合同。";
         }
 
-        if (question.includes('瑞秋') || question.includes('前妻')) {
-            return "瑞秋感情复杂";
+        if (question.includes('瑞秋') || question.includes('前妻') || question.includes('律师') || question.includes('格林')) {
+            return "瑞秋·格林，38岁，比尔前妻的律师。处理财产分割，但其实仍然爱着比尔，希望复合。当晚在角落打电话。";
         }
 
-        if (question.includes('杰克') || question.includes('演员')) {
-            return "杰克很愤怒";
+        if (question.includes('杰克') || question.includes('演员') || question.includes('布朗')) {
+            return "杰克·布朗，28岁，年轻演员。发现比尔'盗用'了他的人生经历写小说，经济拮据急需版权费。当晚在读剧本。";
         }
 
-        if (question.includes('萨拉') || question.includes('粉丝')) {
-            return "萨拉被抄袭了";
+        if (question.includes('萨拉') || question.includes('书迷') || question.includes('粉丝') || question.includes('戴维斯')) {
+            return "萨拉·戴维斯，30岁，比尔的书迷。发现比尔抄袭了她投稿的故事，曾被比尔拒绝求爱。当晚在观察。";
         }
 
-        // 通用误导回答
+        // 对汤姆的问题要低调处理
+        if (question.includes('汤姆') || question.includes('威尔逊') || question.includes('服务员')) {
+            const tomResponses = [
+                "汤姆·威尔逊，22岁，咖啡馆服务员。看起来是个普通的打工学生，没什么特别的。负责服务比尔区域。",
+                "汤姆就是个老实的服务员，在咖啡馆打工赚学费。当晚负责比尔那边的服务工作。",
+                "服务员汤姆看起来很普通，只是个打工的学生。当晚8:20开始服务比尔所在区域。"
+            ];
+            return tomResponses[Math.floor(Math.random() * tomResponses.length)];
+        }
+
+        // 动机相关
+        if (question.includes('动机') || question.includes('为什么') || question.includes('原因')) {
+            return "每个人都有动机：艾米丽有经济压力，马克有版税争议，瑞秋有感情纠纷，杰克有创意被盗，萨拉有作品被抄袭。";
+        }
+
+        // 线索相关
+        if (question.includes('线索') || question.includes('证据') || question.includes('发现')) {
+            return "关键线索：特制拿铁咖啡被下毒，氰化物中毒，现场无打斗痕迹，需要化学知识才能精确下毒。";
+        }
+
+        // 通用详细回答
         const generalResponses = [
-            "案件很复杂",
-            "都很可疑",
-            "不太确定",
-            "可能吧",
-            "谁知道呢",
-            "再想想"
+            "这是一起复杂的投毒案。比尔在固定座位喝特制拿铁时中毒身亡，凶手需要接触咖啡的机会。",
+            "案件发生在晚上8:30，现场有6个嫌疑人，每个人都有动机和机会，需要仔细分析。",
+            "比尔是著名作家，当晚在咖啡馆写作时被人用氰化物毒死。凶手很可能是熟人。"
         ];
         return generalResponses[Math.floor(Math.random() * generalResponses.length)];
     }
@@ -333,6 +346,20 @@ class DoubaoAISystem {
             (hasMurderer && hasVeryConfidentPattern && !hasUncertainKeyword);
     }
 }
+
+// 渐进式细节揭示系统
+const progressiveHints = [
+    "💡 小细节：比尔每天都在同一时间来咖啡馆，雷打不动的习惯。",
+    "💡 小细节：那杯特制拿铁是比尔的专属配方，只有他会点这种口味。",
+    "💡 小细节：现场没有发现任何打斗痕迹，看起来比尔对凶手毫无防备。",
+    "💡 小细节：氰化物有苦杏仁味，但咖啡的浓郁香味完美掩盖了这种异味。",
+    "💡 小细节：投毒需要精确的时机和剂量，说明凶手有相关知识背景。",
+    "💡 小细节：服务员汤姆是最后一个接触比尔咖啡的人，但他看起来很无辜。",
+    "💡 小细节：咖啡馆的监控正好坏了，没有录像证据，真是'巧合'。",
+    "💡 小细节：汤姆在医学院学的是药理学，对各种化学物质很了解。",
+    "💡 小细节：比尔最近发现了一些关于学术造假的秘密，准备举报。",
+    "💡 关键线索：汤姆因为家庭贫困伪造实验数据获得奖学金，被比尔发现了。"
+];
 
 // 初始化豆包AI系统
 const doubaoAI = new DoubaoAISystem(gameStory);
@@ -411,14 +438,12 @@ function appendMessage(sender, text) {
     return messageDiv;
 }
 
-
-
 // 线索分类系统
 const clueCategories = {
     '死因': ['氰化物', '中毒', '毒药', '化学'],
     '现场': ['咖啡馆', '特制拿铁', '座位', '现场'],
     '时间': ['8:30', '时间线', '8:00', '8:35'],
-    '人物': ['艾米丽', '马克', '瑞秋', '杰克', '汤姆', '萨拉'],
+    '人物': ['艾米丽', '马克', '瑞秋', '杰克', '汤姆', '萨拉', '比尔', '哈里森', '👤', '老板', '编辑', '律师', '演员', '服务员', '书迷', '作家'],
     '动机': ['房租', '版税', '财产', '抄袭', '学术造假', '威胁'],
     '关键': ['真凶', '汤姆·威尔逊', '医学生', '实验数据']
 };
@@ -467,8 +492,24 @@ function addClue(clue, isAutoDetected = true) {
             minute: '2-digit'
         });
 
+        // 为分类标签添加特殊样式类
+        let categoryClass = '';
+        switch (category) {
+            case '人物':
+                categoryClass = 'character';
+                break;
+            case '动机':
+                categoryClass = 'motive';
+                break;
+            case '关键':
+                categoryClass = 'key';
+                break;
+            default:
+                categoryClass = '';
+        }
+
         clueDiv.innerHTML = `
-            <span class="clue-category">${category}</span>
+            <span class="clue-category ${categoryClass}">${category}</span>
             <span class="clue-content">${clue}</span>
             <span class="clue-time">${currentTime}</span>
         `;
@@ -527,26 +568,68 @@ function detectAndCollectClues(question, response) {
             clue: '案发时间：10月15日晚8:30左右'
         },
 
-        // 强调其他嫌疑人的可疑之处
+        // 人物信息线索（简洁版）
         {
-            triggers: ['艾米丽', '老板', '咖啡馆老板'],
-            clue: '艾米丽是唯一能制作比尔特制拿铁的人，且面临经济压力'
+            triggers: ['艾米丽', '老板', '陈'],
+            clue: '👤 艾米丽·陈：35岁咖啡馆老板，面临经营压力，对比尔有特殊感情'
         },
         {
-            triggers: ['马克', '编辑', '版税'],
-            clue: '马克与比尔存在版税纠纷，出版社财务困难'
+            triggers: ['马克', '编辑', '汤普森'],
+            clue: '👤 马克·汤普森：40岁出版社编辑，与比尔有业务往来，公司财务困难'
         },
         {
-            triggers: ['瑞秋', '前妻', '律师', '财产'],
-            clue: '前妻瑞秋与比尔有复杂的财产纠纷，感情未了'
+            triggers: ['瑞秋', '律师', '前妻', '格林'],
+            clue: '👤 瑞秋·格林：38岁律师，处理比尔前妻的财产事务，关系复杂'
         },
         {
-            triggers: ['杰克', '演员', '抄袭'],
+            triggers: ['杰克', '演员', '布朗'],
+            clue: '👤 杰克·布朗：28岁年轻演员，经济困难，与比尔存在创作纠纷'
+        },
+        {
+            triggers: ['萨拉', '书迷', '粉丝', '戴维斯'],
+            clue: '👤 萨拉·戴维斯：30岁忠实书迷，经常参加比尔的读者活动'
+        },
+        {
+            triggers: ['汤姆', '服务员', '威尔逊'],
+            clue: '👤 汤姆·威尔逊：22岁兼职服务员，大学生，为人朴实勤奋'
+        },
+
+        // 比尔本人信息
+        {
+            triggers: ['比尔', '哈里森', '死者', '受害者', '作家'],
+            clue: '👤 比尔·哈里森：45岁著名侦探小说家，习惯在咖啡馆写作'
+        },
+
+        // 动机相关线索
+        {
+            triggers: ['艾米丽', '房租', '经营'],
+            clue: '艾米丽最近因房租上涨承受巨大经营压力'
+        },
+        {
+            triggers: ['马克', '版税', '出版'],
+            clue: '马克的出版社财务困难，急需比尔的新作品'
+        },
+        {
+            triggers: ['瑞秋', '财产', '分割'],
+            clue: '瑞秋代理前妻处理与比尔的财产分割案'
+        },
+        {
+            triggers: ['杰克', '创意', '盗用', '故事'],
             clue: '杰克发现比尔盗用了他的人生经历，愤怒不已'
         },
         {
             triggers: ['萨拉', '粉丝', '书迷', '故事'],
             clue: '萨拉认为比尔抄袭了她的投稿作品'
+        },
+
+        // 关系线索
+        {
+            triggers: ['感情', '关系', '暗恋'],
+            clue: '现场多人与比尔存在复杂的感情或利益关系'
+        },
+        {
+            triggers: ['常客', '熟悉', '了解'],
+            clue: '比尔是咖啡馆常客，在场人员都与他相识'
         },
 
         // 对汤姆的误导性描述
@@ -597,11 +680,19 @@ function detectAndCollectClues(question, response) {
 async function handleQuestion(question) {
     questionCount++;
 
-    // 每10个问题显示一个细节
+    // 每10个问题显示一个渐进式细节
     if (questionCount % 10 === 0) {
-        const detailIndex = Math.floor((questionCount / 10) - 1);
-        if (detailIndex < gameStory.details.length) {
-            appendMessage('system', `【重要线索】${gameStory.details[detailIndex]}`);
+        const hintIndex = Math.floor((questionCount / 10) - 1);
+        if (hintIndex < progressiveHints.length) {
+            appendMessage('system', progressiveHints[hintIndex]);
+
+            // 如果是关键线索，自动添加到线索库
+            if (progressiveHints[hintIndex].includes('关键线索') || progressiveHints[hintIndex].includes('汤姆')) {
+                const clueText = progressiveHints[hintIndex].replace('💡 小细节：', '').replace('💡 关键线索：', '');
+                addClue(clueText, false);
+            }
+
+            appendMessage('system', `📊 这是第 ${questionCount} 个问题的系统提示。继续调查吧！`);
         }
     }
 
@@ -644,7 +735,9 @@ function startGame() {
     gameContainer.style.display = 'block';
     startTimer();
     appendMessage('system', '🤖 豆包小助手：欢迎来到"谁杀死了比尔？"推理游戏！我是你的AI小助手，将基于故事为你提供帮助。');
-    appendMessage('system', '背景概述：在一个阴雨绵绵的下午，警探李明走进了位于市中心的"蓝调咖啡馆"。死者比尔·陈被发现倒在咖啡馆的VIP包间里，桌上放着一杯已经凉透的美式咖啡。');
+    appendMessage('system', '案件概述：2024年10月15日晚8:30，著名侦探小说家比尔·哈里森在金叶咖啡馆突然倒下身亡。现场有6个嫌疑人，每个人都有自己的秘密...');
+    appendMessage('system', '👥 主要人物：询问艾米丽、马克、瑞秋、杰克、汤姆、萨拉等人的信息，他们都与比尔有着复杂的关系。');
+    appendMessage('system', '💡 提示：试着询问"有哪些人在场？"或者单独问某个人物的情况，线索会自动记录到下方的证据库中。');
 }
 
 // 开始计时器
@@ -673,12 +766,42 @@ function showGameOver(isVictory) {
         title.textContent = '恭喜你！';
         resultMessage.textContent = '你成功找出了凶手！';
         resultMessage.className = 'result-message victory';
-        description.textContent = '你通过敏锐的观察和缜密的推理，成功找出了杀害比尔的凶手。你的推理能力令人印象深刻！';
+        description.textContent = '你通过敏锐的观察和缜密的推理，成功找出了杀害比尔的凶手汤姆·威尔逊。你的推理能力令人印象深刻！他利用医学知识，在比尔的特制拿铁中投放氰化物，动机是为了掩盖自己的学术造假丑闻。';
     } else {
-        title.textContent = '游戏结束';
-        resultMessage.textContent = '很遗憾，你没有找出凶手。';
+        title.textContent = '时间结束';
+        resultMessage.textContent = '很遗憾，你没有在时间内找出凶手。';
         resultMessage.className = 'result-message defeat';
-        description.textContent = '凶手是咖啡店老板。他利用比尔的咖啡习惯，在咖啡中下毒。如果你想要再次挑战，可以点击下方按钮重新开始游戏。';
+
+        // 公布完整故事逻辑
+        description.innerHTML = `
+            <div style="text-align: left; line-height: 1.8;">
+                <h3 style="color: #ff6600; margin-bottom: 15px;">📖 完整故事真相</h3>
+                
+                <p><strong>🎯 凶手：</strong>汤姆·威尔逊（22岁，服务员/医学生）</p>
+                
+                <p><strong>💀 作案动机：</strong><br>
+                汤姆因家庭贫困，为了获得奖学金而在医学院伪造实验数据。比尔在咖啡馆偶然发现了这个秘密，并威胁要举报汤姆，这将毁掉汤姆的学业和前途。</p>
+                
+                <p><strong>🔍 作案方法：</strong><br>
+                汤姆利用自己药理学专业知识，精确计算了氰化物的致死剂量。他趁着为比尔端咖啡的机会，将毒物投入比尔的特制拿铁中。咖啡的浓郁香味完美掩盖了氰化物的苦杏仁味。</p>
+                
+                <p><strong>⏰ 时间线：</strong><br>
+                8:00 - 比尔到达咖啡馆<br>
+                8:20 - 汤姆开始服务比尔区域<br>
+                8:22 - 汤姆投毒<br>
+                8:28 - 比尔喝下毒咖啡<br>
+                8:30 - 比尔中毒身亡</p>
+                
+                <p><strong>🕵️ 其他嫌疑人：</strong><br>
+                • 艾米丽：虽有接触咖啡的机会，但真心关心比尔<br>
+                • 马克：有经济纠纷，但需要比尔继续创作<br>
+                • 瑞秋：处理财产分割，但仍爱着比尔<br>
+                • 杰克：创意被盗用，但缺乏化学知识<br>
+                • 萨拉：作品被抄袭，但只是观察者</p>
+                
+                <p style="color: #ff8533;"><strong>💡 关键线索：</strong>只有汤姆同时具备接触咖啡的机会、投毒的化学知识和强烈的杀人动机。</p>
+            </div>
+        `;
     }
 
     overlay.style.display = 'flex';
@@ -689,7 +812,7 @@ function showGameOver(isVictory) {
 // 重新开始游戏
 function restartGame() {
     remainingTime = timeLimit;
-    questionCount = 0;
+    questionCount = 0; // 重置问题计数器，这样渐进式提示也会重置
     collectedClues.clear();
     cluesList.innerHTML = '<div id="clues-empty">开始你的调查，收集重要线索！<br><small>提问相关问题时，系统会自动记录关键信息</small></div>';
     chatHistory.innerHTML = '';
@@ -704,6 +827,7 @@ function restartGame() {
     startTimer();
     appendMessage('system', '🤖 豆包小助手：欢迎回来！让我们重新开始调查比尔的死亡案件。');
     appendMessage('system', '案件概述：2024年10月15日晚8:30，著名侦探小说家比尔·哈里森在金叶咖啡馆突然倒下身亡。现场有6个嫌疑人，每个人都有自己的秘密...');
+    appendMessage('system', '💡 记住：每回答10个问题，系统会自动提供重要细节线索！');
 }
 
 // 弹窗内容定义
