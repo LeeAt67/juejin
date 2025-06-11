@@ -5,6 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=5.0">
   <title>谁杀死了比尔？</title>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
   <style>
     :root {
       --primary-color: #ff6600;
@@ -247,9 +249,73 @@
       gap: 0.5rem;
     }
 
-    #clue-collection h3::before {
-      content: "🔍";
-      font-size: 1.2rem;
+    #clue-collection h4 {
+      font-size: 1.1rem;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .clue-column {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      padding: 1rem;
+      border: 1px solid var(--border-color);
+      min-height: 200px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .clue-column::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .clue-column::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 3px;
+    }
+
+    .clue-column::-webkit-scrollbar-thumb {
+      background: var(--primary-color);
+      border-radius: 3px;
+    }
+
+    .clue-column::-webkit-scrollbar-thumb:hover {
+      background: var(--hover-color);
+    }
+
+    .clues-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .clues-empty {
+      text-align: center;
+      color: #888;
+      font-style: italic;
+      padding: 1.5rem;
+      border: 2px dashed rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      margin: 0.5rem 0;
+    }
+
+    .clues-empty::before {
+      content: "🕵️‍♂️";
+      display: block;
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+      #clues-container {
+        flex-direction: column;
+      }
+
+      .clue-column {
+        min-height: 150px;
+        max-height: 300px;
+      }
     }
 
     #clue-counter {
@@ -345,23 +411,6 @@
       border: 1px solid rgba(244, 67, 54, 0.3);
       font-weight: bold;
       animation: pulse 2s infinite;
-    }
-
-    #clues-empty {
-      text-align: center;
-      color: #888;
-      font-style: italic;
-      padding: 2rem;
-      border: 2px dashed rgba(255, 255, 255, 0.2);
-      border-radius: 10px;
-      margin: 1rem 0;
-    }
-
-    #clues-empty::before {
-      content: "🕵️‍♂️";
-      display: block;
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
     }
 
     /* 脉冲动画 */
@@ -1243,15 +1292,23 @@
     <div id="chat-history"></div>
     <input type="text" id="question-input" placeholder="开始你的调查吧！例如：咖啡馆里当晚都有谁？比尔的死因是什么？">
     <button id="submit-btn">提交问题</button>
+
+    <!-- 线索收集区域 -->
     <div id="clue-collection">
-      <h3>
-        已收集的线索
-        <span id="clue-counter">0</span>
-      </h3>
-      <div id="clues-list">
-        <div id="clues-empty">
-          开始你的调查，收集重要线索！<br>
-          <small>提问相关问题时，系统会自动记录关键信息</small>
+      <h3>🔍 证据库</h3>
+      <div id="clue-counter">已收集线索：0条</div>
+      <div id="clues-container">
+        <div class="clue-column" id="scene-clues">
+          <h4>现场线索</h4>
+          <div class="clues-list">
+            <div class="clues-empty">开始收集现场线索！<br><small>提问相关问题时，系统会自动记录关键信息</small></div>
+          </div>
+        </div>
+        <div class="clue-column" id="character-clues">
+          <h4>人物线索</h4>
+          <div class="clues-list">
+            <div class="clues-empty">开始收集人物线索！<br><small>提问相关问题时，系统会自动记录关键信息</small></div>
+          </div>
         </div>
       </div>
     </div>

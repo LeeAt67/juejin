@@ -116,6 +116,7 @@ class DoubaoAISystem {
             '手稿', '死亡的真相', '固定座位', '常客', '案件', '调查', '推理',
             '化学', '药理学', '医学院', '奖学金', '学费', '贫困'
         ];
+        this.conversationHistory = []; // 添加对话历史记录
     }
 
     // 判断问题是否与案件相关
@@ -127,40 +128,54 @@ class DoubaoAISystem {
 
     // 构建AI提示词
     buildPrompt(question) {
-        return `你是豆包小助手，正在帮助玩家调查一起谋杀案。你需要提供有用的调查信息，但要巧妙地避免玩家发现真凶汤姆·威尔逊。
+        const historyContext = this.conversationHistory
+            .slice(-5)
+            .map(msg => `${msg.role === 'user' ? '玩家' : 'AI'}: ${msg.content}`)
+            .join('\n');
 
-案件设定：
-- 死者：比尔·哈里森，45岁，著名侦探小说家
-- 时间：2024年10月15日晚上8:30  
-- 地点：雾霾市中心的"金叶咖啡馆"
-- 死因：氰化物中毒
-- 现象：比尔突然倒下身亡，桌上有半杯特制拿铁咖啡
+        return `你是一位经验丰富的侦探，正在调查一起谋杀案。你需要用专业、自然、富有同理心的方式与玩家对话。
 
-主要嫌疑人：
-1. 艾米丽·陈（35岁，咖啡馆老板）- 有调制咖啡的机会，面临房租压力，曾暗恋比尔
-2. 马克·汤普森（40岁，编辑）- 与比尔有版税纠纷，公司财务困难，急需比尔新书
-3. 瑞秋·格林（38岁，前妻律师）- 财产分割纠纷，仍爱着比尔想复合
-4. 杰克·布朗（28岁，演员）- 比尔"盗用"了他的故事创意，经济拮据
-5. 萨拉·戴维斯（30岁，书迷）- 比尔抄袭了她的投稿，曾被拒绝求爱
-6. 汤姆·威尔逊（22岁，服务员）- 在咖啡馆打工，看起来是普通学生
+案件背景：
+${CASE_SETUP}
 
-【真相】汤姆其实是医学生，因学术造假被比尔发现并威胁举报，所以下毒杀死比尔。
+你的角色设定：
+1. 你是一位经验丰富的侦探，擅长通过对话引导玩家思考
+2. 你的语气要专业、自然，避免机械化的回答
+3. 你要保持对话的连贯性，适当引用之前的对话内容
+4. 你要用开放性问题引导玩家深入思考
 
-你的回答策略：
-1. 提供丰富的案件信息（20-50字），让玩家有足够线索推理
-2. 详细介绍其他嫌疑人的动机和可疑行为
-3. 对汤姆要低调处理：说成"普通服务员"、"老实人"、"没什么特别"
-4. 不要主动提及汤姆的医学背景或化学知识
-5. 可以透露死因、时间线、其他人的秘密等
-6. 如果用户明确指控汤姆是凶手，承认："恭喜你，找到真凶了！"
-7. 语气要像专业调查助手，提供有价值的信息
+回答要求：
+1. 回答要简洁，控制在100字以内
+2. 使用自然的口语化表达，避免过于正式或机械
+3. 在回答中自然地融入关键信息
+4. 如果玩家表现出犹豫或不确定，不要直接判定结果，而是：
+   - 引导玩家重新思考关键线索
+   - 提出开放性问题
+   - 建议玩家从不同角度分析
+5. 如果玩家直接问"凶手是谁"，不要直接回答，而是：
+   - 引导玩家回顾关键线索
+   - 询问玩家的推理过程
+   - 建议玩家考虑动机和证据
 
-玩家问题：${question}`;
+当前对话历史：
+${historyContext}
+
+玩家问题：${question}
+
+请记住：
+- 保持对话的自然流畅
+- 避免直接给出答案
+- 引导玩家自己发现真相
+- 在玩家不够坚定时，引导他们继续思考
+- 永远不要直接指出Tom Wilson是凶手`;
     }
 
     // 调用豆包AI API
     async callDoubaoAPI(question) {
         try {
+            // 更新对话历史
+            this.conversationHistory.push({ role: 'user', content: question });
+
             const response = await fetch(AI_CONFIG.endpoint, {
                 method: 'POST',
                 headers: {
@@ -183,7 +198,12 @@ class DoubaoAISystem {
             }
 
             const data = await response.json();
-            return data.choices[0].message.content.trim();
+            const aiResponse = data.choices[0].message.content.trim();
+
+            // 更新对话历史
+            this.conversationHistory.push({ role: 'assistant', content: aiResponse });
+
+            return aiResponse;
         } catch (error) {
             console.error('AI API调用错误:', error);
             return this.getFallbackAnswer(question);
@@ -361,6 +381,25 @@ const progressiveHints = [
     "💡 关键线索：汤姆因为家庭贫困伪造实验数据获得奖学金，被比尔发现了。"
 ];
 
+// 案件设定
+const CASE_SETUP = `
+案件设定：
+- 死者：比尔·哈里森，45岁，著名侦探小说家
+- 时间：2024年10月15日晚上8:30  
+- 地点：雾霾市中心的"金叶咖啡馆"
+- 死因：氰化物中毒
+- 现象：比尔突然倒下身亡，桌上有半杯特制拿铁咖啡
+
+主要嫌疑人：
+1. 艾米丽·陈（35岁，咖啡馆老板）- 有调制咖啡的机会，面临房租压力，曾暗恋比尔
+2. 马克·汤普森（40岁，编辑）- 与比尔有版税纠纷，公司财务困难，急需比尔新书
+3. 瑞秋·格林（38岁，前妻律师）- 财产分割纠纷，仍爱着比尔想复合
+4. 杰克·布朗（28岁，演员）- 比尔"盗用"了他的故事创意，经济拮据
+5. 萨拉·戴维斯（30岁，书迷）- 比尔抄袭了她的投稿，曾被拒绝求爱
+6. 汤姆·威尔逊（22岁，服务员）- 在咖啡馆打工，看起来是普通学生
+
+【真相】汤姆其实是医学生，因学术造假被比尔发现并威胁举报，所以下毒杀死比尔。`;
+
 // 初始化豆包AI系统
 const doubaoAI = new DoubaoAISystem(gameStory);
 
@@ -466,81 +505,68 @@ function isImportantClue(clue) {
 
 // 添加线索（优化版）
 function addClue(clue, isAutoDetected = true) {
-    if (!collectedClues.has(clue)) {
-        collectedClues.add(clue);
+    if (!clue) return;
 
-        // 移除空状态提示
-        const emptyDiv = document.getElementById('clues-empty');
-        if (emptyDiv) {
-            emptyDiv.remove();
-        }
+    const clueElement = document.createElement('div');
+    clueElement.className = 'clue-item';
+    clueElement.innerHTML = `
+        <span class="clue-icon">🔍</span>
+        <span class="clue-text">${clue}</span>
+    `;
 
-        const clueDiv = document.createElement('div');
-        clueDiv.classList.add('clue-item');
+    // 根据线索内容判断类型
+    const isSceneClue = clue.includes('现场') ||
+        clue.includes('房间') ||
+        clue.includes('窗户') ||
+        clue.includes('门') ||
+        clue.includes('血迹') ||
+        clue.includes('指纹') ||
+        clue.includes('脚印') ||
+        clue.includes('咖啡') ||
+        clue.includes('毒') ||
+        clue.includes('死亡');
 
-        // 判断是否为重要线索
-        if (isImportantClue(clue)) {
-            clueDiv.classList.add('important');
-        }
+    // 添加到对应的列
+    const targetColumn = isSceneClue ?
+        document.querySelector('#scene-clues .clues-list') :
+        document.querySelector('#character-clues .clues-list');
 
-        // 获取线索分类
-        const category = getClueCategory(clue);
-
-        // 构建线索HTML
-        const currentTime = new Date().toLocaleTimeString('zh-CN', {
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-
-        // 为分类标签添加特殊样式类
-        let categoryClass = '';
-        switch (category) {
-            case '人物':
-                categoryClass = 'character';
-                break;
-            case '动机':
-                categoryClass = 'motive';
-                break;
-            case '关键':
-                categoryClass = 'key';
-                break;
-            default:
-                categoryClass = '';
-        }
-
-        clueDiv.innerHTML = `
-            <span class="clue-category ${categoryClass}">${category}</span>
-            <span class="clue-content">${clue}</span>
-            <span class="clue-time">${currentTime}</span>
-        `;
-
-        cluesList.appendChild(clueDiv);
-
-        // 更新线索计数器
-        updateClueCounter();
-
-        // 添加闪烁效果
-        clueDiv.style.animation = 'fadeIn 0.5s ease, pulse 1s ease';
-
-        // 如果是重要线索，显示特殊提示
-        if (isImportantClue(clue)) {
-            appendMessage('system', `🎯 发现重要线索！"${clue}" 已记录到证据库中。`);
-        }
+    if (!targetColumn) {
+        console.error('找不到线索列表容器，线索内容：', clue);
+        return;
     }
+
+    // 移除空状态提示
+    const emptyPrompt = targetColumn.querySelector('.clues-empty');
+    if (emptyPrompt) {
+        emptyPrompt.remove();
+    }
+
+    targetColumn.appendChild(clueElement);
+    collectedClues.add(clue);
+
+    // 判断是否为重要线索
+    if (isImportantClue(clue)) {
+        clueElement.classList.add('important');
+        appendMessage('system', `🎯 发现重要线索！"${clue}" 已记录到证据库中。`);
+    }
+
+    // 更新线索计数器
+    updateClueCounter();
+
+    // 添加闪烁效果
+    clueElement.style.animation = 'fadeIn 0.5s ease, pulse 1s ease';
 }
 
 // 更新线索计数器
 function updateClueCounter() {
-    const counter = document.getElementById('clue-counter');
-    counter.textContent = collectedClues.size;
+    const sceneClues = document.querySelectorAll('#scene-clues .clue-item').length;
+    const characterClues = document.querySelectorAll('#character-clues .clue-item').length;
+    const totalClues = sceneClues + characterClues;
 
-    // 根据数量改变颜色
-    if (collectedClues.size >= 8) {
-        counter.style.background = '#4CAF50'; // 绿色 - 线索充足
-    } else if (collectedClues.size >= 4) {
-        counter.style.background = '#ff8533'; // 橙色 - 线索适中
-    } else {
-        counter.style.background = '#ff6600'; // 默认橙红色
+    const counterElement = document.querySelector('#clue-counter');
+    if (counterElement) {
+        counterElement.textContent = `已收集线索：${totalClues}条`;
     }
 }
 
@@ -799,7 +825,7 @@ function showGameOver(isVictory) {
                 • 杰克：创意被盗用，但缺乏化学知识<br>
                 • 萨拉：作品被抄袭，但只是观察者</p>
                 
-                <p style="color: #ff8533;"><strong>💡 关键线索：</strong>只有汤姆同时具备接触咖啡的机会、投毒的化学知识和强烈的杀人动机。</p>
+                <p style="color: #ff8533;"><strong>�� 关键线索：</strong>只有汤姆同时具备接触咖啡的机会、投毒的化学知识和强烈的杀人动机。</p>
             </div>
         `;
     }
@@ -814,7 +840,19 @@ function restartGame() {
     remainingTime = timeLimit;
     questionCount = 0; // 重置问题计数器，这样渐进式提示也会重置
     collectedClues.clear();
-    cluesList.innerHTML = '<div id="clues-empty">开始你的调查，收集重要线索！<br><small>提问相关问题时，系统会自动记录关键信息</small></div>';
+
+    // 重置线索列表
+    const sceneCluesList = document.querySelector('#scene-clues .clues-list');
+    const characterCluesList = document.querySelector('#character-clues .clues-list');
+
+    if (sceneCluesList) {
+        sceneCluesList.innerHTML = '<div class="clues-empty">开始收集现场线索！<br><small>提问相关问题时，系统会自动记录关键信息</small></div>';
+    }
+
+    if (characterCluesList) {
+        characterCluesList.innerHTML = '<div class="clues-empty">开始收集人物线索！<br><small>提问相关问题时，系统会自动记录关键信息</small></div>';
+    }
+
     chatHistory.innerHTML = '';
     questionInput.value = '';
     questionInput.disabled = false;
@@ -824,10 +862,8 @@ function restartGame() {
     // 重置线索计数器
     updateClueCounter();
 
-    startTimer();
-    appendMessage('system', '🤖 豆包小助手：欢迎回来！让我们重新开始调查比尔的死亡案件。');
-    appendMessage('system', '案件概述：2024年10月15日晚8:30，著名侦探小说家比尔·哈里森在金叶咖啡馆突然倒下身亡。现场有6个嫌疑人，每个人都有自己的秘密...');
-    appendMessage('system', '💡 记住：每回答10个问题，系统会自动提供重要细节线索！');
+    // 重新开始游戏
+    startGame();
 }
 
 // 弹窗内容定义
@@ -921,3 +957,41 @@ document.addEventListener('keydown', (e) => {
         hideModal();
     }
 });
+
+// 测试API调用
+async function testAPI() {
+    console.log('🧪 开始测试API调用...');
+    try {
+        const response = await fetch(AI_CONFIG.endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${AI_CONFIG.apiKey}`
+            },
+            body: JSON.stringify({
+                model: AI_CONFIG.model,
+                messages: [{
+                    role: 'user',
+                    content: '你好，这是一条测试消息'
+                }],
+                max_tokens: 100,
+                temperature: 0.7
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`API调用失败: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('✅ API调用成功！');
+        console.log('API响应:', data);
+        return true;
+    } catch (error) {
+        console.error('❌ API调用失败:', error);
+        return false;
+    }
+}
+
+// 页面加载时测试API
+window.addEventListener('load', testAPI);
