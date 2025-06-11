@@ -102,7 +102,82 @@ const AI_CONFIG = {
     model: 'doubao-1-5-pro-32k-250115'
 };
 
-// AI回答系统
+// 证人证词系统
+const WITNESS_TESTIMONIES = {
+    '艾米丽': {
+        name: '艾米丽·陈',
+        role: '咖啡馆老板',
+        age: 35,
+        testimonies: [
+            '那天晚上8点左右，比尔像往常一样来到咖啡馆。他每天都是这个时间来，雷打不动。',
+            '我注意到他今天看起来有点心不在焉，一直在看手机，好像在等什么消息。',
+            '汤姆是最后一个接触比尔咖啡的人。他刚来咖啡馆工作不久，但做事很认真。',
+            '比尔的死让我很震惊。他是我店里的常客，我们关系不错，我怎么可能害他？',
+            '最近房租确实涨了，但我有其他收入来源，不至于为了钱做这种事。'
+        ]
+    },
+    '马克': {
+        name: '马克·汤普森',
+        role: '编辑',
+        age: 40,
+        testimonies: [
+            '我和比尔约好那天晚上讨论新书的出版事宜。他最近在写一部关于学术造假的小说。',
+            '我到咖啡馆时已经8:15了，看到比尔正在喝咖啡。我们聊了大约10分钟。',
+            '我们确实在版税问题上有些分歧，但这是正常的商业谈判，不至于闹到这种地步。',
+            '公司最近确实遇到一些财务困难，但比尔的下一本书对我们很重要，我不可能害他。',
+            '我离开时比尔还好好的，没想到会发生这种事。'
+        ]
+    },
+    '瑞秋': {
+        name: '瑞秋·格林',
+        role: '前妻律师',
+        age: 38,
+        testimonies: [
+            '我是比尔的离婚律师，但我们之间不只是工作关系。我承认我对他还有感情。',
+            '那天晚上我是来和他讨论财产分割的事，但主要是想和他谈谈复合的可能。',
+            '我看到他喝咖啡时有点心不在焉，好像在担心什么。',
+            '我们确实因为财产分割有过争执，但那都是过去的事了。我现在只想和他重新开始。',
+            '我离开时是8:25，他看起来一切正常。'
+        ]
+    },
+    '杰克': {
+        name: '杰克·布朗',
+        role: '演员',
+        age: 28,
+        testimonies: [
+            '比尔的新小说《死亡的真相》用了我的故事创意，但没有给我任何补偿。',
+            '我那天是去找他理论的，但看到他在和别人谈话，就在旁边等着。',
+            '我确实很生气，但我不可能为了一个故事创意就杀人。',
+            '我注意到那个服务员汤姆一直在观察比尔，看起来有点可疑。',
+            '我等到8:20就离开了，因为看到他在忙，打算改天再来。'
+        ]
+    },
+    '萨拉': {
+        name: '萨拉·戴维斯',
+        role: '书迷',
+        age: 30,
+        testimonies: [
+            '我是比尔的忠实读者，经常来咖啡馆看他写作。',
+            '那天晚上我是来给他看我写的新故事，希望能得到他的指导。',
+            '我注意到他今天特别关注手机，好像在等什么重要消息。',
+            '我确实曾经向他表白过，但被拒绝了。这让我很伤心，但我不可能因此伤害他。',
+            '我一直在咖啡馆待到8:30，亲眼看到他突然倒下。'
+        ]
+    },
+    '汤姆': {
+        name: '汤姆·威尔逊',
+        role: '服务员',
+        age: 22,
+        testimonies: [
+            '我是咖啡馆的兼职服务员，在医学院读大三。',
+            '那天晚上我负责比尔那桌的服务，他点了一杯特制拿铁。',
+            '我确实有机会接触他的咖啡，但我为什么要害他？我们无冤无仇。',
+            '我注意到他一直在看手机，好像在等什么消息。',
+            '我送完咖啡就去忙其他事了，直到听到有人喊叫才知道出事了。'
+        ]
+    }
+};
+
 class DoubaoAISystem {
     constructor(gameStory) {
         this.gameStory = gameStory;
@@ -126,12 +201,45 @@ class DoubaoAISystem {
         );
     }
 
-    // 构建AI提示词
+    // 修改AI提示词，减少误导性，让AI更专注于提供真实信息
     buildPrompt(question) {
         const historyContext = this.conversationHistory
             .slice(-5)
             .map(msg => `${msg.role === 'user' ? '玩家' : 'AI'}: ${msg.content}`)
             .join('\n');
+
+        // 检查是否在询问证人证词
+        const witnessMatch = question.match(/(艾米丽|马克|瑞秋|杰克|萨拉|汤姆)(的证词|说了什么|怎么说|怎么说|的供述)/);
+        if (witnessMatch) {
+            const witnessName = witnessMatch[1];
+            const witness = WITNESS_TESTIMONIES[witnessName];
+            if (witness) {
+                return `你是一位经验丰富的侦探，正在调查一起谋杀案。玩家正在询问${witness.name}的证词。
+
+案件背景：
+${CASE_SETUP}
+
+证人信息：
+- 姓名：${witness.name}
+- 身份：${witness.role}
+- 年龄：${witness.age}
+
+证词内容：
+${witness.testimonies.join('\n')}
+
+回答要求：
+1. 准确转述证人的证词，不要添加或删减信息
+2. 保持证人的语气和态度
+3. 如果玩家追问，可以进一步解释证词中的细节
+4. 不要对证词进行主观评价或推测
+5. 不要暗示任何人是凶手
+
+当前对话历史：
+${historyContext}
+
+玩家问题：${question}`;
+            }
+        }
 
         return `你是一位经验丰富的侦探，正在调查一起谋杀案。你需要用专业、自然、富有同理心的方式与玩家对话。
 
@@ -147,15 +255,15 @@ ${CASE_SETUP}
 回答要求：
 1. 回答要简洁，控制在100字以内
 2. 使用自然的口语化表达，避免过于正式或机械
-3. 在回答中自然地融入关键信息
-4. 如果玩家表现出犹豫或不确定，不要直接判定结果，而是：
-   - 引导玩家重新思考关键线索
-   - 提出开放性问题
-   - 建议玩家从不同角度分析
-5. 如果玩家直接问"凶手是谁"，不要直接回答，而是：
-   - 引导玩家回顾关键线索
-   - 询问玩家的推理过程
-   - 建议玩家考虑动机和证据
+3. 只提供已知的事实信息，不要进行主观推测
+4. 如果玩家表现出犹豫或不确定，引导他们：
+   - 回顾已收集的线索
+   - 思考线索之间的关联
+   - 分析时间线和动机
+5. 如果玩家直接问"凶手是谁"，引导他们：
+   - 回顾关键线索
+   - 分析每个人的动机和机会
+   - 思考证据的可靠性
 
 当前对话历史：
 ${historyContext}
@@ -164,10 +272,10 @@ ${historyContext}
 
 请记住：
 - 保持对话的自然流畅
-- 避免直接给出答案
+- 只提供事实信息，不做主观判断
 - 引导玩家自己发现真相
 - 在玩家不够坚定时，引导他们继续思考
-- 永远不要直接指出Tom Wilson是凶手`;
+- 不要直接指出凶手，让玩家自己推理`;
     }
 
     // 调用豆包AI API
@@ -364,6 +472,91 @@ ${historyContext}
         // 必须有明确指控且不能有不确定的词汇，或者使用了非常坚定的表述模式
         return (hasMurderer && hasDefiniteCaseKeyword && !hasUncertainKeyword) ||
             (hasMurderer && hasVeryConfidentPattern && !hasUncertainKeyword);
+    }
+
+    showAIHelper() {
+        const content = `
+            <div class="ai-helper-content">
+                <h3>AI助手使用指南</h3>
+                <div class="helper-section">
+                    <h4>📝 基本对话</h4>
+                    <p>你可以直接向AI助手提问，比如：</p>
+                    <ul>
+                        <li>"案发现场有什么线索？"</li>
+                        <li>"能详细说说艾米丽的证词吗？"</li>
+                        <li>"案发时马克在哪里？"</li>
+                    </ul>
+                </div>
+                <div class="helper-section">
+                    <h4>🔍 线索分析</h4>
+                    <p>AI助手会帮你：</p>
+                    <ul>
+                        <li>整理已收集的线索</li>
+                        <li>分析线索之间的关联</li>
+                        <li>提供时间线分析</li>
+                    </ul>
+                </div>
+                <div class="helper-section">
+                    <h4>💡 推理建议</h4>
+                    <p>当你需要帮助时，可以问：</p>
+                    <ul>
+                        <li>"能帮我分析一下这些线索吗？"</li>
+                        <li>"这些证据说明了什么？"</li>
+                        <li>"谁有作案动机？"</li>
+                    </ul>
+                </div>
+                <div class="helper-section">
+                    <h4>⚠️ 注意事项</h4>
+                    <ul>
+                        <li>AI助手只会提供事实信息</li>
+                        <li>不会直接指出凶手</li>
+                        <li>需要你自己推理和判断</li>
+                    </ul>
+                </div>
+            </div>
+        `;
+        showModal('AI助手', content);
+    }
+
+    showGameRules() {
+        const content = `
+            <div class="game-rules-content">
+                <h3>游戏规则</h3>
+                <div class="rules-section">
+                    <h4>🎯 游戏目标</h4>
+                    <p>通过收集线索、分析证据，找出杀害比尔的凶手。</p>
+                </div>
+                <div class="rules-section">
+                    <h4>🔍 线索收集</h4>
+                    <ul>
+                        <li>点击场景中的物品收集线索</li>
+                        <li>与证人对话获取证词</li>
+                        <li>线索会自动分类到"现场"和"人物"两栏</li>
+                    </ul>
+                </div>
+                <div class="rules-section">
+                    <h4>💬 对话系统</h4>
+                    <ul>
+                        <li>使用AI助手分析线索</li>
+                        <li>可以询问证人证词</li>
+                        <li>通过对话获取更多信息</li>
+                    </ul>
+                </div>
+                <div class="rules-section">
+                    <h4>⚖️ 推理规则</h4>
+                    <ul>
+                        <li>所有线索都是真实的</li>
+                        <li>需要分析动机和机会</li>
+                        <li>注意时间线和不在场证明</li>
+                    </ul>
+                </div>
+                <div class="rules-section">
+                    <h4>🏆 获胜条件</h4>
+                    <p>当你确信找到凶手时，可以提交你的推理。如果推理正确，你将成功破案！</p>
+                </div>
+            </div>
+        `;
+        showModal('游戏规则', content);
     }
 }
 
@@ -825,7 +1018,7 @@ function showGameOver(isVictory) {
                 • 杰克：创意被盗用，但缺乏化学知识<br>
                 • 萨拉：作品被抄袭，但只是观察者</p>
                 
-                <p style="color: #ff8533;"><strong>�� 关键线索：</strong>只有汤姆同时具备接触咖啡的机会、投毒的化学知识和强烈的杀人动机。</p>
+                <p style="color: #ff8533;"><strong>关键线索：</strong>只有汤姆同时具备接触咖啡的机会、投毒的化学知识和强烈的杀人动机。</p>
             </div>
         `;
     }
@@ -907,10 +1100,12 @@ const modalContents = {
 };
 
 // 弹窗功能
-function showModal(content) {
+function showModal(title, content) {
     const modal = document.getElementById('infoModal');
     const modalBody = document.getElementById('modalBody');
     modalBody.innerHTML = content;
+    const modalTitle = document.getElementById('modalTitle');
+    modalTitle.textContent = title;
     modal.style.display = 'block';
 }
 
@@ -939,9 +1134,9 @@ questionInput.addEventListener('keypress', async (e) => {
 document.getElementById('restartBtn').addEventListener('click', restartGame);
 
 // 信息按钮事件监听器
-document.getElementById('aiInfoBtn').addEventListener('click', () => showModal(modalContents.ai));
-document.getElementById('caseInfoBtn').addEventListener('click', () => showModal(modalContents.case));
-document.getElementById('rulesInfoBtn').addEventListener('click', () => showModal(modalContents.rules));
+document.getElementById('aiInfoBtn').addEventListener('click', () => doubaoAI.showAIHelper());
+document.getElementById('caseInfoBtn').addEventListener('click', () => showModal('案件背景', modalContents.case));
+document.getElementById('rulesInfoBtn').addEventListener('click', () => doubaoAI.showGameRules());
 document.getElementById('closeModal').addEventListener('click', hideModal);
 
 // 点击弹窗外部关闭
