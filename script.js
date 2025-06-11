@@ -249,8 +249,14 @@ ${CASE_SETUP}
 ${witness.testimonies.join('\n')}
 
 回答要求：
-1. 直接转述证人的证词，不要添加或删减信息
-2. 保持证人的语气和态度
+1. 用自然的语气转述证词，可以适当加入一些口语化表达
+2. 保持证人的性格特点，比如：
+   - 艾米丽：温和、关心他人
+   - 马克：专业、理性
+   - 瑞秋：感性、细腻
+   - 杰克：年轻气盛、直率
+   - 萨拉：细腻、观察力强
+   - 汤姆：紧张、试图掩饰
 3. 如果玩家追问，可以进一步解释证词中的细节
 4. 不要对证词进行主观评价或推测
 5. 不要暗示任何人是凶手
@@ -262,17 +268,27 @@ ${historyContext}
             }
         }
 
-        return `你是一位经验丰富的侦探，正在调查一起谋杀案。你需要直接、简洁地回答玩家的问题。
+        return `你是一位经验丰富的侦探，正在调查一起谋杀案。你需要用自然、生动的语气与玩家对话。
 
 案件背景：
 ${CASE_SETUP}
 
 回答要求：
-1. 直接提供事实信息，不要引导思考
+1. 用自然的语气回答，避免机械化的表达
 2. 回答要简洁，控制在100字以内
 3. 只提供已知的事实信息，不要进行主观推测
-4. 如果玩家问"凶手是谁"，直接回答"需要你自己推理"
-5. 如果玩家问具体人物信息，直接提供该人物的基本信息
+4. 如果玩家问"凶手是谁"，用轻松的语气说"这个需要你自己推理哦"
+5. 如果玩家问具体人物信息，用生动的语言描述该人物
+6. 可以适当使用一些口语化表达，比如：
+   - "让我想想..."
+   - "这个嘛..."
+   - "说起来..."
+   - "有意思的是..."
+7. 根据问题类型调整语气：
+   - 询问基本信息时：轻松自然
+   - 询问关键线索时：认真严肃
+   - 询问人物关系时：娓娓道来
+   - 询问时间线时：条理清晰
 
 当前对话历史：
 ${historyContext}
@@ -420,60 +436,127 @@ ${historyContext}
     }
 
     // 检查是否提到真凶（需要坚定的回答才算获胜）
-    checkMurdererMention(question) {
+    async checkMurdererMention(question) {
+        // 构建AI判断提示词
+        const prompt = `你是一位经验丰富的侦探，正在判断玩家的推理是否合理。
+
+案件背景：
+${CASE_SETUP}
+
+玩家推理：
+${question}
+
+判断要求：
+1. 玩家是否明确指出凶手是汤姆·威尔逊
+2. 玩家的推理是否合理，是否基于证据
+3. 玩家是否提供了完整的推理过程
+4. 玩家的语气是否坚定
+
+请用JSON格式回答，包含以下字段：
+{
+    "isCorrect": true/false,  // 是否找到真凶
+    "isConfident": true/false,  // 语气是否坚定
+    "hasEvidence": true/false,  // 是否有证据支持
+    "hasReasoning": true/false,  // 是否有推理过程
+    "explanation": "解释原因"  // 解释判断理由
+}`;
+
+        try {
+            const response = await fetch(AI_CONFIG.endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${AI_CONFIG.apiKey}`
+                },
+                body: JSON.stringify({
+                    model: AI_CONFIG.model,
+                    messages: [{
+                        role: 'user',
+                        content: prompt
+                    }],
+                    max_tokens: 300,
+                    temperature: 0.7
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`API调用失败: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const aiResponse = JSON.parse(data.choices[0].message.content.trim());
+
+            // 如果AI判断玩家找到了真凶，且推理合理
+            if (aiResponse.isCorrect && aiResponse.isConfident &&
+                (aiResponse.hasEvidence || aiResponse.hasReasoning)) {
+                console.log('🎉 AI判断玩家推理合理，游戏通关！');
+                console.log('AI解释:', aiResponse.explanation);
+                return true;
+            }
+
+            // 如果AI判断玩家推理不够合理，给出提示
+            if (aiResponse.isCorrect && !aiResponse.isConfident) {
+                appendMessage('system', '🤖 你的推理方向是对的，但语气不够坚定。再仔细想想，用更确定的语气说出来。');
+            } else if (aiResponse.isCorrect && !aiResponse.hasEvidence && !aiResponse.hasReasoning) {
+                appendMessage('system', '🤖 你找到了真凶，但需要提供更多证据和推理过程。为什么你认为是他？');
+            }
+
+            return false;
+        } catch (error) {
+            console.error('AI判断失败:', error);
+            // 如果AI调用失败，回退到关键词匹配
+            return this.fallbackCheckMurdererMention(question);
+        }
+    }
+
+    // 备用关键词匹配方法
+    fallbackCheckMurdererMention(question) {
         const murdererKeywords = ['汤姆', '威尔逊', '汤姆·威尔逊', '服务员汤姆', '汤姆威尔逊'];
         const definiteCaseKeywords = [
             '凶手', '杀死了', '杀害了', '真凶', '是凶手', '就是', '是他', '他干的', '他做的',
             '罪犯', '犯人', '答案', '一定是', '肯定是', '必定是', '绝对是', '确定是',
             '真正的凶手', '杀手', '元凶', '主犯', '谋杀者', '下毒者', '投毒者',
-            '我认为是', '我确定是', '我肯定是', '断定是', '判断是', '推断是'
+            '我找到了', '我发现了', '我明白了', '我知道了', '我确认了',
+            '就是他', '就是他干的', '就是他做的', '就是他杀的',
+            '凶手就是他', '真凶就是他', '罪犯就是他', '犯人就是他'
         ];
 
-        // 排除不够坚定的词汇
         const uncertainKeywords = [
             '应该是', '可能是', '怀疑', '觉得是', '也许是', '或许是', '大概是',
             '似乎是', '好像是', '估计是', '推测是', '猜测是', '感觉是',
-            '倾向于', '不确定', '有点像', '有可能', '疑似', '看起来像'
+            '倾向于', '不确定', '有点像', '有可能', '疑似', '看起来像',
+            '我猜', '我怀疑', '我认为', '我觉得', '我想', '我估计',
+            '可能', '也许', '大概', '应该', '似乎', '好像',
+            '不确定', '不太确定', '不是很确定', '不太清楚',
+            '需要更多证据', '还需要调查', '有待确认'
         ];
 
         const questionLower = question.toLowerCase();
 
-        // 检查是否包含凶手关键词
         const hasMurderer = murdererKeywords.some(keyword =>
             questionLower.includes(keyword.toLowerCase())
         );
 
-        // 检查是否包含坚定的指控词汇
         const hasDefiniteCaseKeyword = definiteCaseKeywords.some(keyword =>
             questionLower.includes(keyword.toLowerCase())
         );
 
-        // 检查是否包含不确定的词汇
         const hasUncertainKeyword = uncertainKeywords.some(keyword =>
             questionLower.includes(keyword.toLowerCase())
         );
 
-        // 额外检查：如果用户使用了非常坚定的表述模式
-        const veryConfidentPatterns = [
-            /就是.*汤姆/i,
-            /汤姆.*就是.*凶手/i,
-            /凶手.*就是.*汤姆/i,
-            /汤姆.*一定.*杀/i,
-            /汤姆.*肯定.*杀/i,
-            /汤姆.*绝对.*杀/i,
-            /我.*确定.*汤姆/i,
-            /我.*肯定.*汤姆/i,
-            /答案.*汤姆/i,
-            /汤姆.*答案/i
-        ];
+        const hasEvidence = questionLower.includes('证据') ||
+            questionLower.includes('线索') ||
+            questionLower.includes('原因') ||
+            questionLower.includes('动机') ||
+            questionLower.includes('因为') ||
+            questionLower.includes('所以');
 
-        const hasVeryConfidentPattern = veryConfidentPatterns.some(pattern =>
-            pattern.test(question)
-        );
+        const hasReasoning = questionLower.includes('因为') &&
+            questionLower.includes('所以') &&
+            questionLower.includes('因此');
 
-        // 必须有明确指控且不能有不确定的词汇，或者使用了非常坚定的表述模式
-        return (hasMurderer && hasDefiniteCaseKeyword && !hasUncertainKeyword) ||
-            (hasMurderer && hasVeryConfidentPattern && !hasUncertainKeyword);
+        return (hasMurderer && hasDefiniteCaseKeyword && !hasUncertainKeyword && (hasEvidence || hasReasoning));
     }
 
     showAIHelper() {
@@ -899,55 +982,26 @@ function detectAndCollectClues(question, response) {
 
 // 处理问题
 async function handleQuestion(question) {
-    questionCount++;
+    if (!question.trim()) return;
 
-    // 每10个问题显示一个渐进式细节
-    if (questionCount % 10 === 0) {
-        const hintIndex = Math.floor((questionCount / 10) - 1);
-        if (hintIndex < progressiveHints.length) {
-            appendMessage('system', progressiveHints[hintIndex]);
+    // 添加用户问题到聊天界面
+    appendMessage('user', question);
 
-            // 如果是关键线索，自动添加到线索库
-            if (progressiveHints[hintIndex].includes('关键线索') || progressiveHints[hintIndex].includes('汤姆')) {
-                const clueText = progressiveHints[hintIndex].replace('💡 小细节：', '').replace('💡 关键线索：', '');
-                addClue(clueText, false);
-            }
-
-            appendMessage('system', `📊 这是第 ${questionCount} 个问题的系统提示。继续调查吧！`);
-        }
-    }
-
-    // 检查是否提到真凶（需要坚定的回答才算获胜）
-    if (doubaoAI.checkMurdererMention(question)) {
-        console.log('🎉 检测到坚定的指控，用户获胜！');
-        appendMessage('system', '🎯 检测到坚定的指控！你找到了真凶！');
+    // 检查是否提到真凶
+    const isCorrect = await doubaoAI.checkMurdererMention(question);
+    if (isCorrect) {
         showGameOver(true);
         return;
     }
 
-    // 添加用户问题
-    appendMessage('user', question);
+    // 获取AI回答
+    const answer = await doubaoAI.generateAnswer(question);
 
-    // 显示AI思考中...
-    const thinkingMessage = appendMessage('system', '🤖 豆包小助手正在思考中...');
+    // 添加AI回答到聊天界面
+    appendMessage('assistant', answer);
 
-    let aiResponse = '';
-    try {
-        // 使用AI系统生成回答
-        aiResponse = await doubaoAI.generateAnswer(question);
-
-        // 移除思考消息，添加真实回答
-        thinkingMessage.remove();
-        appendMessage('system', `🤖 豆包小助手：${aiResponse}`);
-    } catch (error) {
-        console.error('AI回答生成失败:', error);
-        thinkingMessage.remove();
-        aiResponse = '抱歉，我现在有点困惑，请重新问一下吧~';
-        appendMessage('system', `🤖 豆包小助手：${aiResponse}`);
-    }
-
-    // 智能线索检测和收集
-    detectAndCollectClues(question, aiResponse);
+    // 自动检测和收集线索
+    detectAndCollectClues(question, answer);
 }
 
 // 开始游戏
@@ -955,10 +1009,10 @@ function startGame() {
     startOverlay.style.display = 'none';
     gameContainer.style.display = 'block';
     startTimer();
-    appendMessage('system', '🤖 豆包小助手：欢迎来到"谁杀死了比尔？"推理游戏！我是你的AI小助手，将为你提供案件信息。');
-    appendMessage('system', '案件概述：2024年10月15日晚8:30，著名侦探小说家比尔·哈里森在金叶咖啡馆突然倒下身亡。现场有6个嫌疑人，每个人都有自己的秘密...');
-    appendMessage('system', '👥 主要人物：艾米丽（咖啡馆老板）、马克（编辑）、瑞秋（前妻律师）、杰克（演员）、汤姆（服务员）、萨拉（书迷）');
-    appendMessage('system', '💡 提示：你可以直接询问"艾米丽的证词"、"马克说了什么"等，我会直接告诉你他们的证词内容。也可以询问具体人物信息或案件细节。');
+    appendMessage('system', '🤖 你好！我是你的AI助手。看来你也在调查这起案件啊。');
+    appendMessage('system', '让我告诉你一些基本信息：10月15日晚8:30，著名侦探小说家比尔·哈里森在金叶咖啡馆突然倒下身亡。现场有6个嫌疑人，每个人都有自己的故事...');
+    appendMessage('system', '👥 在场的人有：艾米丽（咖啡馆老板）、马克（编辑）、瑞秋（前妻律师）、杰克（演员）、汤姆（服务员）和萨拉（书迷）。');
+    appendMessage('system', '💡 你可以直接问我"艾米丽说了什么"、"马克的证词"这样的问题，我会告诉你他们的证词。当然，你也可以问任何关于案件的问题。');
 }
 
 // 开始计时器
