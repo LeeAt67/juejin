@@ -97,7 +97,7 @@ const gameStory = {
 
 // AI API配置
 const AI_CONFIG = {
-    apiKey: '25fe9205-b5d3-4747-8df4-dcdfc8528f32',
+    apiKey: '894dcbf9-7049-4cbe-9053-9f47b7aa8a52',
     endpoint: 'https://ark.cn-beijing.volces.com/api/v3/chat/completions',
     model: 'doubao-1-5-pro-32k-250115'
 };
@@ -306,7 +306,8 @@ ${historyContext}
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${AI_CONFIG.apiKey}`
+                    'Authorization': `Bearer ${AI_CONFIG.apiKey}`,
+                    'X-Request-Id': Date.now().toString()
                 },
                 body: JSON.stringify({
                     model: AI_CONFIG.model,
@@ -315,12 +316,15 @@ ${historyContext}
                         content: this.buildPrompt(question)
                     }],
                     max_tokens: 300,
-                    temperature: 0.7
+                    temperature: 0.7,
+                    stream: false
                 })
             });
 
             if (!response.ok) {
-                throw new Error(`API调用失败: ${response.status}`);
+                const errorData = await response.json();
+                console.error('API错误详情:', errorData);
+                throw new Error(`API调用失败: ${response.status} - ${JSON.stringify(errorData)}`);
             }
 
             const data = await response.json();
@@ -466,7 +470,8 @@ ${question}
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${AI_CONFIG.apiKey}`
+                    'Authorization': `Bearer ${AI_CONFIG.apiKey}`,
+                    'X-Request-Id': Date.now().toString()
                 },
                 body: JSON.stringify({
                     model: AI_CONFIG.model,
@@ -475,12 +480,15 @@ ${question}
                         content: prompt
                     }],
                     max_tokens: 300,
-                    temperature: 0.7
+                    temperature: 0.7,
+                    stream: false
                 })
             });
 
             if (!response.ok) {
-                throw new Error(`API调用失败: ${response.status}`);
+                const errorData = await response.json();
+                console.error('API错误详情:', errorData);
+                throw new Error(`API调用失败: ${response.status} - ${JSON.stringify(errorData)}`);
             }
 
             const data = await response.json();
@@ -785,31 +793,6 @@ function isImportantClue(clue) {
 function addClue(clue, isAutoDetected = true) {
     if (!clue) return;
 
-    // 检查是否已存在相同或相似的线索
-    const existingClues = Array.from(collectedClues);
-    const isDuplicate = existingClues.some(existingClue => {
-        // 检查完全相同的线索
-        if (existingClue === clue) return true;
-
-        // 检查相似线索（包含相同的关键信息）
-        const clueWords = clue.toLowerCase().split(/\s+/);
-        const existingWords = existingClue.toLowerCase().split(/\s+/);
-
-        // 如果两个线索包含相同的关键词（如人名、地点等），认为是重复的
-        const commonWords = clueWords.filter(word =>
-            existingWords.includes(word) &&
-            word.length > 2 && // 忽略太短的词
-            !['的', '了', '是', '在', '有', '和', '与', '或', '但', '而'].includes(word) // 忽略常见虚词
-        );
-
-        return commonWords.length >= 2; // 如果有2个或以上相同的关键词，认为是重复的
-    });
-
-    if (isDuplicate) {
-        console.log('跳过重复线索:', clue);
-        return;
-    }
-
     const clueElement = document.createElement('div');
     clueElement.className = 'clue-item';
     clueElement.innerHTML = `
@@ -873,7 +856,7 @@ function updateClueCounter() {
     }
 }
 
-// 智能线索检测和收集（优化版）
+// 智能线索检测和收集（误导版本）
 function detectAndCollectClues(question, response) {
     const text = (question + ' ' + (response || '')).toLowerCase();
 
@@ -904,7 +887,7 @@ function detectAndCollectClues(question, response) {
         },
         {
             triggers: ['马克', '编辑', '汤普森'],
-            clue: '👤 马克·汤普森：40岁出版社编辑，与比尔有版税纠纷'
+            clue: '👤 马克·汤普森：40岁出版社编辑，与比尔有业务往来，公司财务困难'
         },
         {
             triggers: ['瑞秋', '律师', '前妻', '格林'],
@@ -936,7 +919,7 @@ function detectAndCollectClues(question, response) {
         },
         {
             triggers: ['马克', '版税', '出版'],
-            clue: '马克与比尔存在版税分配争议'
+            clue: '马克的出版社财务困难，急需比尔的新作品'
         },
         {
             triggers: ['瑞秋', '财产', '分割'],
@@ -985,14 +968,293 @@ function detectAndCollectClues(question, response) {
         }
     });
 
-    // 特殊处理汤姆相关的医学信息
+    // 特殊误导：如果询问汤姆的详细信息，给出无害的线索
     if (text.includes('汤姆') && (text.includes('医学') || text.includes('化学') || text.includes('专业'))) {
         addClue('汤姆在大学学习，是个勤奋的学生');
     }
+
+    // 如果询问具体时间线，给出模糊信息
+    if (text.includes('8:') && text.includes('时间')) {
+        addClue('当晚8点后比尔按惯例来到咖啡馆写作');
+    }
+
+    // 强调其他人的可疑行为
+    if (text.includes('房租') || text.includes('压力')) {
+        addClue('艾米丽最近因房租问题焦虑，经济状况紧张');
+    }
+
+    if (text.includes('版税') || text.includes('合同')) {
+        addClue('马克和比尔的版税谈判陷入僵局，关系恶化');
+    }
 }
 
-// 为"开始游戏"按钮绑定点击事件，切换界面
-startBtn.addEventListener('click', () => {
+// 处理问题
+async function handleQuestion(question) {
+    if (!question.trim()) return;
+
+    // 添加用户问题到聊天界面
+    appendMessage('user', question);
+
+    // 检查是否提到真凶
+    const isCorrect = await doubaoAI.checkMurdererMention(question);
+    if (isCorrect) {
+        showGameOver(true);
+        return;
+    }
+
+    // 获取AI回答
+    const answer = await doubaoAI.generateAnswer(question);
+
+    // 添加AI回答到聊天界面
+    appendMessage('assistant', answer);
+
+    // 自动检测和收集线索
+    detectAndCollectClues(question, answer);
+}
+
+// 开始游戏
+function startGame() {
     startOverlay.style.display = 'none';
     gameContainer.style.display = 'block';
+    startTimer();
+    appendMessage('system', '🤖 你好！我是你的AI助手。看来你也在调查这起案件啊。');
+    appendMessage('system', '让我告诉你一些基本信息：10月15日晚8:30，著名侦探小说家比尔·哈里森在金叶咖啡馆突然倒下身亡。现场有6个嫌疑人，每个人都有自己的故事...');
+    appendMessage('system', '👥 在场的人有：艾米丽（咖啡馆老板）、马克（编辑）、瑞秋（前妻律师）、杰克（演员）、汤姆（服务员）和萨拉（书迷）。');
+    appendMessage('system', '💡 你可以直接问我"艾米丽说了什么"、"马克的证词"这样的问题，我会告诉你他们的证词。当然，你也可以问任何关于案件的问题。');
+}
+
+// 开始计时器
+function startTimer() {
+    const timerInterval = setInterval(() => {
+        remainingTime--;
+        const minutes = Math.floor(remainingTime / 60);
+        const seconds = remainingTime % 60;
+        timerElement.textContent = `剩余时间: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+        if (remainingTime <= 0) {
+            clearInterval(timerInterval);
+            showGameOver(false);
+        }
+    }, 1000);
+}
+
+// 游戏结束
+function showGameOver(isVictory) {
+    const overlay = document.getElementById('gameOverOverlay');
+    const title = document.getElementById('gameOverTitle');
+    const resultMessage = document.getElementById('resultMessage');
+    const description = document.getElementById('gameOverDescription');
+
+    if (isVictory) {
+        title.textContent = '恭喜你！';
+        resultMessage.textContent = '你成功找出了凶手！';
+        resultMessage.className = 'result-message victory';
+        description.textContent = '你通过敏锐的观察和缜密的推理，成功找出了杀害比尔的凶手汤姆·威尔逊。你的推理能力令人印象深刻！他利用医学知识，在比尔的特制拿铁中投放氰化物，动机是为了掩盖自己的学术造假丑闻。';
+    } else {
+        title.textContent = '时间结束';
+        resultMessage.textContent = '很遗憾，你没有在时间内找出凶手。';
+        resultMessage.className = 'result-message defeat';
+
+        // 公布完整故事逻辑
+        description.innerHTML = `
+            <div style="text-align: left; line-height: 1.8;">
+                <h3 style="color: #ff6600; margin-bottom: 15px;">📖 完整故事真相</h3>
+                
+                <p><strong>🎯 凶手：</strong>汤姆·威尔逊（22岁，服务员/医学生）</p>
+                
+                <p><strong>💀 作案动机：</strong><br>
+                汤姆因家庭贫困，为了获得奖学金而在医学院伪造实验数据。比尔在咖啡馆偶然发现了这个秘密，并威胁要举报汤姆，这将毁掉汤姆的学业和前途。</p>
+                
+                <p><strong>🔍 作案方法：</strong><br>
+                汤姆利用自己药理学专业知识，精确计算了氰化物的致死剂量。他趁着为比尔端咖啡的机会，将毒物投入比尔的特制拿铁中。咖啡的浓郁香味完美掩盖了氰化物的苦杏仁味。</p>
+                
+                <p><strong>⏰ 时间线：</strong><br>
+                8:00 - 比尔到达咖啡馆<br>
+                8:20 - 汤姆开始服务比尔区域<br>
+                8:22 - 汤姆投毒<br>
+                8:28 - 比尔喝下毒咖啡<br>
+                8:30 - 比尔中毒身亡</p>
+                
+                <p><strong>🕵️ 其他嫌疑人：</strong><br>
+                • 艾米丽：虽有接触咖啡的机会，但真心关心比尔<br>
+                • 马克：有经济纠纷，但需要比尔继续创作<br>
+                • 瑞秋：处理财产分割，但仍爱着比尔<br>
+                • 杰克：创意被盗用，但缺乏化学知识<br>
+                • 萨拉：作品被抄袭，但只是观察者</p>
+                
+                <p style="color: #ff8533;"><strong>关键线索：</strong>只有汤姆同时具备接触咖啡的机会、投毒的化学知识和强烈的杀人动机。</p>
+            </div>
+        `;
+    }
+
+    overlay.style.display = 'flex';
+    questionInput.disabled = true;
+    submitBtn.disabled = true;
+}
+
+// 重新开始游戏
+function restartGame() {
+    remainingTime = timeLimit;
+    questionCount = 0; // 重置问题计数器，这样渐进式提示也会重置
+    collectedClues.clear();
+
+    // 重置线索列表
+    const sceneCluesList = document.querySelector('#scene-clues .clues-list');
+    const characterCluesList = document.querySelector('#character-clues .clues-list');
+
+    if (sceneCluesList) {
+        sceneCluesList.innerHTML = '<div class="clues-empty">开始收集现场线索！<br><small>提问相关问题时，系统会自动记录关键信息</small></div>';
+    }
+
+    if (characterCluesList) {
+        characterCluesList.innerHTML = '<div class="clues-empty">开始收集人物线索！<br><small>提问相关问题时，系统会自动记录关键信息</small></div>';
+    }
+
+    chatHistory.innerHTML = '';
+    questionInput.value = '';
+    questionInput.disabled = false;
+    submitBtn.disabled = false;
+    document.getElementById('gameOverOverlay').style.display = 'none';
+
+    // 重置线索计数器
+    updateClueCounter();
+
+    // 重新开始游戏
+    startGame();
+}
+
+// 弹窗内容定义
+const modalContents = {
+    ai: `
+        <h2>🤖 豆包AI助手</h2>
+        <ul>
+            <li>🎯 <strong>真实AI对话</strong>：集成豆包AI智能回答系统</li>
+            <li>💬 <strong>智能推理</strong>：基于案件背景进行分析判断</li>
+            <li>📱 <strong>实时响应</strong>：AI实时处理并回答你的问题</li>
+            <li>🛡️ <strong>备用机制</strong>：API不可用时自动切换到本地逻辑</li>
+            <li>🔍 <strong>神秘风格</strong>：AI回答简短神秘，需要你仔细推理</li>
+        </ul>
+    `,
+    case: `
+        <h2>📖 案件背景</h2>
+        <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem; line-height: 1.8;">
+            <p><strong>🕰️ 时间</strong>：2024年10月15日，晚上8:30</p>
+            <p><strong>📍 地点</strong>：雾霾市中心区的"金叶咖啡馆"</p>
+            <p><strong>💀 受害者</strong>：比尔·哈里森（William Harrison），45岁，著名侦探小说家</p>
+            
+            <p style="color: #ff8533; margin-top: 1.5rem;"><strong>案件概述：</strong></p>
+            <p>当晚，比尔如往常一样来到他最喜欢的咖啡馆写作。这家咖啡馆是他的"秘密基地"，几乎每天都会在固定的角落座位待上几个小时。</p>
+            <p>晚上8:30左右，比尔突然倒在桌上，呼吸急促，面色发紫。几分钟后便停止了呼吸。医生初步判断为<span style="color: #ff6600;">中毒身亡</span>。</p>
+            <p>现场发现一杯刚喝了一半的<span style="color: #ff6600;">特制拿铁咖啡</span>，桌上还有他正在撰写的新小说手稿《死亡的真相》。</p>
+            <p>奇怪的是，当晚咖啡馆里有几个常客，但没有人注意到异常情况...</p>
+        </div>
+    `,
+    rules: `
+        <h2>🎯 游戏规则</h2>
+        <ul>
+            <li><strong>🔍 调查目标</strong>：通过智能提问找出真正的凶手</li>
+            <li><strong>🤖 AI助手</strong>：豆包AI基于案件背景提供线索（但会误导！）</li>
+            <li><strong>⏰ 时间限制</strong>：30分钟内破解谜题</li>
+            <li><strong>📋 线索系统</strong>：重要发现会自动记录到证据库</li>
+            <li><strong>🏆 获胜条件</strong>：正确指出凶手即可获胜</li>
+            <li><strong>💡 提问技巧</strong>：可询问现场细节、人物关系、时间线等</li>
+            <li><strong>⚠️ 注意</strong>：AI可能会误导你，需要独立思考！</li>
+        </ul>
+    `
+};
+
+// 弹窗功能
+function showModal(title, content) {
+    const modal = document.getElementById('infoModal');
+    const modalBody = document.getElementById('modalBody');
+    modalBody.innerHTML = content;
+    const modalTitle = document.getElementById('modalTitle');
+    modalTitle.textContent = title;
+    modal.style.display = 'block';
+}
+
+function hideModal() {
+    document.getElementById('infoModal').style.display = 'none';
+}
+
+// 事件监听器
+startBtn.addEventListener('click', startGame);
+submitBtn.addEventListener('click', async () => {
+    const question = questionInput.value.trim();
+    if (question) {
+        await handleQuestion(question);
+        questionInput.value = '';
+    }
 });
+questionInput.addEventListener('keypress', async (e) => {
+    if (e.key === 'Enter') {
+        const question = questionInput.value.trim();
+        if (question) {
+            await handleQuestion(question);
+            questionInput.value = '';
+        }
+    }
+});
+document.getElementById('restartBtn').addEventListener('click', restartGame);
+
+// 信息按钮事件监听器
+document.getElementById('aiInfoBtn').addEventListener('click', () => doubaoAI.showAIHelper());
+document.getElementById('caseInfoBtn').addEventListener('click', () => showModal('案件背景', modalContents.case));
+document.getElementById('rulesInfoBtn').addEventListener('click', () => doubaoAI.showGameRules());
+document.getElementById('closeModal').addEventListener('click', hideModal);
+
+// 点击弹窗外部关闭
+document.getElementById('infoModal').addEventListener('click', (e) => {
+    if (e.target.id === 'infoModal') {
+        hideModal();
+    }
+});
+
+// ESC键关闭弹窗
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        hideModal();
+    }
+});
+
+// 测试API调用
+async function testAPI() {
+    console.log('🧪 开始测试API调用...');
+    try {
+        const response = await fetch(AI_CONFIG.endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${AI_CONFIG.apiKey}`,
+                'X-Request-Id': Date.now().toString()
+            },
+            body: JSON.stringify({
+                model: AI_CONFIG.model,
+                messages: [{
+                    role: 'user',
+                    content: '你好，这是一条测试消息'
+                }],
+                max_tokens: 100,
+                temperature: 0.7,
+                stream: false
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('API错误详情:', errorData);
+            throw new Error(`API调用失败: ${response.status} - ${JSON.stringify(errorData)}`);
+        }
+
+        const data = await response.json();
+        console.log('✅ API调用成功！');
+        console.log('API响应:', data);
+        return true;
+    } catch (error) {
+        console.error('❌ API调用失败:', error);
+        return false;
+    }
+}
+
+// 页面加载时测试API
+window.addEventListener('load', testAPI);
