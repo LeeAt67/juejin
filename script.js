@@ -990,3 +990,9 @@ function detectAndCollectClues(question, response) {
         addClue('汤姆在大学学习，是个勤奋的学生');
     }
 }
+
+// 为"开始游戏"按钮绑定点击事件，切换界面
+startBtn.addEventListener('click', () => {
+    startOverlay.style.display = 'none';
+    gameContainer.style.display = 'block';
+});
