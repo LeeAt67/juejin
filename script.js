@@ -999,13 +999,13 @@ startBtn.addEventListener('click', () => {
 
 // 资源加载配置
 const RESOURCE_CONFIG = {
-    // 使用jsDelivr CDN（需要替换为您的GitHub仓库地址）
-    backgroundImage: 'https://cdn.jsdelivr.net/gh/your-username/your-repo/assets/bgp.png',
-    backgroundMusic: 'https://cdn.jsdelivr.net/gh/your-username/your-repo/assets/bgm.mp3',
+    // 使用jsDelivr CDN
+    backgroundImage: 'https://cdn.jsdelivr.net/gh/LeeAt67/juejin/assets/bgp.png',
+    backgroundMusic: 'https://cdn.jsdelivr.net/gh/LeeAt67/juejin/assets/bgm.mp3',
 
-    // 使用Gitee作为备用（需要替换为您的Gitee仓库地址）
-    giteeBackgroundImage: 'https://gitee.com/your-username/your-repo/raw/master/assets/bgp.png',
-    giteeBackgroundMusic: 'https://gitee.com/your-username/your-repo/raw/master/assets/bgm.mp3',
+    // 使用Gitee作为备用
+    giteeBackgroundImage: 'https://gitee.com/LeeAt67/juejin/raw/main/assets/bgp.png',
+    giteeBackgroundMusic: 'https://gitee.com/LeeAt67/juejin/raw/main/assets/bgm.mp3',
 
     // 本地资源作为最后备用
     localBackgroundImage: './assets/bgp.png',
