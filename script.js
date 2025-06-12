@@ -964,27 +964,42 @@ function detectAndCollectClues(question, response) {
     // 检测并收集线索（但避免暴露关键信息）
     cluePatterns.forEach(pattern => {
         if (pattern.triggers.some(trigger => text.includes(trigger))) {
-            addClue(pattern.clue);
+            // 检查线索是否已经存在
+            if (!collectedClues.has(pattern.clue)) {
+                addClue(pattern.clue);
+            }
         }
     });
 
     // 特殊误导：如果询问汤姆的详细信息，给出无害的线索
     if (text.includes('汤姆') && (text.includes('医学') || text.includes('化学') || text.includes('专业'))) {
-        addClue('汤姆在大学学习，是个勤奋的学生');
+        const clue = '汤姆在大学学习，是个勤奋的学生';
+        if (!collectedClues.has(clue)) {
+            addClue(clue);
+        }
     }
 
     // 如果询问具体时间线，给出模糊信息
     if (text.includes('8:') && text.includes('时间')) {
-        addClue('当晚8点后比尔按惯例来到咖啡馆写作');
+        const clue = '当晚8点后比尔按惯例来到咖啡馆写作';
+        if (!collectedClues.has(clue)) {
+            addClue(clue);
+        }
     }
 
     // 强调其他人的可疑行为
     if (text.includes('房租') || text.includes('压力')) {
-        addClue('艾米丽最近因房租问题焦虑，经济状况紧张');
+        const clue = '艾米丽最近因房租问题焦虑，经济状况紧张';
+        if (!collectedClues.has(clue)) {
+            addClue(clue);
+        }
     }
 
     if (text.includes('版税') || text.includes('合同')) {
-        addClue('马克和比尔的版税谈判陷入僵局，关系恶化');
+        const clue = '马克和比尔的版税谈判陷入僵局，关系恶化';
+        if (!collectedClues.has(clue)) {
+            addClue(clue);
+        }
     }
 }
 
