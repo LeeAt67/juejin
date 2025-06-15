@@ -1003,7 +1003,7 @@ function startGame() {
     startOverlay.style.display = 'none';
     gameContainer.style.display = 'block';
     startTimer();
-    appendMessage('system', '🤖 你好！我是你的AI助手。看来你也在调查这起案件啊。');
+    appendMessage('system', '🤖 你好！我是你的AI小助手。看来你也在调查这起案件啊。');
     appendMessage('system', '让我告诉你一些基本信息：10月15日晚8:30，著名侦探小说家比尔·哈里森在金叶咖啡馆突然倒下身亡。现场有6个嫌疑人，每个人都有自己的故事...');
     appendMessage('system', '👥 在场的人有：艾米丽（咖啡馆老板）、马克（编辑）、瑞秋（前妻律师）、杰克（演员）、汤姆（服务员）和萨拉（书迷）。');
     appendMessage('system', '💡 你可以直接问我"艾米丽说了什么"、"马克的证词"这样的问题，我会告诉你他们的证词。当然，你也可以问任何关于案件的问题。');
