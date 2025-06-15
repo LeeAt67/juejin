@@ -785,63 +785,82 @@ function getClueCategory(clue) {
 
 // 判断是否为重要线索
 function isImportantClue(clue) {
-    const importantKeywords = ['真凶', '汤姆·威尔逊', '氰化物', '学术造假', '医学生', '威胁举报'];
-    return importantKeywords.some(keyword => clue.includes(keyword));
+    const importantKeywords = [
+        '真凶', '汤姆·威尔逊', '氰化物', '学术造假', '医学生', '威胁举报',
+        '汤姆', '威尔逊', '毒物', '下毒', '投毒', '医学', '化学',
+        '实验', '报告', '数据', '造假', '举报', '威胁'
+    ];
+
+    // 检查是否包含重要关键词
+    const hasImportantKeyword = importantKeywords.some(keyword => clue.includes(keyword));
+
+    // 检查是否包含特定组合
+    const hasImportantCombination =
+        (clue.includes('汤姆') && (clue.includes('医学') || clue.includes('化学'))) ||
+        (clue.includes('威尔逊') && (clue.includes('学生') || clue.includes('大学'))) ||
+        (clue.includes('服务员') && (clue.includes('专业') || clue.includes('学习')));
+
+    return hasImportantKeyword || hasImportantCombination;
 }
 
 // 添加线索（优化版）
 function addClue(clue, isAutoDetected = true) {
-    if (!clue) return;
+    if (!collectedClues.has(clue)) {
+        collectedClues.add(clue);
+        const category = getClueCategory(clue);
+        const isImportant = isImportantClue(clue);
 
-    const clueElement = document.createElement('div');
-    clueElement.className = 'clue-item';
-    clueElement.innerHTML = `
-        <span class="clue-icon">🔍</span>
-        <span class="clue-text">${clue}</span>
-    `;
+        // 创建线索元素
+        const clueElement = document.createElement('div');
+        clueElement.className = `clue ${category.toLowerCase()}-clue`;
+        clueElement.innerHTML = `
+            <span class="clue-icon">${category === '现场' ? '🔍' : '👤'}</span>
+            <span class="clue-text">${clue}</span>
+        `;
 
-    // 根据线索内容判断类型
-    const isSceneClue = clue.includes('现场') ||
-        clue.includes('房间') ||
-        clue.includes('窗户') ||
-        clue.includes('门') ||
-        clue.includes('血迹') ||
-        clue.includes('指纹') ||
-        clue.includes('脚印') ||
-        clue.includes('咖啡') ||
-        clue.includes('毒') ||
-        clue.includes('死亡');
+        // 获取或创建线索列表容器
+        let clueList = document.getElementById(`${category.toLowerCase()}-clues`);
+        if (!clueList) {
+            // 如果线索列表不存在，创建一个新的
+            const clueContainer = document.createElement('div');
+            clueContainer.className = 'clue-container';
+            clueContainer.innerHTML = `
+                <h3>${category}线索</h3>
+                <div id="${category.toLowerCase()}-clues" class="clue-list"></div>
+            `;
+            document.getElementById('game-container').appendChild(clueContainer);
+            clueList = document.getElementById(`${category.toLowerCase()}-clues`);
+        }
 
-    // 添加到对应的列
-    const targetColumn = isSceneClue ?
-        document.querySelector('#scene-clues .clues-list') :
-        document.querySelector('#character-clues .clues-list');
+        // 添加到对应的线索列表
+        clueList.appendChild(clueElement);
 
-    if (!targetColumn) {
-        console.error('找不到线索列表容器，线索内容：', clue);
-        return;
+        // 更新线索计数器
+        updateClueCounter();
+
+        // 如果是重要线索，显示特殊提示
+        if (isImportant) {
+            const notification = document.createElement('div');
+            notification.className = 'important-clue-notification';
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <h3>🎉 恭喜发现重要线索！</h3>
+                    <p>${clue}</p>
+                    <p class="notification-tip">这条线索可能对破案很有帮助！</p>
+                </div>
+            `;
+            document.body.appendChild(notification);
+
+            // 3秒后自动消失
+            setTimeout(() => {
+                notification.classList.add('fade-out');
+                setTimeout(() => notification.remove(), 500);
+            }, 3000);
+        }
+
+        // 添加动画效果
+        clueElement.style.animation = 'fadeIn 0.5s ease';
     }
-
-    // 移除空状态提示
-    const emptyPrompt = targetColumn.querySelector('.clues-empty');
-    if (emptyPrompt) {
-        emptyPrompt.remove();
-    }
-
-    targetColumn.appendChild(clueElement);
-    collectedClues.add(clue);
-
-    // 判断是否为重要线索
-    if (isImportantClue(clue)) {
-        clueElement.classList.add('important');
-        appendMessage('system', `🎯 发现重要线索！"${clue}" 已记录到证据库中。`);
-    }
-
-    // 更新线索计数器
-    updateClueCounter();
-
-    // 添加闪烁效果
-    clueElement.style.animation = 'fadeIn 0.5s ease, pulse 1s ease';
 }
 
 // 更新线索计数器
@@ -906,62 +925,38 @@ function detectAndCollectClues(question, response) {
             clue: '👤 汤姆·威尔逊：22岁兼职服务员，大学生，为人朴实勤奋'
         },
 
-        // 比尔本人信息
+        // 重要线索（新增）
         {
-            triggers: ['比尔', '哈里森', '死者', '受害者', '作家'],
-            clue: '👤 比尔·哈里森：45岁著名侦探小说家，习惯在咖啡馆写作'
-        },
-
-        // 动机相关线索
-        {
-            triggers: ['艾米丽', '房租', '经营'],
-            clue: '艾米丽最近因房租上涨承受巨大经营压力'
+            triggers: ['汤姆', '医学', '专业'],
+            clue: '👤 汤姆·威尔逊：医学院学生，正在准备实验报告'
         },
         {
-            triggers: ['马克', '版税', '出版'],
-            clue: '马克的出版社财务困难，急需比尔的新作品'
+            triggers: ['汤姆', '化学', '专业'],
+            clue: '👤 汤姆·威尔逊：化学专业学生，对毒理学有研究'
         },
         {
-            triggers: ['瑞秋', '财产', '分割'],
-            clue: '瑞秋代理前妻处理与比尔的财产分割案'
+            triggers: ['威尔逊', '大学', '学生'],
+            clue: '👤 汤姆·威尔逊：医学院在读学生，成绩优秀'
         },
         {
-            triggers: ['杰克', '创意', '盗用', '故事'],
-            clue: '杰克发现比尔盗用了他的人生经历，愤怒不已'
+            triggers: ['服务员', '专业', '学习'],
+            clue: '👤 汤姆·威尔逊：医学院学生，在咖啡馆兼职'
         },
         {
-            triggers: ['萨拉', '粉丝', '书迷', '故事'],
-            clue: '萨拉认为比尔抄袭了她的投稿作品'
-        },
-
-        // 关系线索
-        {
-            triggers: ['感情', '关系', '暗恋'],
-            clue: '现场多人与比尔存在复杂的感情或利益关系'
+            triggers: ['毒物', '下毒', '投毒'],
+            clue: '现场发现可疑物质，需要进一步化验'
         },
         {
-            triggers: ['常客', '熟悉', '了解'],
-            clue: '比尔是咖啡馆常客，在场人员都与他相识'
-        },
-
-        // 对汤姆的误导性描述
-        {
-            triggers: ['汤姆', '服务员'],
-            clue: '汤姆是普通的兼职服务员，为人老实，在读大学'
-        },
-
-        // 其他误导性线索
-        {
-            triggers: ['动机', '原因'],
-            clue: '多人与比尔存在经济或感情纠纷，动机复杂'
+            triggers: ['实验', '报告', '数据'],
+            clue: '汤姆最近在准备一个重要的实验报告'
         },
         {
-            triggers: ['接触', '机会'],
-            clue: '艾米丽和服务员都有接触咖啡的机会'
+            triggers: ['造假', '举报', '威胁'],
+            clue: '比尔发现了一些学术造假的证据，准备举报'
         }
     ];
 
-    // 检测并收集线索（但避免暴露关键信息）
+    // 检测并收集线索
     cluePatterns.forEach(pattern => {
         if (pattern.triggers.some(trigger => text.includes(trigger))) {
             // 检查线索是否已经存在
@@ -971,36 +966,40 @@ function detectAndCollectClues(question, response) {
         }
     });
 
-    // 特殊误导：如果询问汤姆的详细信息，给出无害的线索
-    if (text.includes('汤姆') && (text.includes('医学') || text.includes('化学') || text.includes('专业'))) {
-        const clue = '汤姆在大学学习，是个勤奋的学生';
-        if (!collectedClues.has(clue)) {
-            addClue(clue);
+    // 特殊重要线索检测
+    const importantPatterns = [
+        {
+            condition: text.includes('汤姆') && (text.includes('医学') || text.includes('化学')),
+            clue: '👤 汤姆·威尔逊：医学院学生，正在准备实验报告，对毒理学有研究'
+        },
+        {
+            condition: text.includes('威尔逊') && (text.includes('学生') || text.includes('大学')),
+            clue: '👤 汤姆·威尔逊：医学院在读学生，成绩优秀，正在准备实验报告'
+        },
+        {
+            condition: text.includes('服务员') && (text.includes('专业') || text.includes('学习')),
+            clue: '👤 汤姆·威尔逊：医学院学生，在咖啡馆兼职，对化学实验很感兴趣'
+        },
+        {
+            condition: text.includes('毒物') || text.includes('下毒') || text.includes('投毒'),
+            clue: '现场发现可疑物质，初步检测显示可能含有毒物成分'
+        },
+        {
+            condition: text.includes('实验') && (text.includes('报告') || text.includes('数据')),
+            clue: '汤姆最近在准备一个重要的实验报告，涉及毒理学研究'
+        },
+        {
+            condition: text.includes('造假') && (text.includes('举报') || text.includes('威胁')),
+            clue: '比尔发现了一些学术造假的证据，准备写进新书揭露真相'
         }
-    }
+    ];
 
-    // 如果询问具体时间线，给出模糊信息
-    if (text.includes('8:') && text.includes('时间')) {
-        const clue = '当晚8点后比尔按惯例来到咖啡馆写作';
-        if (!collectedClues.has(clue)) {
-            addClue(clue);
+    // 检测重要线索
+    importantPatterns.forEach(pattern => {
+        if (pattern.condition && !collectedClues.has(pattern.clue)) {
+            addClue(pattern.clue);
         }
-    }
-
-    // 强调其他人的可疑行为
-    if (text.includes('房租') || text.includes('压力')) {
-        const clue = '艾米丽最近因房租问题焦虑，经济状况紧张';
-        if (!collectedClues.has(clue)) {
-            addClue(clue);
-        }
-    }
-
-    if (text.includes('版税') || text.includes('合同')) {
-        const clue = '马克和比尔的版税谈判陷入僵局，关系恶化';
-        if (!collectedClues.has(clue)) {
-            addClue(clue);
-        }
-    }
+    });
 }
 
 // 处理问题
