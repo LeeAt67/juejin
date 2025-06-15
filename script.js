@@ -502,13 +502,7 @@ ${question}
                 return true;
             }
 
-            // 如果AI判断玩家推理不够合理，给出提示
-            if (aiResponse.isCorrect && !aiResponse.isConfident) {
-                appendMessage('system', '🤖 你的推理方向是对的，但语气不够坚定。再仔细想想，用更确定的语气说出来。');
-            } else if (aiResponse.isCorrect && !aiResponse.hasEvidence && !aiResponse.hasReasoning) {
-                appendMessage('system', '🤖 你找到了真凶，但需要提供更多证据和推理过程。为什么你认为是他？');
-            }
-
+            // 如果AI判断玩家推理不够合理，直接返回false
             return false;
         } catch (error) {
             console.error('AI判断失败:', error);
