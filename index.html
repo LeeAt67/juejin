@@ -1245,7 +1245,7 @@
 </head>
 
 <body>
-  <audio id="bgm" src="bgm.mp3" autoplay loop hidden></audio>
+  <audio id="bgm" src="https://music.163.com/song/media/outer/url?id=817864.mp3" autoplay loop hidden></audio>
   <!-- 音乐控制按钮 -->
   <button id="music-control" title="播放音乐">
     <img
@@ -1327,34 +1327,19 @@
     const localImg = new Image();
     localImg.onload = function () {
       console.log('✅ 本地背景图片加载成功');
-      document.body.style.backgroundImage = 'url("bgp.png")';
+      document.body.style.backgroundImage = 'url("https://raw.githubusercontent.com/LeeAt67/juejin/a38baaf5bd7fe24bfc1897c74e2bdb188036e267/bgp.png")';
       document.body.style.backgroundSize = 'cover';
       document.body.style.backgroundRepeat = 'no-repeat';
       document.body.style.backgroundPosition = 'center';
       document.body.style.backgroundAttachment = 'fixed';
     };
     localImg.onerror = function () {
-      console.log('❌ 本地背景图片加载失败，尝试Gitee备用链接');
-
-      // 尝试Gitee备用链接
-      const giteeImg = new Image();
-      giteeImg.onload = function () {
-        console.log('✅ Gitee备用背景图片加载成功');
-        document.body.style.backgroundImage = 'url("https://gitee.com/codechickentub/kiki/raw/master/bgp.png")';
-        document.body.style.backgroundSize = 'cover';
-        document.body.style.backgroundRepeat = 'no-repeat';
-        document.body.style.backgroundPosition = 'center';
-        document.body.style.backgroundAttachment = 'fixed';
-      };
-      giteeImg.onerror = function () {
-        console.log('❌ Gitee备用背景也加载失败，使用渐变背景');
-        document.body.style.backgroundImage = 'linear-gradient(135deg, rgba(45, 45, 45, 0.9) 0%, rgba(30, 30, 30, 0.95) 25%, rgba(20, 20, 20, 0.98) 50%, rgba(15, 15, 15, 1) 75%, rgba(10, 10, 10, 1) 100%), radial-gradient(circle at 20% 80%, rgba(255, 102, 0, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255, 133, 51, 0.08) 0%, transparent 50%)';
-      };
-      giteeImg.src = 'https://gitee.com/codechickentub/kiki/raw/master/bgp.png';
+      console.log('❌ 本地背景图片加载失败，使用渐变背景');
+      document.body.style.backgroundImage = 'linear-gradient(135deg, rgba(45, 45, 45, 0.9) 0%, rgba(30, 30, 30, 0.95) 25%, rgba(20, 20, 20, 0.98) 50%, rgba(15, 15, 15, 1) 75%, rgba(10, 10, 10, 1) 100%), radial-gradient(circle at 20% 80%, rgba(255, 102, 0, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255, 133, 51, 0.08) 0%, transparent 50%)';
     };
 
-    // 先尝试本地文件
-    localImg.src = 'bgp.png';
+    // 尝试加载GitHub图片
+    localImg.src = 'https://raw.githubusercontent.com/LeeAt67/juejin/a38baaf5bd7fe24bfc1897c74e2bdb188036e267/bgp.png';
 
     console.log('🎮 游戏资源配置：本地文件优先，Gitee作为备用');
 
@@ -1368,7 +1353,7 @@
       if (!audioAttempted) {
         console.log('❌ 本地音频加载失败，尝试Gitee备用链接');
         audioAttempted = true;
-        audio.src = 'https://gitee.com/codechickentub/kiki/raw/master/bgm.mp3';
+        audio.src = 'https://music.163.com/song/media/outer/url?id=817864.mp3';
       } else {
         console.log('❌ Gitee音频也加载失败');
       }
