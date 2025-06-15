@@ -97,7 +97,7 @@ const gameStory = {
 
 // AI API配置
 const AI_CONFIG = {
-    apiKey: '123',
+    apiKey: '894dcbf9-7049-4cbe-9053-9f47b7aa8a52',
     endpoint: 'https://ark.cn-beijing.volces.com/api/v3/chat/completions',
     model: 'doubao-1-5-pro-32k-250115'
 };
@@ -1010,15 +1010,22 @@ async function handleQuestion(question) {
     // 添加用户问题到聊天界面
     appendMessage('user', question);
 
+    // 显示AI思考中的提示
+    const thinkingMessage = appendMessage('system', '🤖 小助手正在思考中...');
+
     // 检查是否提到真凶
     const isCorrect = await doubaoAI.checkMurdererMention(question);
     if (isCorrect) {
+        thinkingMessage.remove(); // 移除思考提示
         showGameOver(true);
         return;
     }
 
     // 获取AI回答
     const answer = await doubaoAI.generateAnswer(question);
+
+    // 移除思考提示
+    thinkingMessage.remove();
 
     // 添加AI回答到聊天界面
     appendMessage('assistant', answer);
