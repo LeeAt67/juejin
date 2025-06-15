@@ -97,7 +97,7 @@ const gameStory = {
 
 // AI API配置
 const AI_CONFIG = {
-    apiKey: 'apikey',
+    apiKey: '894dcbf9-7049-4cbe-9053-9f47b7aa8a52',
     endpoint: 'https://ark.cn-beijing.volces.com/api/v3/chat/completions',
     model: 'doubao-1-5-pro-32k-250115'
 };
