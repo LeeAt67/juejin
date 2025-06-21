@@ -370,9 +370,12 @@ class GameState {
         this.gameEnded = false;
         this.currentPanel = null;
         this.selectedSuspect = null;
-        this.interrogationCooldowns = {}; // 审问冷却时间
+        this.interrogationCooldowns = {}; // 审问冷却时间（保留兼容性）
         this.notesData = {}; // 推理记录数据
         this.discoveredClues = new Set(); // 已发现的线索
+
+        // 初始化审问时间管理
+        this.initializeInterrogationTiming();
 
         // 初始化推理记录
         Object.keys(gameData.suspects).forEach(key => {
@@ -409,26 +412,109 @@ class GameState {
         showGameOver(victory);
     }
 
-    // 检查审问冷却时间
+    // 审问时间管理
+    initializeInterrogationTiming() {
+        this.interrogationWindowDuration = 30 * 1000; // 30秒审问窗口
+        this.interrogationCooldownTime = 2 * 60 * 1000; // 2分钟冷却时间
+        this.currentInterrogationWindow = null; // 当前审问窗口
+        this.interrogationTimer = null; // 审问计时器
+    }
+
+    // 检查是否可以开始审问
+    canStartInterrogation() {
+        const now = Date.now();
+
+        // 如果已经在审问窗口中，可以继续审问
+        if (this.currentInterrogationWindow) {
+            const elapsed = now - this.currentInterrogationWindow.startTime;
+            return elapsed < this.interrogationWindowDuration;
+        }
+
+        // 检查冷却时间
+        const lastInterrogationEnd = this.lastInterrogationEnd || 0;
+        return now - lastInterrogationEnd >= this.interrogationCooldownTime;
+    }
+
+    // 获取审问状态信息
+    getInterrogationStatus() {
+        const now = Date.now();
+
+        if (this.currentInterrogationWindow) {
+            const elapsed = now - this.currentInterrogationWindow.startTime;
+            const remaining = Math.max(0, this.interrogationWindowDuration - elapsed);
+            return {
+                type: 'active',
+                remainingTime: remaining,
+                message: `审问进行中，剩余时间: ${Math.ceil(remaining / 1000)}秒`
+            };
+        }
+
+        const lastEnd = this.lastInterrogationEnd || 0;
+        const cooldownElapsed = now - lastEnd;
+
+        if (cooldownElapsed < this.interrogationCooldownTime) {
+            const remaining = this.interrogationCooldownTime - cooldownElapsed;
+            const minutes = Math.floor(remaining / 60000);
+            const seconds = Math.floor((remaining % 60000) / 1000);
+            return {
+                type: 'cooldown',
+                remainingTime: remaining,
+                message: `审问冷却中，${minutes}:${String(seconds).padStart(2, '0')} 后可再次审问`
+            };
+        }
+
+        return {
+            type: 'ready',
+            remainingTime: 0,
+            message: '可以开始审问'
+        };
+    }
+
+    // 开始审问窗口
+    startInterrogationWindow() {
+        const now = Date.now();
+        this.currentInterrogationWindow = {
+            startTime: now
+        };
+
+        // 设置审问窗口结束计时器
+        this.interrogationTimer = setTimeout(() => {
+            this.endInterrogationWindow();
+        }, this.interrogationWindowDuration);
+
+        return true;
+    }
+
+    // 结束审问窗口
+    endInterrogationWindow() {
+        if (this.interrogationTimer) {
+            clearTimeout(this.interrogationTimer);
+            this.interrogationTimer = null;
+        }
+
+        this.lastInterrogationEnd = Date.now();
+        this.currentInterrogationWindow = null;
+
+        // 通知审问系统窗口已结束
+        if (window.interrogationSystem) {
+            window.interrogationSystem.onInterrogationWindowEnded();
+        }
+    }
+
+    // 检查审问冷却时间（保留原方法供兼容）
     canInterrogate(suspect) {
-        const now = Date.now();
-        const lastInterrogation = this.interrogationCooldowns[suspect] || 0;
-        const cooldownTime = 2 * 60 * 1000; // 2分钟
-        return now - lastInterrogation >= cooldownTime;
+        return this.canStartInterrogation();
     }
 
-    // 设置审问冷却时间
+    // 设置审问冷却时间（保留原方法供兼容）
     setInterrogationCooldown(suspect) {
-        this.interrogationCooldowns[suspect] = Date.now();
+        // 现在由审问窗口系统管理
     }
 
-    // 获取剩余冷却时间
+    // 获取剩余冷却时间（保留原方法供兼容）
     getRemainingCooldown(suspect) {
-        const now = Date.now();
-        const lastInterrogation = this.interrogationCooldowns[suspect] || 0;
-        const cooldownTime = 2 * 60 * 1000; // 2分钟
-        const elapsed = now - lastInterrogation;
-        return Math.max(0, cooldownTime - elapsed);
+        const status = this.getInterrogationStatus();
+        return status.remainingTime;
     }
 }
 
@@ -502,6 +588,12 @@ class PanelManager {
                 panel.classList.remove('active');
             }
         });
+
+        // 如果关闭审问面板，清理审问状态
+        if (gameState.currentPanel === 'interrogationPanel' && window.interrogationSystem) {
+            window.interrogationSystem.stopInterrogationCountdown();
+        }
+
         gameState.currentPanel = null;
     }
 }
@@ -774,13 +866,20 @@ class InterrogationSystem {
     }
 
     selectSuspect(suspectKey) {
-        // 检查冷却时间
-        if (!gameState.canInterrogate(suspectKey)) {
-            const remainingTime = Math.ceil(gameState.getRemainingCooldown(suspectKey) / 1000);
-            const minutes = Math.floor(remainingTime / 60);
-            const seconds = remainingTime % 60;
-            this.showCooldownMessage(gameData.suspects[suspectKey].name, minutes, seconds);
+        // 检查审问状态
+        const status = gameState.getInterrogationStatus();
+
+        if (status.type === 'cooldown') {
+            this.showInterrogationStatusMessage(status.message, 'warning');
             return;
+        }
+
+        if (status.type === 'ready') {
+            // 开始新的审问窗口
+            if (!gameState.startInterrogationWindow()) {
+                this.showInterrogationStatusMessage('无法开始审问，请稍后再试', 'error');
+                return;
+            }
         }
 
         this.currentSuspect = suspectKey;
@@ -794,6 +893,9 @@ class InterrogationSystem {
 
         // 显示角色进入描述
         this.showCharacterIntroduction(suspect);
+
+        // 开始审问窗口倒计时
+        this.startInterrogationCountdown();
     }
 
     updateSuspectSelection(suspectKey) {
@@ -806,9 +908,10 @@ class InterrogationSystem {
     showInterrogationArea(suspect) {
         document.getElementById('selectedSuspect').style.display = 'block';
         document.getElementById('currentSuspectName').textContent = `正在审问: ${suspect.name}`;
-        document.getElementById('questionInput').disabled = false;
-        document.getElementById('askBtn').disabled = false;
         document.getElementById('dialogueArea').innerHTML = '';
+
+        // 启用审问功能
+        this.enableInterrogation();
     }
 
     showCharacterIntroduction(suspect) {
@@ -870,9 +973,6 @@ class InterrogationSystem {
 
         // 清空输入框
         document.getElementById('questionInput').value = '';
-
-        // 设置冷却时间
-        gameState.setInterrogationCooldown(this.currentSuspect);
 
         // 更新UI状态
         this.updateInterrogationUI();
@@ -969,24 +1069,33 @@ class InterrogationSystem {
         }
     }
 
-    showCooldownMessage(name, minutes, seconds) {
-        const message = `${name}还在休息中，请等待 ${minutes}:${String(seconds).padStart(2, '0')} 后再次审问。审问是一个需要耐心的过程...`;
-
-        // 创建临时提示
+    showInterrogationStatusMessage(message, type = 'info') {
+        // 创建状态提示
         const toast = document.createElement('div');
-        toast.className = 'cooldown-toast';
+        toast.className = `interrogation-status-toast ${type}`;
         toast.textContent = message;
+
+        const bgColor = {
+            'info': 'rgba(0, 0, 0, 0.8)',
+            'warning': 'rgba(255, 152, 0, 0.8)',
+            'error': 'rgba(244, 67, 54, 0.8)',
+            'success': 'rgba(76, 175, 80, 0.8)'
+        };
+
         toast.style.cssText = `
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
+            background: ${bgColor[type] || bgColor.info};
             color: white;
             padding: 1rem 2rem;
             border-radius: 10px;
             z-index: 1000;
             font-size: 1.1rem;
+            text-align: center;
+            max-width: 400px;
+            animation: toastFadeIn 0.3s ease-out, toastFadeOut 0.3s ease-in 2.7s;
         `;
 
         document.body.appendChild(toast);
@@ -994,6 +1103,132 @@ class InterrogationSystem {
         setTimeout(() => {
             toast.remove();
         }, 3000);
+    }
+
+    startInterrogationCountdown() {
+        // 清除之前的倒计时
+        if (this.countdownInterval) {
+            clearInterval(this.countdownInterval);
+        }
+
+        // 显示倒计时区域
+        this.showCountdownDisplay();
+
+        // 开始倒计时
+        this.countdownInterval = setInterval(() => {
+            const status = gameState.getInterrogationStatus();
+
+            if (status.type === 'active') {
+                this.updateCountdownDisplay(status.remainingTime);
+            } else {
+                // 审问窗口已结束
+                this.stopInterrogationCountdown();
+            }
+        }, 100);
+    }
+
+    stopInterrogationCountdown() {
+        if (this.countdownInterval) {
+            clearInterval(this.countdownInterval);
+            this.countdownInterval = null;
+        }
+        this.hideCountdownDisplay();
+    }
+
+    showCountdownDisplay() {
+        const interrogationArea = document.querySelector('.interrogation-area');
+        if (!interrogationArea) return;
+
+        // 移除已存在的倒计时显示
+        const existingCountdown = document.getElementById('interrogationCountdown');
+        if (existingCountdown) {
+            existingCountdown.remove();
+        }
+
+        const countdownDiv = document.createElement('div');
+        countdownDiv.id = 'interrogationCountdown';
+        countdownDiv.style.cssText = `
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 102, 0, 0.9);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1rem;
+            z-index: 100;
+        `;
+
+        interrogationArea.style.position = 'relative';
+        interrogationArea.appendChild(countdownDiv);
+    }
+
+    updateCountdownDisplay(remainingTime) {
+        const countdownDiv = document.getElementById('interrogationCountdown');
+        if (countdownDiv) {
+            const seconds = Math.ceil(remainingTime / 1000);
+            countdownDiv.textContent = `审问时间: ${seconds}s`;
+
+            // 最后10秒变红警告
+            if (seconds <= 10) {
+                countdownDiv.style.background = 'rgba(244, 67, 54, 0.9)';
+                countdownDiv.style.animation = 'pulse 1s infinite';
+            }
+        }
+    }
+
+    hideCountdownDisplay() {
+        const countdownDiv = document.getElementById('interrogationCountdown');
+        if (countdownDiv) {
+            countdownDiv.remove();
+        }
+    }
+
+    // 审问窗口结束的回调
+    onInterrogationWindowEnded() {
+        this.stopInterrogationCountdown();
+
+        // 禁用审问功能
+        this.disableInterrogation();
+
+        // 显示窗口结束消息
+        this.showInterrogationStatusMessage('本轮审问时间结束，请等待2分钟后再次审问', 'warning');
+
+        // 清除当前选择的嫌疑人
+        this.clearSuspectSelection();
+    }
+
+    disableInterrogation() {
+        document.getElementById('questionInput').disabled = true;
+        document.getElementById('askBtn').disabled = true;
+
+        // 添加视觉反馈
+        const selectedSuspect = document.getElementById('selectedSuspect');
+        if (selectedSuspect) {
+            selectedSuspect.style.opacity = '0.5';
+            selectedSuspect.style.pointerEvents = 'none';
+        }
+    }
+
+    enableInterrogation() {
+        document.getElementById('questionInput').disabled = false;
+        document.getElementById('askBtn').disabled = false;
+
+        const selectedSuspect = document.getElementById('selectedSuspect');
+        if (selectedSuspect) {
+            selectedSuspect.style.opacity = '1';
+            selectedSuspect.style.pointerEvents = 'auto';
+        }
+    }
+
+    clearSuspectSelection() {
+        document.querySelectorAll('.suspect-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+
+        document.getElementById('selectedSuspect').style.display = 'none';
+        this.currentSuspect = null;
     }
 
     addMessage(type, content) {
@@ -1021,15 +1256,34 @@ class InterrogationSystem {
     }
 
     updateInterrogationUI() {
+        const status = gameState.getInterrogationStatus();
+
         // 更新所有嫌疑人卡片的状态
         Object.keys(gameData.suspects).forEach(suspectKey => {
             const card = document.querySelector(`[data-suspect="${suspectKey}"]`);
-            if (!gameState.canInterrogate(suspectKey)) {
+
+            if (status.type === 'cooldown') {
+                // 冷却期间，所有卡片都禁用
                 card.classList.add('disabled');
+            } else if (status.type === 'active') {
+                // 审问进行中，非当前角色禁用
+                if (suspectKey !== this.currentSuspect) {
+                    card.classList.add('disabled');
+                } else {
+                    card.classList.remove('disabled');
+                }
             } else {
+                // 准备状态，所有卡片可用
                 card.classList.remove('disabled');
             }
         });
+
+        // 更新审问区域状态
+        if (status.type === 'active' && this.currentSuspect) {
+            this.enableInterrogation();
+        } else if (status.type === 'cooldown') {
+            this.disableInterrogation();
+        }
     }
 
     startCooldownUpdate() {
@@ -1041,21 +1295,21 @@ class InterrogationSystem {
 
     updateCooldownDisplay() {
         const cooldownDisplay = document.getElementById('interrogationCooldown');
+        const status = gameState.getInterrogationStatus();
 
-        // 检查是否有任何角色在冷却中
-        let anyCooldown = false;
-        for (const suspectKey of Object.keys(gameData.suspects)) {
-            if (!gameState.canInterrogate(suspectKey)) {
-                anyCooldown = true;
-                const remainingTime = Math.ceil(gameState.getRemainingCooldown(suspectKey) / 1000);
-                const minutes = Math.floor(remainingTime / 60);
-                const seconds = remainingTime % 60;
-                cooldownDisplay.textContent = `${minutes}:${String(seconds).padStart(2, '0')}`;
-                break;
-            }
+        if (status.type === 'cooldown') {
+            const remainingTime = Math.ceil(status.remainingTime / 1000);
+            const minutes = Math.floor(remainingTime / 60);
+            const seconds = remainingTime % 60;
+            cooldownDisplay.textContent = `${minutes}:${String(seconds).padStart(2, '0')}`;
+            cooldownDisplay.style.display = 'block';
+        } else if (status.type === 'active') {
+            // 审问进行中，不显示冷却计时器（因为有专门的审问倒计时）
+            cooldownDisplay.style.display = 'none';
+        } else {
+            // 准备状态
+            cooldownDisplay.style.display = 'none';
         }
-
-        cooldownDisplay.style.display = anyCooldown ? 'block' : 'none';
     }
 }
 
@@ -1236,6 +1490,9 @@ function initializeGame() {
     const interrogationSystem = new InterrogationSystem();
     const notesSystem = new NotesSystem();
     const verificationSystem = new VerificationSystem();
+
+    // 设置全局引用以便GameState访问
+    window.interrogationSystem = interrogationSystem;
 
     // 开始游戏按钮
     document.getElementById('startBtn').addEventListener('click', () => {
