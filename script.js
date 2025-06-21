@@ -526,6 +526,7 @@ class MusicController {
     constructor() {
         this.bgm = document.getElementById('bgm');
         this.musicControl = document.getElementById('music-control');
+        this.startMusicControl = document.getElementById('start-music-control');
         this.isPlaying = true;
         this.bgm.volume = 0.5;
 
@@ -540,19 +541,50 @@ class MusicController {
             }
         }, { once: true });
 
-        // 音乐控制按钮
-        this.musicControl.addEventListener('click', () => this.toggleMusic());
+        // 游戏内音乐控制按钮
+        if (this.musicControl) {
+            this.musicControl.addEventListener('click', () => {
+                this.toggleMusic();
+            });
+        }
+
+        // 开始界面音乐控制按钮
+        if (this.startMusicControl) {
+            this.startMusicControl.addEventListener('click', () => {
+                this.toggleMusic(true);
+            });
+        }
     }
 
-    toggleMusic() {
+
+
+    toggleMusic(isStartScreen = false) {
         if (this.isPlaying) {
             this.bgm.pause();
-            this.musicControl.innerHTML = '<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0xMiAzdjE4TTggN3YxME0xNiA3djEwTTQgNGwxNiAxNiIvPjwvc3ZnPg==" alt="静音">';
-            this.musicControl.title = '播放音乐';
+            // 更新游戏内按钮
+            if (this.musicControl) {
+                const musicText = document.getElementById('music-text');
+                if (musicText) musicText.textContent = '🔇 静音';
+                this.musicControl.title = '播放音乐';
+            }
+            // 更新开始界面按钮
+            if (this.startMusicControl) {
+                this.startMusicControl.innerHTML = '<span>🔇 静音</span>';
+                this.startMusicControl.title = '播放音乐';
+            }
         } else {
             this.bgm.play();
-            this.musicControl.innerHTML = '<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0xMiAzdjE4TTggN3YxME0xNiA3djEwIi8+PC9zdmc+" alt="音乐">';
-            this.musicControl.title = '暂停音乐';
+            // 更新游戏内按钮
+            if (this.musicControl) {
+                const musicText = document.getElementById('music-text');
+                if (musicText) musicText.textContent = '♪ 音乐';
+                this.musicControl.title = '暂停音乐';
+            }
+            // 更新开始界面按钮
+            if (this.startMusicControl) {
+                this.startMusicControl.innerHTML = '<span>♪ 音乐</span>';
+                this.startMusicControl.title = '暂停音乐';
+            }
         }
         this.isPlaying = !this.isPlaying;
     }
@@ -1114,7 +1146,7 @@ class InterrogationSystem {
         // 显示倒计时区域
         this.showCountdownDisplay();
 
-        // 开始倒计时
+        // 开始倒计时 - 降低更新频率以提升性能
         this.countdownInterval = setInterval(() => {
             const status = gameState.getInterrogationStatus();
 
@@ -1124,7 +1156,7 @@ class InterrogationSystem {
                 // 审问窗口已结束
                 this.stopInterrogationCountdown();
             }
-        }, 100);
+        }, 500); // 改为0.5秒更新一次，减少CPU使用
     }
 
     stopInterrogationCountdown() {
@@ -1287,10 +1319,11 @@ class InterrogationSystem {
     }
 
     startCooldownUpdate() {
+        // 优化定时器频率，减少性能消耗
         setInterval(() => {
             this.updateInterrogationUI();
             this.updateCooldownDisplay();
-        }, 1000);
+        }, 2000); // 改为2秒更新一次，减少CPU使用
     }
 
     updateCooldownDisplay() {
@@ -1567,6 +1600,19 @@ class GameRulesManager {
     startGame() {
         document.getElementById('startOverlay').style.display = 'none';
         document.getElementById('game-container').style.display = 'block';
+
+        // 隐藏开始界面音乐按钮
+        const startMusicControl = document.getElementById('start-music-control');
+        if (startMusicControl) {
+            startMusicControl.style.display = 'none';
+        }
+
+        // 确保游戏内音乐按钮显示
+        const gameMusicControl = document.getElementById('music-control');
+        if (gameMusicControl) {
+            gameMusicControl.style.display = 'flex';
+        }
+
         gameState.startGame();
 
         // 显示欢迎消息
