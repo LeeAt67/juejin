@@ -267,6 +267,9 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      max-width: 120px;
+      min-width: 80px;
+      white-space: nowrap;
     }
 
     .in-game-rules-btn::before {
@@ -293,6 +296,15 @@
         0 8px 25px rgba(255, 102, 0, 0.4),
         inset 0 1px 0 rgba(255, 255, 255, 0.3);
       border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* 规则按钮文字控制 */
+    .in-game-rules-btn .rules-text-full {
+      display: inline;
+    }
+
+    .in-game-rules-btn .rules-text-short {
+      display: none;
     }
 
     h1 {
@@ -1106,6 +1118,10 @@
       .scene-controls {
         display: flex;
       }
+
+      .scene-mode-toggle:disabled::after {
+        display: block;
+      }
     }
 
     .scene-mode-toggle {
@@ -1156,8 +1172,9 @@
       cursor: not-allowed !important;
       transform: none !important;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
-      opacity: 0.6;
+      opacity: 0.5 !important;
       position: relative;
+      border-color: rgba(128, 128, 128, 0.4) !important;
     }
 
     .scene-mode-toggle:disabled::before {
@@ -1168,10 +1185,24 @@
       transform: none !important;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
       background: linear-gradient(135deg, rgba(128, 128, 128, 0.4) 0%, rgba(100, 100, 100, 0.6) 100%) !important;
+      cursor: not-allowed !important;
     }
 
     .scene-mode-toggle:disabled:active {
       transform: none !important;
+    }
+
+    /* 手机端禁用状态的额外提示 */
+    .scene-mode-toggle:disabled::after {
+      content: '仅限桌面端';
+      position: absolute;
+      bottom: -25px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.6rem;
+      color: rgba(255, 255, 255, 0.4);
+      white-space: nowrap;
+      display: none;
     }
 
     .scene-size-warning {
@@ -1275,7 +1306,43 @@
 
     .suspect-card.selected {
       border-color: var(--primary-color);
-      background: rgba(255, 102, 0, 0.3);
+      background: linear-gradient(135deg, rgba(255, 102, 0, 0.3) 0%, rgba(255, 133, 51, 0.4) 100%);
+      box-shadow:
+        0 0 20px rgba(255, 102, 0, 0.4),
+        0 8px 25px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transform: translateY(-3px) scale(1.02);
+      position: relative;
+    }
+
+    .suspect-card.selected::before {
+      content: '🎯';
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: var(--primary-color);
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      box-shadow: 0 4px 15px rgba(255, 102, 0, 0.5);
+      animation: selectedBadge 2s ease-in-out infinite;
+    }
+
+    @keyframes selectedBadge {
+
+      0%,
+      100% {
+        transform: scale(1) rotate(0deg);
+      }
+
+      50% {
+        transform: scale(1.1) rotate(5deg);
+      }
     }
 
     .suspect-card.disabled {
@@ -1301,229 +1368,57 @@
       color: #ccc;
     }
 
-    .interrogation-area {
-      background: rgba(0, 0, 0, 0.3);
-      padding: 2rem;
-      border-radius: 12px;
-      margin-top: 2rem;
-      min-height: 300px;
-    }
-
-    .question-input {
+    /* 审问状态指示器 */
+    .interrogation-status {
+      position: static;
+      background: linear-gradient(135deg, rgba(255, 102, 0, 0.9) 0%, rgba(255, 133, 51, 1) 100%);
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border-radius: 25px;
+      margin: 0 0 1.5rem 0;
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 15px rgba(255, 102, 0, 0.4);
+      animation: statusGlow 2s ease-in-out infinite alternate;
       width: 100%;
-      padding: 1rem;
-      border: 2px solid var(--border-color);
-      border-radius: 10px;
-      background: rgba(0, 0, 0, 0.2);
-      color: var(--text-color);
-      font-size: 1.1rem;
-      margin-bottom: 1rem;
+      box-sizing: border-box;
+      order: -1;
+      z-index: 10;
     }
 
-    .question-input:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 15px rgba(255, 102, 0, 0.3);
+    .interrogation-status .status-icon {
+      display: inline-block;
+      margin-right: 0.5rem;
+      font-size: 1.2rem;
+      animation: iconSpin 2s linear infinite;
     }
 
-    .ask-btn {
-      background: var(--primary-color);
-      color: var(--text-color);
-      border: none;
-      padding: 1rem 2rem;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 1.1rem;
+    .interrogation-status .countdown {
+      font-size: 1.3rem;
       font-weight: bold;
-      transition: all 0.3s ease;
+      color: #fff;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
     }
 
-    .ask-btn:hover {
-      background: var(--hover-color);
-      transform: translateY(-2px);
-    }
-
-    .ask-btn:disabled {
-      background: rgba(128, 128, 128, 0.5);
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .dialogue-area {
-      max-height: 400px;
-      overflow-y: auto;
-      padding: 1rem;
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 10px;
-      margin-top: 1rem;
-    }
-
-    .dialogue-message {
-      margin-bottom: 1rem;
-      padding: 1rem;
-      border-radius: 10px;
-      animation: slideIn 0.3s ease;
-    }
-
-    .dialogue-message.player {
-      background: var(--primary-color);
-      margin-left: 20%;
-      text-align: right;
-    }
-
-    .dialogue-message.suspect {
-      background: rgba(255, 255, 255, 0.1);
-      margin-right: 20%;
-    }
-
-    .speaker-name {
-      font-weight: bold;
-      margin-bottom: 0.5rem;
-      color: var(--primary-color);
-    }
-
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateX(20px);
+    @keyframes statusGlow {
+      0% {
+        box-shadow: 0 4px 15px rgba(255, 102, 0, 0.4);
       }
 
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-
-    /* AI对话增强样式 */
-    .typing-indicator .typing-dots {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .typing-indicator .typing-dots span {
-      width: 8px;
-      height: 8px;
-      background-color: var(--primary-color);
-      border-radius: 50%;
-      animation: typingDots 1.5s infinite;
-    }
-
-    .typing-indicator .typing-dots span:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-
-    .typing-indicator .typing-dots span:nth-child(3) {
-      animation-delay: 0.4s;
-    }
-
-    @keyframes typingDots {
-
-      0%,
-      60%,
       100% {
-        transform: scale(0.8);
-        opacity: 0.5;
-      }
-
-      30% {
-        transform: scale(1.2);
-        opacity: 1;
+        box-shadow: 0 6px 20px rgba(255, 102, 0, 0.6);
       }
     }
 
-    /* 可疑程度样式 */
-    .suspect-card.high-suspicion {
-      border-color: #ff4444 !important;
-      background: rgba(255, 68, 68, 0.15) !important;
-      box-shadow: 0 0 15px rgba(255, 68, 68, 0.3);
-    }
-
-    .suspect-card.medium-suspicion {
-      border-color: #ff9800 !important;
-      background: rgba(255, 152, 0, 0.15) !important;
-      box-shadow: 0 0 12px rgba(255, 152, 0, 0.3);
-    }
-
-    /* 冷却提示样式 */
-    .cooldown-toast {
-      animation: toastFadeIn 0.3s ease-out, toastFadeOut 0.3s ease-in 2.7s;
-    }
-
-    @keyframes toastFadeIn {
-      from {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0.8);
+    @keyframes iconSpin {
+      0% {
+        transform: rotate(0deg);
       }
 
-      to {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
+      100% {
+        transform: rotate(360deg);
       }
-    }
-
-    @keyframes toastFadeOut {
-      from {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
-      }
-
-      to {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0.8);
-      }
-    }
-
-    /* 角色情绪表现增强 */
-    .dialogue-message.suspect {
-      position: relative;
-    }
-
-    .dialogue-message.suspect::before {
-      content: '';
-      position: absolute;
-      left: -10px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 4px;
-      height: 60%;
-      background: var(--primary-color);
-      border-radius: 2px;
-      opacity: 0.6;
-    }
-
-    /* 问题历史追踪 */
-    .question-counter {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      background: rgba(255, 102, 0, 0.2);
-      color: white;
-      padding: 4px 8px;
-      border-radius: 12px;
-      font-size: 0.8rem;
-      font-weight: bold;
-    }
-
-    /* AI连接状态指示 */
-    .ai-status {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: rgba(0, 0, 0, 0.7);
-      color: white;
-      padding: 8px 12px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      z-index: 1000;
-    }
-
-    .ai-status.connected {
-      background: rgba(76, 175, 80, 0.8);
-    }
-
-    .ai-status.error {
-      background: rgba(244, 67, 54, 0.8);
     }
 
     /* 审问倒计时动画 */
@@ -1542,6 +1437,123 @@
         transform: scale(1);
         opacity: 1;
       }
+    }
+
+    /* 紧急倒计时样式 */
+    .interrogation-status.urgent {
+      background: linear-gradient(135deg, #ff4444 0%, #ff6666 100%);
+      animation: urgentPulse 0.8s ease-in-out infinite alternate;
+    }
+
+    @keyframes urgentPulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 4px 15px rgba(255, 68, 68, 0.5);
+      }
+
+      100% {
+        transform: scale(1.02);
+        box-shadow: 0 8px 25px rgba(255, 68, 68, 0.8);
+      }
+    }
+
+    /* 重新设计审问界面布局 - 彻底解决重叠问题 */
+    .interrogation-area {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-top: 2rem;
+      min-height: 300px;
+      border: 1px solid rgba(255, 102, 0, 0.2);
+      backdrop-filter: blur(5px);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: visible;
+    }
+
+    .interrogation-area.active {
+      border-color: rgba(255, 102, 0, 0.5);
+      background: rgba(0, 0, 0, 0.4);
+      box-shadow: 0 0 20px rgba(255, 102, 0, 0.2);
+    }
+
+    /* 审问界面容器 - 使用CSS Grid布局确保完美排列 */
+    #selectedSuspect {
+      display: grid !important;
+      grid-template-areas:
+        "status status"
+        "title title"
+        "input input"
+        "button button"
+        "dialogue dialogue";
+      grid-template-rows: auto auto auto auto 1fr;
+      gap: 1rem;
+      width: 100%;
+      min-height: 200px;
+    }
+
+    /* 审问状态指示器区域 */
+    .interrogation-status-area {
+      grid-area: status;
+      position: relative;
+      z-index: 20;
+    }
+
+    /* 标题区域 */
+    #selectedSuspect h4 {
+      grid-area: title;
+      margin: 0;
+      color: var(--primary-color);
+      font-size: 1.2rem;
+      text-align: center;
+      padding: 0.5rem;
+      background: rgba(255, 102, 0, 0.1);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 102, 0, 0.3);
+    }
+
+    /* 输入框区域 */
+    #selectedSuspect .question-input {
+      grid-area: input;
+    }
+
+    /* 按钮区域 */
+    #selectedSuspect .ask-btn {
+      grid-area: button;
+    }
+
+    /* 对话区域 */
+    #selectedSuspect .dialogue-area {
+      grid-area: dialogue;
+    }
+
+    /* 动态添加的状态指示器样式 */
+    #interrogationCountdown {
+      background: linear-gradient(135deg, rgba(255, 102, 0, 0.95) 0%, rgba(255, 133, 51, 1) 100%) !important;
+      color: white !important;
+      padding: 0.6rem 1.2rem !important;
+      border-radius: 20px !important;
+      font-weight: bold !important;
+      font-size: 1rem !important;
+      text-align: center !important;
+      box-shadow: 0 4px 15px rgba(255, 102, 0, 0.4) !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      backdrop-filter: blur(10px) !important;
+      position: relative !important;
+      top: auto !important;
+      right: auto !important;
+      left: auto !important;
+      bottom: auto !important;
+      z-index: 10 !important;
+      width: 100% !important;
+      margin: 0 !important;
+      animation: statusGlow 2s ease-in-out infinite alternate !important;
+    }
+
+    /* 紧急状态倒计时 */
+    #interrogationCountdown.urgent {
+      background: linear-gradient(135deg, #ff4444 0%, #ff6666 100%) !important;
+      animation: urgentPulse 0.8s ease-in-out infinite alternate !important;
     }
 
     /* 审问状态提示增强 */
@@ -1893,6 +1905,8 @@
       padding: 1.5rem;
       border-radius: 12px;
       border-left: 4px solid var(--primary-color);
+      box-sizing: border-box;
+      overflow: hidden;
     }
 
     .character-note h4 {
@@ -1912,6 +1926,8 @@
       font-family: inherit;
       font-size: 0.95rem;
       resize: vertical;
+      box-sizing: border-box;
+      max-width: 100%;
     }
 
     .note-textarea:focus {
@@ -1953,6 +1969,8 @@
       background: rgba(0, 0, 0, 0.2);
       color: var(--text-color);
       font-size: 1.1rem;
+      box-sizing: border-box;
+      max-width: 100%;
     }
 
     .answer-input:focus {
@@ -2094,6 +2112,9 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      max-width: 130px;
+      min-width: 90px;
+      white-space: nowrap;
     }
 
     #music-control::before {
@@ -2131,6 +2152,10 @@
       font-size: 1rem;
       font-weight: bold;
       letter-spacing: 0.5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 80px;
     }
 
     /* 简化装饰元素 - 移除动画以提升性能 */
@@ -2178,10 +2203,40 @@
       /* 移除复杂动画以提升性能 */
     }
 
-    /* 响应式设计 */
-    @media (max-width: 1024px) {
+    /* 全面响应式设计 */
+
+    /* 超大屏幕 (1440px+) */
+    @media (min-width: 1440px) {
+      #game-container {
+        max-width: 1400px;
+        padding: 3rem;
+      }
+
+      .function-btn {
+        padding: 2rem 2.5rem;
+        font-size: 1.3rem;
+      }
+
+      .in-game-rules-btn,
+      #music-control {
+        font-size: 1.1rem;
+        padding: 1rem 1.8rem;
+      }
+    }
+
+    /* 大屏平板/小桌面 (1024px-1439px) */
+    @media (max-width: 1439px) and (min-width: 1024px) {
+      #game-container {
+        max-width: 1200px;
+        padding: 2.5rem;
+      }
+    }
+
+    /* 平板横屏 (768px-1023px) */
+    @media (max-width: 1023px) and (min-width: 768px) {
       #game-container {
         padding: 2rem;
+        margin: 1rem;
       }
 
       h1::before,
@@ -2190,29 +2245,105 @@
         left: -3rem;
         right: -3rem;
       }
+
+      .function-btn {
+        padding: 1.6rem 2rem;
+        font-size: 1.15rem;
+      }
+
+      .panel-title {
+        font-size: 1.6rem;
+      }
+
+      .close-panel {
+        width: 45px;
+        height: 45px;
+        font-size: 1.3rem;
+      }
     }
 
-    @media (max-width: 768px) {
+    /* 平板竖屏/大手机 (481px-767px) */
+    @media (max-width: 767px) and (min-width: 481px) {
       #game-container {
-        padding: 1.5rem;
+        padding: 1.8rem;
         margin: 1rem;
       }
 
       .suspect-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 1.2rem;
+      }
+
+      .suspect-card {
+        padding: 1.2rem;
+        min-height: 140px;
+      }
+
+      .suspect-avatar {
+        font-size: 2.5rem;
+        margin-bottom: 0.8rem;
+      }
+
+      .suspect-name {
+        font-size: 1.1rem;
+        margin-bottom: 0.4rem;
+      }
+
+      .suspect-role {
+        font-size: 0.85rem;
+      }
+
+      .interrogation-area {
+        padding: 1.5rem;
+        min-height: 250px;
+      }
+
+      .dialogue-area {
+        max-height: 300px;
+        padding: 0.8rem;
+      }
+
+      .dialogue-message {
+        padding: 0.8rem;
+        margin-bottom: 0.8rem;
+        font-size: 0.95rem;
+      }
+
+      .dialogue-message.player {
+        margin-left: 15%;
+      }
+
+      .dialogue-message.suspect {
+        margin-right: 15%;
       }
 
       .notes-grid {
         grid-template-columns: 1fr;
+        gap: 1.2rem;
+      }
+
+      .character-note {
+        padding: 1.2rem;
+      }
+
+      .character-note h4 {
+        font-size: 1.1rem;
+        margin-bottom: 0.8rem;
+      }
+
+      .note-textarea {
+        min-height: 120px;
+        padding: 0.8rem;
+        font-size: 0.9rem;
       }
 
       #startTitle {
-        font-size: 2rem;
+        font-size: 2.2rem;
       }
 
       h1 {
-        font-size: 2rem;
-        margin-bottom: 1.5rem;
+        font-size: 2.2rem;
+        margin-bottom: 1.8rem;
       }
 
       h1::before,
@@ -2221,32 +2352,62 @@
       }
 
       #timer {
-        font-size: 1.4rem;
-        padding: 1rem 1.5rem;
+        font-size: 1.5rem;
+        padding: 1.2rem 1.8rem;
         margin-bottom: 2rem;
       }
 
       .function-btn {
-        padding: 1.4rem 1.5rem;
-        font-size: 1.1rem;
+        padding: 1.5rem 1.8rem;
+        font-size: 1.15rem;
+        min-height: 60px;
+      }
+
+      .panel-title {
+        font-size: 1.5rem;
+      }
+
+      .close-panel {
+        width: 42px;
+        height: 42px;
+        font-size: 1.2rem;
       }
 
       .in-game-rules-btn {
         top: 1rem;
         left: 1rem;
-        padding: 0.6rem 1.2rem;
-        font-size: 0.9rem;
+        padding: 0.7rem 1.3rem;
+        font-size: 0.95rem;
+        max-width: 85px;
+        min-width: 75px;
+        white-space: nowrap;
       }
 
       #music-control {
         top: 1rem;
         right: 1rem;
-        padding: 0.5rem 1rem;
-        height: 40px;
+        padding: 0.6rem 1.2rem;
+        height: 42px;
       }
 
       #music-control #music-text {
-        font-size: 12px;
+        font-size: 13px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 50px;
+      }
+
+      .scene-mode-toggle {
+        padding: 0.7rem 1.4rem;
+        font-size: 0.9rem;
+      }
+
+      .ask-btn,
+      .verify-btn {
+        padding: 1rem 1.5rem;
+        font-size: 1.1rem;
+        min-height: 50px;
       }
 
       .detective-decoration {
@@ -2254,14 +2415,61 @@
       }
     }
 
-    @media (max-width: 480px) {
+    /* 标准手机 (361px-480px) */
+    @media (max-width: 480px) and (min-width: 361px) {
       #game-container {
-        padding: 1rem;
-        margin: 0.5rem;
+        padding: 1.2rem;
+        margin: 0.8rem;
       }
 
       .suspect-grid {
         grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .suspect-card {
+        padding: 1rem;
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .suspect-avatar {
+        font-size: 2.2rem;
+        margin-bottom: 0.6rem;
+      }
+
+      .suspect-name {
+        font-size: 1rem;
+        margin-bottom: 0.3rem;
+      }
+
+      .suspect-role {
+        font-size: 0.8rem;
+      }
+
+      .question-counter {
+        top: 8px;
+        right: 12px;
+        padding: 3px 6px;
+        font-size: 0.7rem;
+      }
+
+      .interrogation-area {
+        padding: 1.2rem;
+        min-height: 200px;
+      }
+
+      .dialogue-area {
+        max-height: 250px;
+        padding: 0.6rem;
+      }
+
+      .dialogue-message {
+        padding: 0.7rem;
+        margin-bottom: 0.7rem;
+        font-size: 0.9rem;
       }
 
       .dialogue-message.player {
@@ -2272,32 +2480,1226 @@
         margin-right: 10%;
       }
 
+      .speaker-name {
+        font-size: 0.85rem;
+        margin-bottom: 0.3rem;
+      }
+
+      .dialogue-message.player {
+        margin-left: 8%;
+      }
+
+      .dialogue-message.suspect {
+        margin-right: 8%;
+      }
+
+      #startTitle {
+        font-size: 1.8rem;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+        margin-bottom: 1.2rem;
+      }
+
+      #timer {
+        font-size: 1.3rem;
+        padding: 1rem 1.2rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .function-btn {
+        padding: 1.3rem 1.2rem;
+        font-size: 1.05rem;
+        min-height: 58px;
+      }
+
+      .panel-title {
+        font-size: 1.4rem;
+      }
+
+      .close-panel {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+      }
+
+      .in-game-rules-btn {
+        top: 0.8rem;
+        left: 0.8rem;
+        padding: 0.5rem 0.9rem;
+        font-size: 0.85rem;
+        max-width: 65px;
+        min-width: 60px;
+        white-space: nowrap;
+        z-index: 150;
+      }
+
+      #music-control {
+        top: 0.8rem;
+        right: 0.8rem;
+        padding: 0.5rem 0.9rem;
+        height: 38px;
+        max-width: 70px;
+        min-width: 65px;
+        z-index: 150;
+      }
+
+      #music-control #music-text {
+        font-size: 12px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 45px;
+      }
+
+      .scene-mode-toggle {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.85rem;
+      }
+
+      .ask-btn,
+      .verify-btn {
+        padding: 0.9rem 1.3rem;
+        font-size: 1rem;
+        min-height: 48px;
+      }
+
+      .question-input,
+      .answer-input {
+        padding: 0.8rem;
+        font-size: 1rem;
+      }
+
+      .verification-form {
+        padding: 1.5rem;
+      }
+
+      .question-label {
+        font-size: 1.1rem;
+        margin-bottom: 0.6rem;
+      }
+
+      .notes-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .character-note {
+        padding: 1rem;
+      }
+
+      .character-note h4 {
+        font-size: 1rem;
+        margin-bottom: 0.6rem;
+      }
+
+      .note-textarea {
+        min-height: 100px;
+        padding: 0.7rem;
+        font-size: 0.85rem;
+      }
+
+      .detective-decoration {
+        font-size: 1.8rem !important;
+        opacity: 0.05;
+      }
+    }
+
+    /* 小屏手机 (≤360px) */
+    @media (max-width: 360px) {
+      #game-container {
+        padding: 1rem;
+        margin: 0.5rem;
+      }
+
+      .suspect-grid {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+      }
+
+      .suspect-card {
+        padding: 0.8rem;
+        min-height: 100px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        text-align: left;
+        position: relative;
+      }
+
+      .suspect-avatar {
+        font-size: 2rem;
+        margin-bottom: 0;
+        margin-right: 0.8rem;
+        flex-shrink: 0;
+        width: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .suspect-name,
+      .suspect-role {
+        flex: 1;
+      }
+
+      .suspect-name {
+        font-size: 0.95rem;
+        margin-bottom: 0.2rem;
+      }
+
+      .suspect-role {
+        font-size: 0.75rem;
+        line-height: 1.2;
+      }
+
+      .question-counter {
+        top: 6px;
+        right: 8px;
+        padding: 2px 5px;
+        font-size: 0.6rem;
+      }
+
+      .interrogation-area {
+        padding: 1rem;
+        min-height: 180px;
+      }
+
+      .dialogue-area {
+        max-height: 200px;
+        padding: 0.5rem;
+      }
+
+      .dialogue-message {
+        padding: 0.6rem;
+        margin-bottom: 0.6rem;
+        font-size: 0.85rem;
+        line-height: 1.3;
+      }
+
+      .dialogue-message.player {
+        margin-left: 5%;
+      }
+
+      .dialogue-message.suspect {
+        margin-right: 5%;
+      }
+
+      .speaker-name {
+        font-size: 0.8rem;
+        margin-bottom: 0.2rem;
+      }
+
+      .dialogue-message.player {
+        margin-left: 5%;
+      }
+
+      .dialogue-message.suspect {
+        margin-right: 5%;
+      }
+
+      #startTitle {
+        font-size: 1.6rem;
+      }
+
+      h1 {
+        font-size: 1.6rem;
+        margin-bottom: 1rem;
+      }
+
+      #timer {
+        font-size: 1.2rem;
+        padding: 0.8rem 1rem;
+        margin-bottom: 1.2rem;
+      }
+
       .function-btn {
         padding: 1.2rem 1rem;
+        font-size: 1rem;
+        min-height: 56px;
+      }
+
+      .panel-title {
+        font-size: 1.3rem;
+      }
+
+      .close-panel {
+        width: 38px;
+        height: 38px;
         font-size: 1rem;
       }
 
       .in-game-rules-btn {
         top: 0.5rem;
         left: 0.5rem;
-        padding: 0.4rem 0.8rem;
+        padding: 0.4rem 0.6rem;
         font-size: 0.8rem;
+        max-width: 40px;
+        min-width: 40px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        z-index: 150;
+      }
+
+      .in-game-rules-btn .rules-text-full {
+        display: none;
+      }
+
+      .in-game-rules-btn .rules-text-short {
+        display: inline !important;
+        font-size: 1.1rem;
+        font-weight: bold;
       }
 
       #music-control {
         top: 0.5rem;
         right: 0.5rem;
-        padding: 0.4rem 0.8rem;
+        padding: 0.4rem 0.6rem;
         height: 36px;
+        max-width: 60px;
+        min-width: 55px;
+        z-index: 150;
       }
 
       #music-control #music-text {
-        font-size: 11px;
+        font-size: 10px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 35px;
+      }
+
+      .scene-mode-toggle {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+      }
+
+      .ask-btn,
+      .verify-btn {
+        padding: 0.8rem 1.2rem;
+        font-size: 0.95rem;
+        min-height: 46px;
+      }
+
+      .question-input,
+      .answer-input {
+        padding: 0.7rem;
+        font-size: 0.95rem;
+      }
+
+      .verification-form {
+        padding: 1rem;
+      }
+
+      .question-label {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .question-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .notes-grid {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+      }
+
+      .character-note {
+        padding: 0.8rem;
+      }
+
+      .character-note h4 {
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+        line-height: 1.2;
+      }
+
+      .note-textarea {
+        min-height: 80px;
+        padding: 0.6rem;
+        font-size: 0.8rem;
+        line-height: 1.3;
       }
 
       .detective-decoration {
         display: none;
       }
+
+      /* 让开始界面按钮在小屏幕下更友好 */
+      #startBtn {
+        padding: 1.2rem 2rem;
+        font-size: 1.1rem;
+      }
+
+      #gameRulesBtn {
+        padding: 0.8rem 1.5rem !important;
+        font-size: 0.9rem !important;
+      }
+    }
+
+    /* 横屏模式适配 */
+    @media (orientation: landscape) and (max-height: 600px) {
+      #game-container {
+        padding: 1rem;
+        margin: 0.5rem;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.8rem;
+      }
+
+      #timer {
+        font-size: 1.1rem;
+        padding: 0.6rem 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .function-btn {
+        padding: 1rem 1.5rem;
+        font-size: 0.95rem;
+        min-height: 50px;
+      }
+
+      .function-buttons {
+        gap: 0.8rem;
+        padding: 1rem;
+      }
+
+      .in-game-rules-btn {
+        top: 0.3rem;
+        left: 0.3rem;
+        padding: 0.3rem 0.5rem;
+        font-size: 0.7rem;
+        max-width: 35px;
+        min-width: 35px;
+        z-index: 150;
+      }
+
+      #music-control {
+        top: 0.3rem;
+        right: 0.3rem;
+        padding: 0.3rem 0.5rem;
+        height: 32px;
+        max-width: 50px;
+        min-width: 45px;
+        z-index: 150;
+      }
+
+      #music-control #music-text {
+        font-size: 9px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 30px;
+      }
+
+      .investigation-scene {
+        min-height: 200px;
+      }
+
+      .suspect-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+      }
+
+      .suspect-card {
+        padding: 0.5rem;
+        min-height: 80px;
+      }
+
+      .suspect-avatar {
+        font-size: 1.5rem;
+        margin-bottom: 0.2rem;
+      }
+
+      .suspect-name {
+        font-size: 0.85rem;
+        margin-bottom: 0.1rem;
+      }
+
+      .suspect-role {
+        font-size: 0.7rem;
+      }
+
+      .interrogation-area {
+        padding: 0.8rem;
+        min-height: 150px;
+      }
+
+      .dialogue-area {
+        max-height: 120px;
+        padding: 0.4rem;
+      }
+
+      .dialogue-message {
+        padding: 0.4rem;
+        margin-bottom: 0.4rem;
+        font-size: 0.8rem;
+      }
+
+      .question-input {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+      }
+
+      .ask-btn {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+      }
+
+      .interrogation-status {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+        margin: 0 0 0.7rem 0;
+      }
+
+      .interrogation-status .countdown {
+        font-size: 0.9rem;
+      }
+
+      #selectedSuspect {
+        gap: 0.5rem;
+      }
+
+      .typing-indicator {
+        margin-right: 10%;
+        padding: 0.5rem;
+      }
+
+      .dialogue-message {
+        padding: 0.5rem;
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+      }
+
+      .dialogue-message.player {
+        margin-left: 10%;
+      }
+
+      .dialogue-message.suspect {
+        margin-right: 10%;
+      }
+
+      .suspect-card.selected::before {
+        width: 18px;
+        height: 18px;
+        font-size: 0.6rem;
+        top: -4px;
+        right: -4px;
+      }
+
+      .notes-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.8rem;
+      }
+
+      .character-note {
+        padding: 0.8rem;
+      }
+
+      .character-note h4 {
+        font-size: 0.9rem;
+        margin-bottom: 0.4rem;
+      }
+
+      .note-textarea {
+        min-height: 60px;
+        padding: 0.5rem;
+        font-size: 0.8rem;
+      }
+    }
+
+    /* 审问区域的特殊适配 */
+    @media (max-width: 768px) {
+      .interrogation-area h4 {
+        font-size: 1.2rem;
+        margin: 0 0 1rem 0;
+        color: var(--primary-color);
+        text-align: center;
+        padding: 0.5rem;
+        background: rgba(255, 102, 0, 0.1);
+        border-radius: 8px;
+        border: 1px solid rgba(255, 102, 0, 0.3);
+      }
+
+      .interrogation-status {
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+        margin: 0 0 1.2rem 0;
+      }
+
+      .interrogation-status .countdown {
+        font-size: 1.2rem;
+      }
+
+      #selectedSuspect {
+        gap: 0.8rem;
+      }
+
+      .typing-indicator {
+        margin-right: 15%;
+        padding: 0.8rem;
+      }
+
+      .dialogue-message.player {
+        margin-left: 15%;
+      }
+
+      .dialogue-message.suspect {
+        margin-right: 15%;
+      }
+
+      .suspect-card.selected::before {
+        width: 25px;
+        height: 25px;
+        font-size: 0.9rem;
+        top: -8px;
+        right: -8px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .interrogation-area h4 {
+        font-size: 1.1rem;
+        margin: 0 0 0.8rem 0;
+        padding: 0.4rem;
+      }
+
+      .question-input {
+        font-size: 16px;
+        /* 防止iOS自动缩放 */
+        padding: 0.8rem;
+      }
+
+      .interrogation-status {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        margin: 0 0 1rem 0;
+      }
+
+      .interrogation-status .countdown {
+        font-size: 1.1rem;
+      }
+
+      #selectedSuspect {
+        gap: 0.7rem;
+      }
+
+      .typing-indicator {
+        margin-right: 10%;
+        padding: 0.7rem;
+      }
+
+      .dialogue-message {
+        padding: 0.8rem;
+        margin-bottom: 0.8rem;
+      }
+
+      .dialogue-message.player {
+        margin-left: 10%;
+      }
+
+      .dialogue-message.suspect {
+        margin-right: 10%;
+      }
+
+      .suspect-card.selected::before {
+        width: 22px;
+        height: 22px;
+        font-size: 0.8rem;
+        top: -6px;
+        right: -6px;
+      }
+
+      .ask-btn {
+        font-size: 1rem;
+        padding: 0.9rem 1.5rem;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .interrogation-area h4 {
+        font-size: 1rem;
+        margin: 0 0 0.6rem 0;
+        padding: 0.3rem;
+      }
+
+      .question-input {
+        font-size: 16px;
+        /* 防止iOS自动缩放 */
+        padding: 0.7rem;
+      }
+
+      .interrogation-status {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+        margin: 0 0 0.8rem 0;
+      }
+
+      .interrogation-status .countdown {
+        font-size: 1rem;
+      }
+
+      #selectedSuspect {
+        gap: 0.6rem;
+      }
+
+      .typing-indicator {
+        margin-right: 5%;
+        padding: 0.6rem;
+      }
+
+      .dialogue-message {
+        padding: 0.6rem;
+        margin-bottom: 0.6rem;
+        font-size: 0.9rem;
+      }
+
+      .dialogue-message.player {
+        margin-left: 5%;
+      }
+
+      .dialogue-message.suspect {
+        margin-right: 5%;
+      }
+
+      .dialogue-message.player::after,
+      .dialogue-message.suspect::after {
+        border-width: 6px;
+      }
+
+      .typing-indicator::after {
+        border-width: 6px;
+      }
+
+      .suspect-card.selected::before {
+        width: 20px;
+        height: 20px;
+        font-size: 0.7rem;
+        top: -5px;
+        right: -5px;
+      }
+
+      .ask-btn {
+        width: 100%;
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+        padding: 0.8rem 1.2rem;
+        letter-spacing: 0.3px;
+      }
+    }
+
+    /* 触控优化 */
+    @media (pointer: coarse) {
+      .function-btn {
+        min-height: 56px;
+        padding: 1.2rem 1.5rem;
+      }
+
+      .close-panel {
+        min-width: 44px;
+        min-height: 44px;
+      }
+
+      .scene-mode-toggle {
+        min-height: 44px;
+        padding: 0.7rem 1.3rem;
+      }
+
+      .ask-btn,
+      .verify-btn {
+        min-height: 48px;
+        padding: 1rem 1.5rem;
+      }
+
+      .clickable-item {
+        min-width: 44px;
+        min-height: 44px;
+      }
+
+      .suspect-card {
+        min-height: 120px;
+        padding: 1.2rem;
+      }
+
+      .in-game-rules-btn,
+      #music-control {
+        min-width: 48px;
+        min-height: 40px;
+      }
+    }
+
+    /* 高分辨率屏幕优化 */
+    @media (-webkit-min-device-pixel-ratio: 2),
+    (min-resolution: 192dpi) {
+
+      .clickable-item,
+      .function-btn,
+      .scene-mode-toggle {
+        border-width: 1px;
+      }
+
+      h1,
+      #timer {
+        text-shadow:
+          1px 1px 2px rgba(0, 0, 0, 0.5),
+          0 0 15px rgba(255, 102, 0, 0.3);
+      }
+    }
+
+    /* 审问界面特殊状态优化 */
+    @media (max-width: 768px) {
+      .suspect-card.selected {
+        border-width: 3px;
+        box-shadow: 0 0 15px rgba(255, 102, 0, 0.5);
+      }
+
+      .dialogue-message.player {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .suspect-card:hover {
+        transform: none;
+        background: rgba(255, 102, 0, 0.25);
+      }
+
+      .suspect-card.selected {
+        transform: none;
+        border-width: 2px;
+        box-shadow: 0 0 10px rgba(255, 102, 0, 0.4);
+      }
+
+      .typing-indicator {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+      }
+
+      .typing-indicator .typing-dots span {
+        width: 6px;
+        height: 6px;
+      }
+    }
+
+    @media (max-width: 360px) {
+
+      .suspect-card.high-suspicion,
+      .suspect-card.medium-suspicion {
+        box-shadow: 0 0 8px rgba(255, 102, 0, 0.3);
+      }
+
+      /* 确保问题计数器在小屏幕上可见 */
+      .question-counter {
+        background: rgba(255, 102, 0, 0.8);
+        color: white;
+        font-weight: bold;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+    }
+
+    /* 移动设备审问状态指示器额外处理 */
+    @media (max-width: 768px) {
+      .interrogation-area {
+        position: relative;
+        overflow: visible;
+      }
+
+      .interrogation-status {
+        position: relative !important;
+        z-index: 20 !important;
+        margin-top: 0 !important;
+      }
+
+      #selectedSuspect {
+        position: relative;
+        z-index: 10;
+      }
+    }
+
+    /* 老旧设备性能优化 */
+    @media (max-width: 480px) {
+      * {
+        will-change: auto;
+      }
+
+      .function-btn:hover,
+      .clickable-item:hover,
+      .scene-mode-toggle:hover {
+        transform: none;
+        transition: background-color 0.2s ease;
+      }
+
+      .detective-decoration {
+        display: none;
+      }
+
+      /* 禁用复杂动画 */
+      .function-btn::before,
+      .scene-mode-toggle::before,
+      .in-game-rules-btn::before,
+      .ask-btn::before {
+        display: none;
+      }
+
+      .interrogation-status {
+        animation: none;
+      }
+
+      .interrogation-status .status-icon {
+        animation: none;
+      }
+
+      .suspect-card.selected::before {
+        animation: none;
+      }
+
+      .typing-indicator .typing-dots span {
+        animation: typingDotsSimple 1s infinite;
+      }
+
+      @keyframes typingDotsSimple {
+
+        0%,
+        100% {
+          opacity: 0.3;
+        }
+
+        50% {
+          opacity: 1;
+        }
+      }
+    }
+
+    /* 输入框样式 */
+    .question-input {
+      width: 100%;
+      padding: 1rem;
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.2);
+      color: var(--text-color);
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      box-sizing: border-box;
+      max-width: 100%;
+      position: relative;
+    }
+
+    .question-input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 15px rgba(255, 102, 0, 0.3), 0 0 25px rgba(255, 102, 0, 0.1);
+      background: rgba(0, 0, 0, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .question-input:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background: rgba(128, 128, 128, 0.1);
+      border-color: rgba(128, 128, 128, 0.3);
+    }
+
+    /* 提问按钮样式 */
+    .ask-btn {
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      color: var(--text-color);
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(255, 102, 0, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .ask-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .ask-btn:hover::before {
+      left: 100%;
+    }
+
+    .ask-btn:hover {
+      background: linear-gradient(135deg, var(--hover-color) 0%, #ffaa80 100%);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 8px 25px rgba(255, 102, 0, 0.5);
+    }
+
+    .ask-btn:active {
+      transform: translateY(-1px) scale(0.98);
+      transition: all 0.1s ease;
+    }
+
+    .ask-btn:disabled {
+      background: linear-gradient(135deg, rgba(128, 128, 128, 0.4) 0%, rgba(100, 100, 100, 0.6) 100%);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      opacity: 0.6;
+    }
+
+    .ask-btn:disabled::before {
+      display: none;
+    }
+
+    /* 对话区域样式 */
+    .dialogue-area {
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+    }
+
+    .dialogue-message {
+      margin-bottom: 1rem;
+      padding: 1rem;
+      border-radius: 15px;
+      animation: slideIn 0.3s ease;
+      position: relative;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .dialogue-message.player {
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      margin-left: 20%;
+      text-align: right;
+      border-bottom-right-radius: 5px;
+    }
+
+    .dialogue-message.player::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: -8px;
+      width: 0;
+      height: 0;
+      border-left: 8px solid var(--primary-color);
+      border-top: 8px solid transparent;
+      border-bottom: 8px solid transparent;
+    }
+
+    .dialogue-message.suspect {
+      background: rgba(255, 255, 255, 0.1);
+      margin-right: 20%;
+      border-bottom-left-radius: 5px;
+    }
+
+    .dialogue-message.suspect::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: -8px;
+      width: 0;
+      height: 0;
+      border-right: 8px solid rgba(255, 255, 255, 0.1);
+      border-top: 8px solid transparent;
+      border-bottom: 8px solid transparent;
+    }
+
+    .speaker-name {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: var(--primary-color);
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* AI对话增强样式 */
+    .typing-indicator {
+      background: rgba(255, 255, 255, 0.1);
+      margin-right: 20%;
+      padding: 1rem;
+      border-radius: 15px;
+      border-bottom-left-radius: 5px;
+      position: relative;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      margin-bottom: 1rem;
+    }
+
+    .typing-indicator::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: -8px;
+      width: 0;
+      height: 0;
+      border-right: 8px solid rgba(255, 255, 255, 0.1);
+      border-top: 8px solid transparent;
+      border-bottom: 8px solid transparent;
+    }
+
+    .typing-indicator .typing-text {
+      color: #ccc;
+      margin-bottom: 0.5rem;
+      font-style: italic;
+    }
+
+    .typing-indicator .typing-dots {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: flex-start;
+    }
+
+    .typing-indicator .typing-dots span {
+      width: 10px;
+      height: 10px;
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      border-radius: 50%;
+      animation: typingDots 1.5s infinite;
+      box-shadow: 0 2px 8px rgba(255, 102, 0, 0.3);
+    }
+
+    .typing-indicator .typing-dots span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-indicator .typing-dots span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typingDots {
+
+      0%,
+      60%,
+      100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+      }
+
+      30% {
+        transform: scale(1.2);
+        opacity: 1;
+      }
+    }
+
+    /* 可疑程度样式 */
+    .suspect-card.high-suspicion {
+      border-color: #ff4444 !important;
+      background: rgba(255, 68, 68, 0.15) !important;
+      box-shadow: 0 0 15px rgba(255, 68, 68, 0.3);
+    }
+
+    .suspect-card.medium-suspicion {
+      border-color: #ff9800 !important;
+      background: rgba(255, 152, 0, 0.15) !important;
+      box-shadow: 0 0 12px rgba(255, 152, 0, 0.3);
+    }
+
+    /* 冷却提示样式 */
+    .cooldown-toast {
+      animation: toastFadeIn 0.3s ease-out, toastFadeOut 0.3s ease-in 2.7s;
+    }
+
+    @keyframes toastFadeIn {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+      }
+
+      to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    @keyframes toastFadeOut {
+      from {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      to {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+      }
+    }
+
+    /* 角色情绪表现增强 */
+    .dialogue-message.suspect {
+      position: relative;
+    }
+
+    .dialogue-message.suspect::before {
+      content: '';
+      position: absolute;
+      left: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 60%;
+      background: var(--primary-color);
+      border-radius: 2px;
+      opacity: 0.6;
+    }
+
+    /* 问题历史追踪 */
+    .question-counter {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: rgba(255, 102, 0, 0.2);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    /* AI连接状态指示 */
+    .ai-status {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      z-index: 1000;
+    }
+
+    .ai-status.connected {
+      background: rgba(76, 175, 80, 0.8);
+    }
+
+    .ai-status.error {
+      background: rgba(244, 67, 54, 0.8);
     }
   </style>
 </head>
@@ -2441,7 +3843,10 @@
     <div class="detective-decoration bottom-left">▲</div>
     <div class="detective-decoration bottom-right">■</div>
 
-    <button id="inGameRulesBtn" class="in-game-rules-btn">规则</button>
+    <button id="inGameRulesBtn" class="in-game-rules-btn" title="查看游戏规则">
+      <span class="rules-text-full">规则</span>
+      <span class="rules-text-short" style="display: none;">?</span>
+    </button>
     <!-- 音乐控制按钮 -->
     <button id="music-control" title="播放音乐">
       <span id="music-text">♪ 音乐</span>
@@ -2561,6 +3966,7 @@
       </div>
       <div class="interrogation-area">
         <div id="selectedSuspect" style="display: none;">
+          <div class="interrogation-status-area"></div>
           <h4 id="currentSuspectName">选择一个嫌疑人开始审问</h4>
           <input type="text" class="question-input" id="questionInput" placeholder="输入你想问的问题..." disabled>
           <button class="ask-btn" id="askBtn" disabled>提问</button>
@@ -2648,33 +4054,61 @@
       const buttonText = document.getElementById('toggleButtonText');
       const button = document.querySelector('.scene-mode-toggle');
 
-      // 如果按钮被禁用，不执行任何操作
+      // 如果按钮被禁用，显示提示信息并返回
       if (button.disabled) {
+        if (window.innerWidth <= 768) {
+          showTemporaryMessage('手机端仅支持列表模式\n为获得最佳体验', 'info');
+        }
         return;
       }
 
+      let newMode;
       if (scene.classList.contains('list-mode')) {
         scene.classList.remove('list-mode');
         buttonText.textContent = '列表模式';
         button.classList.remove('scene-mode-active');
+        newMode = 'scene';
+        showTemporaryMessage('已切换到场景模式', 'success');
       } else {
         scene.classList.add('list-mode');
         buttonText.textContent = '场景模式';
         button.classList.add('scene-mode-active');
+        newMode = 'list';
+        showTemporaryMessage('已切换到列表模式', 'success');
       }
 
-      // 切换后重新检查状态（防止在极小屏幕上意外启用场景模式）
-      setTimeout(updateSceneMode, 50);
+      // 保存用户偏好（仅在非手机端保存）
+      if (window.innerWidth > 768) {
+        localStorage.setItem('sceneMode', newMode);
+      }
+
+      // 触发一个自定义事件，通知模式已改变
+      window.dispatchEvent(new CustomEvent('sceneModeChanged', {
+        detail: { mode: newMode, screenWidth: window.innerWidth }
+      }));
     }
 
     // 显示临时消息
     function showTemporaryMessage(message, type = 'info') {
       const messageDiv = document.createElement('div');
       messageDiv.className = `temporary-message ${type}`;
+
+      // 根据类型选择图标
+      let icon = 'ℹ';
+      if (type === 'warning') icon = '⚠';
+      else if (type === 'success') icon = '✓';
+      else if (type === 'error') icon = '✗';
+
       messageDiv.innerHTML = `
-        <span class="message-icon">${type === 'warning' ? '⚠' : 'ℹ'}</span>
+        <span class="message-icon">${icon}</span>
         <span>${message}</span>
       `;
+
+      // 根据类型选择背景色
+      let backgroundColor = 'rgba(76, 175, 80, 0.95)'; // 默认绿色
+      if (type === 'warning') backgroundColor = 'rgba(255, 152, 0, 0.95)';
+      else if (type === 'error') backgroundColor = 'rgba(244, 67, 54, 0.95)';
+      else if (type === 'info') backgroundColor = 'rgba(33, 150, 243, 0.95)';
 
       // 添加样式
       messageDiv.style.cssText = `
@@ -2682,7 +4116,7 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background: ${type === 'warning' ? 'rgba(255, 152, 0, 0.95)' : 'rgba(76, 175, 80, 0.95)'};
+        background: ${backgroundColor};
         color: white;
         padding: 1rem 2rem;
         border-radius: 25px;
@@ -2692,17 +4126,23 @@
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         backdrop-filter: blur(10px);
         animation: messageSlideIn 0.3s ease-out;
+        text-align: center;
+        white-space: pre-line;
       `;
 
       document.body.appendChild(messageDiv);
 
-      // 3秒后自动消失
+      // 根据消息类型调整显示时间
+      const displayTime = type === 'success' ? 2000 : 3000;
+
       setTimeout(() => {
         messageDiv.style.animation = 'messageSlideOut 0.3s ease-in forwards';
         setTimeout(() => {
-          document.body.removeChild(messageDiv);
+          if (document.body.contains(messageDiv)) {
+            document.body.removeChild(messageDiv);
+          }
         }, 300);
-      }, 3000);
+      }, displayTime);
     }
 
     // 更新场景模式状态
@@ -2713,51 +4153,106 @@
       const warning = document.getElementById('sceneSizeWarning');
       const screenWidth = window.innerWidth;
 
-      if (screenWidth <= 400) {
-        // 极小屏幕：强制列表模式，完全禁用场景模式
-        if (!scene.classList.contains('list-mode')) {
-          scene.classList.add('list-mode');
-          buttonText.textContent = '场景模式';
-          button.classList.add('scene-mode-active');
-        }
-        // 如果当前是列表模式，禁用按钮防止切换到场景模式
-        if (scene.classList.contains('list-mode')) {
-          button.disabled = true;
-          buttonText.textContent = '场景不可用';
-        } else {
-          button.disabled = false; // 允许从场景模式切换回列表模式
-        }
-        warning.style.display = 'block';
-        warning.innerHTML = '<span class="warning-icon">📱</span><span>屏幕太小，场景模式不可用<br><small>可尝试横屏或放大窗口</small></span>';
+      // 获取用户偏好（如果有的话）
+      const userPreference = localStorage.getItem('sceneMode');
 
-      } else if (screenWidth <= 480) {
-        // 小屏幕：默认列表模式，但允许切换
+      if (screenWidth <= 768) {
+        // 手机端：强制禁用场景模式，只能使用列表模式
+        button.disabled = true;
+        warning.style.display = 'block';
+        warning.innerHTML = '<span class="warning-icon">📱</span><span>手机端仅支持列表模式<br><small>为获得最佳体验</small></span>';
+
+        // 强制设置为列表模式
         if (!scene.classList.contains('list-mode')) {
           scene.classList.add('list-mode');
           buttonText.textContent = '场景模式';
           button.classList.add('scene-mode-active');
         }
-        button.disabled = false;
-        warning.style.display = 'block';
-        warning.innerHTML = '<span class="warning-icon">💡</span><span>推荐使用列表模式</span>';
+
+        // 显示禁用状态的按钮样式
+        button.style.opacity = '0.5';
+        button.style.cursor = 'not-allowed';
+        button.title = '手机端不支持场景模式';
 
       } else {
-        // 大屏幕：默认场景模式
+        // 桌面端和平板端：可以自由切换
         button.disabled = false;
         warning.style.display = 'none';
+        button.style.opacity = '1';
+        button.style.cursor = 'pointer';
+        button.title = '切换显示模式';
+
+        // 只在初始加载时设置默认模式
+        if (!userPreference) {
+          // 默认使用场景模式
+          if (scene.classList.contains('list-mode')) {
+            scene.classList.remove('list-mode');
+            buttonText.textContent = '列表模式';
+            button.classList.remove('scene-mode-active');
+          }
+        }
+      }
+
+      // 确保按钮文本与当前状态一致（仅在非禁用状态下）
+      if (!button.disabled) {
         if (scene.classList.contains('list-mode')) {
-          scene.classList.remove('list-mode');
+          buttonText.textContent = '场景模式';
+          button.classList.add('scene-mode-active');
+        } else {
           buttonText.textContent = '列表模式';
           button.classList.remove('scene-mode-active');
         }
       }
     }
 
+    // 设备检测和优化函数
+    function detectDeviceAndOptimize() {
+      const userAgent = navigator.userAgent;
+      const screenWidth = window.innerWidth;
+      const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+      const isAndroid = /Android/.test(userAgent);
+      const isMobile = isIOS || isAndroid || screenWidth <= 768;
+
+      // 为不同设备添加特定样式类
+      if (isMobile) {
+        document.body.classList.add('mobile-device');
+      }
+      if (isIOS) {
+        document.body.classList.add('ios-device');
+      }
+      if (isAndroid) {
+        document.body.classList.add('android-device');
+      }
+
+      // 性能优化：低端设备禁用复杂动画
+      if (screenWidth <= 480 || navigator.hardwareConcurrency <= 2) {
+        document.body.classList.add('low-performance');
+      }
+
+      // 显示设备信息和场景模式状态
+      const sceneMode = screenWidth <= 768 ? '仅列表模式' : '可自由切换';
+      console.log(`设备适配: 宽度${screenWidth}px, 移动设备:${isMobile}, 场景模式:${sceneMode}`);
+    }
+
     // 页面加载时初始化
     document.addEventListener('DOMContentLoaded', function () {
+      // 设备检测和优化
+      detectDeviceAndOptimize();
+
+      // 清除手机端的场景模式偏好设置
+      if (window.innerWidth <= 768) {
+        localStorage.removeItem('sceneMode');
+      }
+
+      // 初始化场景模式
       updateSceneMode();
 
-      // 添加消息动画样式
+      // 添加触控优化
+      if ('ontouchstart' in window) {
+        document.body.classList.add('touch-device');
+      }
+
+      // 添加全局样式和动画
       const style = document.createElement('style');
       style.textContent = `
         @keyframes messageSlideIn {
@@ -2789,8 +4284,47 @@
         .scene-mode-toggle.scene-mode-active:hover {
           background: linear-gradient(135deg, rgba(104, 159, 56, 1) 0%, rgba(76, 175, 80, 1) 100%) !important;
         }
+        
+        /* 触控设备优化 */
+        .touch-device .function-btn:hover {
+          transform: none;
+        }
+        
+        .touch-device .function-btn:active {
+          transform: scale(0.95);
+          transition: transform 0.1s ease;
+        }
+        
+        /* 移动设备专用优化 */
+        .mobile-device .function-btn {
+          min-height: 56px;
+        }
+        
+        .mobile-device .close-panel {
+          min-width: 44px;
+          min-height: 44px;
+        }
+        
+        /* iOS设备专用优化 */
+        .ios-device .function-btn {
+          -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* 低性能设备优化 */
+        .low-performance * {
+          will-change: auto;
+        }
+        
+        .low-performance .function-btn:hover,
+        .low-performance .clickable-item:hover {
+          transform: none;
+          transition: background-color 0.2s ease;
+        }
       `;
       document.head.appendChild(style);
+
+      // 显示适配完成提示
+      console.log('🎮 游戏界面已完成全设备适配');
     });
 
     // 监听屏幕尺寸变化

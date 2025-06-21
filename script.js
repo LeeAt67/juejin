@@ -1218,8 +1218,8 @@ class InterrogationSystem {
     }
 
     showCountdownDisplay() {
-        const interrogationArea = document.querySelector('.interrogation-area');
-        if (!interrogationArea) return;
+        const selectedSuspect = document.getElementById('selectedSuspect');
+        if (!selectedSuspect) return;
 
         // 移除已存在的倒计时显示
         const existingCountdown = document.getElementById('interrogationCountdown');
@@ -1227,23 +1227,22 @@ class InterrogationSystem {
             existingCountdown.remove();
         }
 
+        // 创建状态指示器容器（如果不存在）
+        let statusArea = selectedSuspect.querySelector('.interrogation-status-area');
+        if (!statusArea) {
+            statusArea = document.createElement('div');
+            statusArea.className = 'interrogation-status-area';
+            selectedSuspect.prepend(statusArea);
+        }
+
+        // 创建倒计时指示器
         const countdownDiv = document.createElement('div');
         countdownDiv.id = 'interrogationCountdown';
-        countdownDiv.style.cssText = `
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(255, 102, 0, 0.9);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 1rem;
-            z-index: 100;
-        `;
+        countdownDiv.textContent = '审问时间: 30s';
 
-        interrogationArea.style.position = 'relative';
-        interrogationArea.appendChild(countdownDiv);
+        // 清空状态区域并添加倒计时器
+        statusArea.innerHTML = '';
+        statusArea.appendChild(countdownDiv);
     }
 
     updateCountdownDisplay(remainingTime) {
@@ -1254,8 +1253,9 @@ class InterrogationSystem {
 
             // 最后10秒变红警告
             if (seconds <= 10) {
-                countdownDiv.style.background = 'rgba(244, 67, 54, 0.9)';
-                countdownDiv.style.animation = 'pulse 1s infinite';
+                countdownDiv.classList.add('urgent');
+            } else {
+                countdownDiv.classList.remove('urgent');
             }
         }
     }
