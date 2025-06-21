@@ -20,28 +20,78 @@ const gameData = {
     sceneItems: {
         coffee: {
             name: "咖啡杯",
-            description: "💀 法医检测发现：咖啡杯中检测到氰化物残留，这是比尔的特制拿铁咖啡。咖啡的浓郁香味完美掩盖了氰化物的苦杏仁味。",
+            description: "🔍 现场观察：一只白色陶瓷咖啡杯，内有少量深色液体残留，杯口有唇印痕迹。杯子位于比尔右手旁，距离约15厘米。液体散发淡淡苦杏仁味。",
             importance: "关键证据"
         },
         victim: {
             name: "比尔·哈里森",
-            description: "💀 法医检测发现：比尔身上无明显外伤，死者为中毒身亡。面色发紫，呼吸急促，符合氰化物中毒症状。现场没有打斗痕迹。",
+            description: "🔍 现场观察：死者呈坐姿倒在椅子上，年龄约50岁，身穿深蓝色西装。面部发紫，口角有白色泡沫痕迹，双眼紧闭，呼吸已停止。身体无明显外伤。",
             importance: "受害者"
         },
         table: {
             name: "桌子",
-            description: "🔍 现场勘查：桌上放着比尔正在撰写的新小说手稿《死亡的真相》，内容涉及学术造假。手稿旁边还有他的手机，显示他在等待重要消息。",
-            importance: "线索"
+            description: "🔍 现场观察：实木圆桌，直径约1.2米，桌面略显杂乱。摆放有手稿、咖啡杯、手机、钢笔等物品，桌角有轻微磨损痕迹。",
+            importance: "现场环境"
         },
         chair: {
             name: "椅子",
-            description: "🔍 现场勘查：这是比尔的固定座位，他每天都会在这里写作。椅子位置正常，没有被移动过的痕迹。",
-            importance: "背景信息"
+            description: "🔍 现场观察：棕色皮质靠背椅，比尔常用座位，椅子位置正常，未发现移动痕迹。椅背高度约90厘米，扶手处有长期使用的磨损。",
+            importance: "现场环境"
         },
         manuscript: {
             name: "手稿",
-            description: "📄 关键发现：手稿《死亡的真相》中详细描述了学术造假的情节，比尔最近在调查一个医学生的实验数据造假案。这可能是他被杀的动机！",
+            description: "🔍 现场观察：约30页打印稿，标题为《死亡的真相》，内容涉及学术研究造假案例。部分页面有红笔标注，最后一页写有'明天公布真相'。",
             importance: "重要线索"
+        },
+        phone: {
+            name: "手机",
+            description: "🔍 现场观察：黑色智能手机，屏幕朝上放置在桌面，电量显示68%，最近通话记录显示晚上8:15有一个未接来电。",
+            importance: "线索"
+        },
+        notebook: {
+            name: "笔记本",
+            description: "🔍 现场观察：棕色皮质记事本，大小约A5，封面写有'B.H.'字样。翻开可见工整的手写笔记，记录有多个人名和时间。",
+            importance: "线索"
+        },
+        pen: {
+            name: "钢笔",
+            description: "🔍 现场观察：银色钢笔，品牌为派克，笔尖有红色墨水痕迹。笔身有轻微指纹，位置靠近手稿边缘。",
+            importance: "线索"
+        },
+        wallet: {
+            name: "钱包",
+            description: "🔍 现场观察：黑色真皮钱包，内有身份证、银行卡和现金约200元。钱包完好无损，未发现被翻动痕迹。",
+            importance: "个人物品"
+        },
+        glasses: {
+            name: "眼镜",
+            description: "🔍 现场观察：金丝边框眼镜，镜片干净，放置在比尔面前。眼镜腿处有'比尔·哈里森'的刻字，无损坏痕迹。",
+            importance: "个人物品"
+        },
+        window: {
+            name: "窗户",
+            description: "🔍 现场观察：面向街道的落地窗，玻璃完好，窗帘半拉。透过窗户可见外面车水马龙，窗台上放有一盆绿植。",
+            importance: "环境细节"
+        },
+        door: {
+            name: "门",
+            description: "🔍 现场观察：咖啡馆入口门，实木材质，门把手为黄铜制。门锁完好，无强行闯入痕迹，门框周围整洁。",
+            importance: "环境细节"
+        },
+        floor: {
+            name: "地板",
+            description: "🔍 现场观察：深色木质地板，保养良好。比尔座位周围地面干净，未发现异常液体或物品掉落痕迹。",
+            importance: "环境细节"
+        },
+        ashtray: {
+            name: "烟灰缸",
+            description: "🔍 现场观察：玻璃烟灰缸，内有3个烟蒂，其中2个为同一品牌香烟，1个为不同品牌。烟灰缸边缘有轻微烟渍。",
+            importance: "线索"
+        },
+        lamp: {
+            name: "台灯",
+            description: "🔍 现场观察：复古铜制台灯，灯罩为绿色玻璃，电源开关处于开启状态，灯光柔和。电线整齐地盘在灯座后方。",
+            importance: "环境细节"
         }
     },
 
@@ -644,16 +694,34 @@ class InvestigationSystem {
                 this.examineItem(itemKey);
             });
         });
+
+        // 标记重要物品
+        this.markImportantItems();
+    }
+
+    markImportantItems() {
+        const importantItems = ['coffee', 'victim', 'manuscript', 'phone', 'notebook'];
+        importantItems.forEach(itemKey => {
+            const item = document.querySelector(`[data-item="${itemKey}"]`);
+            if (item) {
+                item.classList.add('important');
+            }
+        });
     }
 
     examineItem(itemKey) {
         const item = gameData.sceneItems[itemKey];
         if (!item) return;
 
+        // 标记为已发现
+        const clickedItem = document.querySelector(`[data-item="${itemKey}"]`);
+        clickedItem.classList.add('discovered');
+        clickedItem.classList.remove('important');
+
         // 显示线索信息
         const clueDisplay = document.getElementById('clueDisplay');
         clueDisplay.innerHTML = `
-            <h4>🔍 ${item.name}</h4>
+            <h4>${item.name}</h4>
             <p>${item.description}</p>
             <small>重要性: ${item.importance}</small>
         `;
@@ -662,30 +730,40 @@ class InvestigationSystem {
         // 添加到已发现线索
         gameState.discoveredClues.add(itemKey);
 
-        // 添加视觉反馈
-        const clickedItem = document.querySelector(`[data-item="${itemKey}"]`);
-        clickedItem.style.background = 'rgba(255, 102, 0, 0.5)';
-        clickedItem.style.border = '2px solid #ff6600';
-
         // 播放发现音效（如果需要）
         this.playDiscoverySound();
+
+        // 添加发现动画
+        this.animateDiscovery(clickedItem);
+    }
+
+    animateDiscovery(element) {
+        element.style.animation = 'none';
+        element.offsetHeight; // 触发重排
+        element.style.animation = 'discoveryAnimation 0.6s ease-out';
     }
 
     playDiscoverySound() {
         // 简单的音效反馈
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
 
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
 
-        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.1);
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
 
-        oscillator.start();
-        oscillator.stop(audioContext.currentTime + 0.5);
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.3);
+        } catch (e) {
+            // 音频上下文创建失败时静默处理
+            console.log('音频播放不可用');
+        }
     }
 }
 

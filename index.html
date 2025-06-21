@@ -611,40 +611,229 @@
     /* 探案面板样式 */
     .investigation-scene {
       position: relative;
-      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600"><rect width="800" height="600" fill="%23654321"/><rect x="50" y="400" width="700" height="150" fill="%23432818"/><circle cx="400" cy="300" r="80" fill="%238B4513"/><rect x="350" y="280" width="100" height="40" fill="%23654321"/><circle cx="380" cy="290" r="8" fill="%23FFFFFF"/><rect x="100" y="100" width="120" height="180" fill="%238B4513"/><rect x="150" y="120" width="20" height="140" fill="%23654321"/><rect x="600" y="150" width="80" height="200" fill="%238B4513"/><text x="400" y="50" text-anchor="middle" fill="%23FFFFFF" font-size="24">金叶咖啡馆案发现场</text></svg>') no-repeat center;
-      background-size: contain;
-      min-height: 400px;
-      border: 2px solid var(--border-color);
-      border-radius: 10px;
+      background:
+        linear-gradient(135deg,
+          rgba(101, 67, 33, 0.9) 0%,
+          rgba(139, 89, 42, 0.85) 25%,
+          rgba(160, 110, 65, 0.8) 50%,
+          rgba(139, 89, 42, 0.85) 75%,
+          rgba(101, 67, 33, 0.9) 100%),
+        radial-gradient(circle at 40% 40%, rgba(255, 204, 102, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 153, 51, 0.2) 0%, transparent 40%);
+      min-height: 500px;
+      border: 3px solid rgba(255, 102, 0, 0.6);
+      border-radius: 20px;
       margin-bottom: 2rem;
+      box-shadow:
+        0 15px 35px rgba(0, 0, 0, 0.5),
+        0 5px 15px rgba(255, 102, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+      /* GPU加速 */
+      will-change: auto;
+      transform: translateZ(0);
+      /* 兼容性 */
+      -webkit-backdrop-filter: blur(10px);
     }
 
+    .investigation-scene::before {
+      content: '金叶咖啡馆案发现场';
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.8rem 2rem;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 102, 0, 0.4);
+    }
+
+    .investigation-scene::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 120px;
+      background: linear-gradient(to top,
+          rgba(67, 40, 24, 0.8) 0%,
+          rgba(67, 40, 24, 0.4) 50%,
+          transparent 100%);
+      z-index: 1;
+    }
+
+    /* 区域划分视觉提示 */
+    .investigation-scene .scene-zones {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .investigation-scene .scene-zones::before {
+      content: '';
+      position: absolute;
+      top: 30%;
+      left: 30%;
+      width: 40%;
+      height: 35%;
+      border: 2px dashed rgba(255, 102, 0, 0.3);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 102, 0, 0.05) 0%, transparent 70%);
+    }
+
+    /* 确保物品间距 */
     .clickable-item {
       position: absolute;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       border: 2px solid transparent;
-      border-radius: 8px;
-      padding: 0.5rem;
-      background: rgba(255, 102, 0, 0.1);
+      border-radius: 12px;
+      padding: 0.8rem;
+      background:
+        linear-gradient(145deg,
+          rgba(255, 102, 0, 0.15) 0%,
+          rgba(255, 133, 51, 0.25) 100%);
+      backdrop-filter: blur(8px);
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: white;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+      box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.3),
+        0 2px 8px rgba(255, 102, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      z-index: 5;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      /* 确保最小间距 */
+      min-width: 25px;
+      min-height: 15px;
+      /* GPU加速 */
+      will-change: transform, box-shadow;
+      transform: translateZ(0);
+      /* 兼容性 */
+      -webkit-backdrop-filter: blur(8px);
+      -webkit-user-select: none;
+    }
+
+    .clickable-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg,
+          transparent 30%,
+          rgba(255, 255, 255, 0.1) 50%,
+          transparent 70%);
+      border-radius: inherit;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .clickable-item:hover::before {
+      opacity: 1;
     }
 
     .clickable-item:hover {
       border-color: var(--primary-color);
-      background: rgba(255, 102, 0, 0.3);
-      transform: scale(1.1);
+      background:
+        linear-gradient(145deg,
+          rgba(255, 102, 0, 0.4) 0%,
+          rgba(255, 133, 51, 0.5) 100%);
+      transform: translateY(-8px) scale(1.15);
+      box-shadow:
+        0 12px 30px rgba(255, 102, 0, 0.4),
+        0 6px 20px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      z-index: 10;
+    }
+
+    .clickable-item:active {
+      transform: translateY(-4px) scale(1.05);
+      transition: all 0.1s ease;
+    }
+
+    /* 物品发现状态 */
+    .clickable-item.discovered {
+      background:
+        linear-gradient(145deg,
+          rgba(76, 175, 80, 0.3) 0%,
+          rgba(139, 195, 74, 0.4) 100%);
+      border-color: rgba(76, 175, 80, 0.6);
+      box-shadow:
+        0 4px 15px rgba(76, 175, 80, 0.3),
+        0 2px 8px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    /* 重要物品样式 */
+    .clickable-item.important {
+      animation: importantPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes importantPulse {
+
+      0%,
+      100% {
+        box-shadow:
+          0 4px 15px rgba(255, 102, 0, 0.3),
+          0 2px 8px rgba(0, 0, 0, 0.3);
+      }
+
+      50% {
+        box-shadow:
+          0 6px 20px rgba(255, 102, 0, 0.5),
+          0 3px 12px rgba(0, 0, 0, 0.4);
+      }
+    }
+
+    /* 发现物品动画 */
+    @keyframes discoveryAnimation {
+      0% {
+        transform: translateY(-8px) scale(1.15);
+      }
+
+      25% {
+        transform: translateY(-12px) scale(1.25) rotate(5deg);
+      }
+
+      50% {
+        transform: translateY(-16px) scale(1.3) rotate(-5deg);
+      }
+
+      75% {
+        transform: translateY(-12px) scale(1.25) rotate(2deg);
+      }
+
+      100% {
+        transform: translateY(-8px) scale(1.15) rotate(0deg);
+      }
     }
 
     .item-coffee {
-      top: 45%;
-      left: 45%;
-      width: 60px;
-      height: 60px;
+      top: 46%;
+      left: 65%;
+      width: 40px;
+      height: 40px;
     }
 
     .item-victim {
       top: 35%;
-      left: 35%;
+      left: 25%;
       width: 80px;
       height: 100px;
     }
@@ -657,26 +846,160 @@
     }
 
     .item-chair {
-      top: 55%;
-      left: 30%;
+      top: 60%;
+      left: 20%;
       width: 60px;
       height: 60px;
     }
 
     .item-manuscript {
-      top: 42%;
-      left: 52%;
+      top: 36%;
+      left: 54%;
       width: 50px;
       height: 30px;
     }
 
+    .item-pen {
+      top: 41%;
+      left: 58%;
+      width: 25px;
+      height: 25px;
+    }
+
+    .item-glasses {
+      top: 26%;
+      left: 48%;
+      width: 35px;
+      height: 15px;
+    }
+
+    .item-phone {
+      top: 50%;
+      left: 62%;
+      width: 30px;
+      height: 50px;
+    }
+
+    .item-ashtray {
+      top: 52%;
+      left: 22%;
+      width: 35px;
+      height: 35px;
+    }
+
+    .item-notebook {
+      top: 18%;
+      left: 12%;
+      width: 60px;
+      height: 40px;
+    }
+
+    .item-wallet {
+      top: 72%;
+      left: 18%;
+      width: 40px;
+      height: 25px;
+    }
+
+    .item-window {
+      top: 6%;
+      left: 72%;
+      width: 80px;
+      height: 60px;
+    }
+
+    .item-door {
+      top: 28%;
+      right: 6%;
+      width: 50px;
+      height: 100px;
+    }
+
+    .item-floor {
+      bottom: 8%;
+      left: 58%;
+      width: 80px;
+      height: 40px;
+    }
+
+    .item-lamp {
+      top: 12%;
+      left: 67%;
+      width: 40px;
+      height: 60px;
+    }
+
     .clue-info {
-      background: rgba(0, 0, 0, 0.8);
+      background:
+        linear-gradient(135deg,
+          rgba(0, 0, 0, 0.85) 0%,
+          rgba(20, 20, 20, 0.9) 50%,
+          rgba(0, 0, 0, 0.85) 100%),
+        radial-gradient(circle at top left, rgba(255, 102, 0, 0.1) 0%, transparent 70%);
       color: var(--text-color);
-      padding: 1rem;
-      border-radius: 10px;
-      margin-top: 1rem;
-      border-left: 4px solid var(--primary-color);
+      padding: 2rem;
+      border-radius: 15px;
+      margin-top: 2rem;
+      border: 2px solid rgba(255, 102, 0, 0.4);
+      backdrop-filter: blur(15px);
+      box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.5),
+        0 4px 15px rgba(255, 102, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+      /* GPU加速 */
+      will-change: auto;
+      transform: translateZ(0);
+      /* 兼容性 */
+      -webkit-backdrop-filter: blur(15px);
+    }
+
+    .clue-info::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg,
+          var(--primary-color) 0%,
+          var(--secondary-color) 50%,
+          var(--hover-color) 100%);
+      z-index: 1;
+    }
+
+    .clue-info h4 {
+      color: var(--primary-color);
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .clue-info h4::before {
+      content: '🔍';
+      font-size: 1.2rem;
+    }
+
+    .clue-info p {
+      line-height: 1.8;
+      margin-bottom: 1rem;
+      color: #ddd;
+      text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+    }
+
+    .clue-info small {
+      display: inline-block;
+      background: rgba(255, 102, 0, 0.2);
+      color: var(--primary-color);
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      font-weight: bold;
+      border: 1px solid rgba(255, 102, 0, 0.3);
+      margin-top: 0.5rem;
     }
 
     /* 审问面板样式 */
@@ -1628,6 +1951,35 @@
         margin: 1rem;
       }
 
+      .investigation-scene {
+        min-height: 400px;
+        margin-bottom: 1.5rem;
+      }
+
+      .investigation-scene::before {
+        font-size: 1.2rem;
+        padding: 0.6rem 1.5rem;
+      }
+
+      .clickable-item {
+        padding: 0.6rem;
+        font-size: 1rem;
+        border-radius: 10px;
+      }
+
+      .clickable-item:hover {
+        transform: translateY(-4px) scale(1.1);
+      }
+
+      .clue-info {
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+      }
+
+      .clue-info h4 {
+        font-size: 1.2rem;
+      }
+
       .suspect-grid {
         grid-template-columns: repeat(2, 1fr);
       }
@@ -1688,6 +2040,25 @@
       #game-container {
         padding: 1rem;
         margin: 0.5rem;
+      }
+
+      .investigation-scene {
+        min-height: 350px;
+      }
+
+      .investigation-scene::before {
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+      }
+
+      .clickable-item {
+        padding: 0.4rem;
+        font-size: 0.9rem;
+        border-radius: 8px;
+      }
+
+      .clue-info {
+        padding: 1rem;
       }
 
       .suspect-grid {
@@ -1914,11 +2285,22 @@
         <button class="close-panel">&times;</button>
       </div>
       <div class="investigation-scene">
+        <div class="scene-zones"></div>
         <div class="clickable-item item-coffee" data-item="coffee" title="咖啡杯">C</div>
         <div class="clickable-item item-victim" data-item="victim" title="比尔">B</div>
         <div class="clickable-item item-table" data-item="table" title="桌子">T</div>
         <div class="clickable-item item-chair" data-item="chair" title="椅子">H</div>
         <div class="clickable-item item-manuscript" data-item="manuscript" title="手稿">M</div>
+        <div class="clickable-item item-phone" data-item="phone" title="手机">P</div>
+        <div class="clickable-item item-notebook" data-item="notebook" title="笔记本">N</div>
+        <div class="clickable-item item-pen" data-item="pen" title="钢笔">🖊</div>
+        <div class="clickable-item item-wallet" data-item="wallet" title="钱包">W</div>
+        <div class="clickable-item item-glasses" data-item="glasses" title="眼镜">👓</div>
+        <div class="clickable-item item-window" data-item="window" title="窗户">□</div>
+        <div class="clickable-item item-door" data-item="door" title="门">🚪</div>
+        <div class="clickable-item item-floor" data-item="floor" title="地板">F</div>
+        <div class="clickable-item item-ashtray" data-item="ashtray" title="烟灰缸">A</div>
+        <div class="clickable-item item-lamp" data-item="lamp" title="台灯">💡</div>
       </div>
       <div id="clueDisplay" class="clue-info" style="display: none;"></div>
     </div>
