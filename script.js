@@ -464,8 +464,8 @@ class GameState {
 
     // 审问时间管理
     initializeInterrogationTiming() {
-        this.interrogationWindowDuration = 30 * 1000; // 30秒审问窗口
-        this.interrogationCooldownTime = 2 * 60 * 1000; // 2分钟冷却时间
+        this.interrogationWindowDuration = 60 * 1000; // 60秒审问窗口
+        this.interrogationCooldownTime = 4 * 60 * 1000; // 4分钟冷却时间
         this.currentInterrogationWindow = null; // 当前审问窗口
         this.interrogationTimer = null; // 审问计时器
     }
@@ -1105,7 +1105,7 @@ class InterrogationSystem {
     showTypingIndicator(name) {
         const dialogueArea = document.getElementById('dialogueArea');
         const typingDiv = document.createElement('div');
-        typingDiv.className = 'dialogue-message suspect typing-indicator';
+        typingDiv.className = 'dialogue-message suspect typing-indicator short-message';
         typingDiv.id = 'typing-indicator';
         typingDiv.innerHTML = `
             <div class="speaker-name">${name}</div>
@@ -1238,7 +1238,7 @@ class InterrogationSystem {
         // 创建倒计时指示器
         const countdownDiv = document.createElement('div');
         countdownDiv.id = 'interrogationCountdown';
-        countdownDiv.textContent = '审问时间: 30s';
+        countdownDiv.textContent = '审问时间: 60s';
 
         // 清空状态区域并添加倒计时器
         statusArea.innerHTML = '';
@@ -1275,7 +1275,7 @@ class InterrogationSystem {
         this.disableInterrogation();
 
         // 显示窗口结束消息
-        this.showInterrogationStatusMessage('本轮审问时间结束，请等待2分钟后再次审问', 'warning');
+        this.showInterrogationStatusMessage('本轮审问时间结束，请等待4分钟后再次审问', 'warning');
 
         // 清除当前选择的嫌疑人
         this.clearSuspectSelection();
@@ -1316,7 +1316,19 @@ class InterrogationSystem {
     addMessage(type, content) {
         const dialogueArea = document.getElementById('dialogueArea');
         const messageDiv = document.createElement('div');
-        messageDiv.className = `dialogue-message ${type}`;
+
+        // 检测消息长度并添加相应的类
+        const textLength = content.length;
+        let lengthClass = '';
+        if (textLength <= 30) {
+            lengthClass = 'short-message';
+        } else if (textLength >= 200) {
+            lengthClass = 'extra-long-message';
+        } else if (textLength >= 80) {
+            lengthClass = 'long-message';
+        }
+
+        messageDiv.className = `dialogue-message ${type} ${lengthClass}`.trim();
 
         if (type === 'suspect') {
             const suspect = gameData.suspects[this.currentSuspect];
