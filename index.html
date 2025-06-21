@@ -96,6 +96,30 @@
       max-width: 1200px;
       backdrop-filter: blur(10px);
       border: 1px solid var(--border-color);
+      position: relative;
+    }
+
+    /* 游戏内规则按钮 */
+    .in-game-rules-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255, 102, 0, 0.1);
+      border: 2px solid var(--primary-color);
+      color: var(--primary-color);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+
+    .in-game-rules-btn:hover {
+      background: var(--primary-color);
+      color: white;
+      transform: scale(1.05);
     }
 
     h1 {
@@ -618,6 +642,285 @@
       border-left: 4px solid #4CAF50;
     }
 
+    /* 游戏规则界面样式 */
+    #gameRulesOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.95);
+      z-index: 1001;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .rules-container {
+      background: linear-gradient(135deg, rgba(45, 45, 45, 0.98) 0%, rgba(30, 30, 30, 0.99) 50%, rgba(20, 20, 20, 1) 100%);
+      border-radius: 20px;
+      max-width: 900px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border-color);
+      backdrop-filter: blur(10px);
+      animation: slideInScale 0.4s ease-out;
+    }
+
+    @keyframes slideInScale {
+      from {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .rules-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2rem 2rem 1rem;
+      border-bottom: 2px solid var(--primary-color);
+      margin-bottom: 1.5rem;
+    }
+
+    .rules-header h2 {
+      color: var(--primary-color);
+      font-size: 2rem;
+      margin: 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .close-rules-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: var(--text-color);
+      font-size: 2rem;
+      padding: 0.5rem;
+      border-radius: 50%;
+      cursor: pointer;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .close-rules-btn:hover {
+      background: var(--primary-color);
+      transform: rotate(90deg);
+    }
+
+    .rules-content {
+      padding: 0 2rem 1rem;
+      color: var(--text-color);
+      line-height: 1.6;
+    }
+
+    .rule-section {
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      border-left: 4px solid var(--primary-color);
+    }
+
+    .rule-section h3 {
+      color: var(--primary-color);
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .rule-section p {
+      margin-bottom: 1rem;
+      color: #ddd;
+    }
+
+    .rule-section ul,
+    .rule-section ol {
+      margin-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .rule-section li {
+      margin-bottom: 0.5rem;
+      color: #ccc;
+    }
+
+    .function-rule {
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      border-left: 3px solid var(--secondary-color);
+    }
+
+    .function-rule h4 {
+      color: var(--secondary-color);
+      font-size: 1.2rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .function-rule p {
+      color: #ddd;
+      margin-bottom: 0.8rem;
+    }
+
+    .function-rule ul {
+      margin-left: 1.2rem;
+    }
+
+    .function-rule li {
+      color: #bbb;
+      font-size: 0.9rem;
+    }
+
+    .suspects-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .suspect-info {
+      background: rgba(255, 102, 0, 0.1);
+      padding: 0.8rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 102, 0, 0.3);
+      color: #ddd;
+    }
+
+    .shortcuts-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .shortcut-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      color: #ddd;
+      font-size: 0.95rem;
+    }
+
+    .key {
+      background: rgba(255, 102, 0, 0.2);
+      color: var(--primary-color);
+      padding: 0.3rem 0.8rem;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      border: 1px solid rgba(255, 102, 0, 0.4);
+      min-width: 60px;
+      text-align: center;
+    }
+
+    .rules-footer {
+      padding: 1.5rem 2rem 2rem;
+      text-align: center;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .start-game-btn {
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      color: white;
+      border: none;
+      padding: 1.2rem 3rem;
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(255, 102, 0, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .start-game-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(255, 102, 0, 0.5);
+    }
+
+    #gameRulesBtn:hover {
+      background: rgba(255, 102, 0, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 102, 0, 0.3);
+    }
+
+    /* 欢迎消息动画 */
+    @keyframes slideDownFade {
+      0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+      }
+
+      15% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      85% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+      }
+    }
+
+    .welcome-toast {
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+      .rules-container {
+        margin: 1rem;
+        max-height: 85vh;
+      }
+
+      .rules-header {
+        padding: 1.5rem 1.5rem 1rem;
+      }
+
+      .rules-header h2 {
+        font-size: 1.6rem;
+      }
+
+      .rules-content {
+        padding: 0 1.5rem 1rem;
+      }
+
+      .rule-section {
+        padding: 1rem;
+      }
+
+      .suspects-info {
+        grid-template-columns: 1fr;
+      }
+
+      .in-game-rules-btn {
+        top: 0.5rem;
+        right: 0.5rem;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+      }
+    }
+
     /* 推理记录面板样式 */
     .notes-grid {
       display: grid;
@@ -907,11 +1210,123 @@
       <p>2024年10月15日晚，著名侦探小说家比尔·哈里森在金叶咖啡馆突然身亡...</p>
       <p>现在，你将化身侦探，通过探案、审问、推理，找出真正的凶手！</p>
     </div>
-    <button id="startBtn">开始探案</button>
+    <div style="display: flex; gap: 1rem; justify-content: center; align-items: center;">
+      <button id="gameRulesBtn"
+        style="background: rgba(255, 255, 255, 0.1); color: white; border: 2px solid var(--primary-color); padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; font-size: 1rem; transition: all 0.3s ease;">📖
+        游戏规则</button>
+      <button id="startBtn">开始探案</button>
+    </div>
+  </div>
+
+  <!-- 游戏规则界面 -->
+  <div id="gameRulesOverlay" style="display: none;">
+    <div class="rules-container">
+      <div class="rules-header">
+        <h2>📖 游戏规则</h2>
+        <button id="closeRulesBtn" class="close-rules-btn">&times;</button>
+      </div>
+
+      <div class="rules-content">
+        <div class="rule-section">
+          <h3>🎯 游戏目标</h3>
+          <p>在30分钟内找出真正的凶手，推理出比尔的死因和杀人动机。</p>
+        </div>
+
+        <div class="rule-section">
+          <h3>🕰️ 时间限制</h3>
+          <ul>
+            <li><strong>总游戏时间：</strong>30分钟</li>
+            <li><strong>审问窗口：</strong>每次审问限时30秒</li>
+            <li><strong>审问冷却：</strong>每2分钟只能进行一次审问</li>
+          </ul>
+        </div>
+
+        <div class="rule-section">
+          <h3>🔍 四大功能</h3>
+
+          <div class="function-rule">
+            <h4>🔍 开始探案</h4>
+            <p>点击案发现场的物品获取法医检测信息，每个物品都可能包含重要线索。</p>
+          </div>
+
+          <div class="function-rule">
+            <h4>👥 进行审问</h4>
+            <p>选择嫌疑人进行审问，每次审问限时30秒，结束后需等待2分钟才能再次审问。</p>
+            <ul>
+              <li>每个角色都有独特的性格和回答方式</li>
+              <li>可以问任何问题，AI会根据角色设定回答</li>
+              <li>敏感问题会增加角色的可疑程度</li>
+            </ul>
+          </div>
+
+          <div class="function-rule">
+            <h4>📝 记录推理</h4>
+            <p>为每个嫌疑人记录推理内容，整理线索和疑点。记录会自动保存。</p>
+          </div>
+
+          <div class="function-rule">
+            <h4>⚖️ 验证推理</h4>
+            <p>提交你的最终推理：</p>
+            <ul>
+              <li>比尔是怎么死的？</li>
+              <li>比尔是被谁杀的？</li>
+              <li>为什么要杀比尔？</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="rule-section">
+          <h3>👤 嫌疑人信息</h3>
+          <div class="suspects-info">
+            <div class="suspect-info">👩‍💼 <strong>艾米丽·陈</strong> - 咖啡馆老板</div>
+            <div class="suspect-info">👨‍💼 <strong>马克·汤普森</strong> - 编辑</div>
+            <div class="suspect-info">👩‍⚖️ <strong>瑞秋·格林</strong> - 前妻律师</div>
+            <div class="suspect-info">🎭 <strong>杰克·布朗</strong> - 演员</div>
+            <div class="suspect-info">📚 <strong>萨拉·戴维斯</strong> - 书迷</div>
+            <div class="suspect-info">☕ <strong>汤姆·威尔逊</strong> - 服务员</div>
+          </div>
+        </div>
+
+        <div class="rule-section">
+          <h3>🏆 获胜条件</h3>
+          <p>正确推理出以下三个关键问题的答案：</p>
+          <ol>
+            <li><strong>死因：</strong>准确说出比尔的死因</li>
+            <li><strong>凶手：</strong>正确指出真正的凶手</li>
+            <li><strong>动机：</strong>说明杀人的动机</li>
+          </ol>
+        </div>
+
+        <div class="rule-section">
+          <h3>💡 游戏技巧</h3>
+          <ul>
+            <li>仔细观察每个嫌疑人的行为和表情描述</li>
+            <li>关注角色之间的关系和互相指证</li>
+            <li>合理分配审问时间，抓住关键问题</li>
+            <li>记录重要线索，避免遗忘关键信息</li>
+            <li>观察可疑程度的变化，重点关注高可疑度角色</li>
+          </ul>
+        </div>
+
+        <div class="rule-section">
+          <h3>⌨️ 快捷键</h3>
+          <div class="shortcuts-grid">
+            <div class="shortcut-item"><span class="key">ESC</span> 关闭规则面板</div>
+            <div class="shortcut-item"><span class="key">Enter</span> 审问时发送问题</div>
+            <div class="shortcut-item"><span class="key">📖</span> 点击右上角按钮查看规则</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rules-footer">
+        <button id="startGameFromRules" class="start-game-btn">开始游戏</button>
+      </div>
+    </div>
   </div>
 
   <!-- 游戏主界面 -->
   <div id="game-container">
+    <button id="inGameRulesBtn" class="in-game-rules-btn">📖 规则</button>
     <h1>谁杀死了比尔？</h1>
     <div id="timer">剩余时间: 30:00</div>
 

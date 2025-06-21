@@ -1481,6 +1481,130 @@ function showGameOver(victory) {
     overlay.style.display = 'flex';
 }
 
+// 游戏规则管理器
+class GameRulesManager {
+    constructor() {
+        this.initializeRules();
+    }
+
+    initializeRules() {
+        // 游戏规则按钮事件
+        document.getElementById('gameRulesBtn').addEventListener('click', () => {
+            this.showRules();
+        });
+
+        // 游戏内规则按钮事件
+        document.getElementById('inGameRulesBtn').addEventListener('click', () => {
+            this.showRules(true);
+        });
+
+        // 关闭规则按钮事件
+        document.getElementById('closeRulesBtn').addEventListener('click', () => {
+            this.hideRules();
+        });
+
+        // 从规则页面开始游戏或返回游戏
+        document.getElementById('startGameFromRules').addEventListener('click', () => {
+            this.hideRules();
+
+            // 如果游戏已经开始，只是隐藏规则返回游戏
+            if (gameState.gameStarted) {
+                return;
+            }
+
+            // 否则开始新游戏
+            this.startGame();
+        });
+
+        // ESC键关闭规则
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.isRulesVisible()) {
+                this.hideRules();
+            }
+        });
+
+        // 点击背景关闭规则
+        document.getElementById('gameRulesOverlay').addEventListener('click', (e) => {
+            if (e.target.id === 'gameRulesOverlay') {
+                this.hideRules();
+            }
+        });
+    }
+
+    showRules(fromInGame = false) {
+        document.getElementById('gameRulesOverlay').style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // 防止背景滚动
+
+        // 根据调用位置调整按钮文本
+        const startButton = document.getElementById('startGameFromRules');
+        if (fromInGame) {
+            startButton.textContent = '返回游戏';
+        } else {
+            startButton.textContent = '开始游戏';
+        }
+
+        // 添加淡入动画
+        setTimeout(() => {
+            document.getElementById('gameRulesOverlay').style.opacity = '1';
+        }, 10);
+    }
+
+    hideRules() {
+        const overlay = document.getElementById('gameRulesOverlay');
+        overlay.style.opacity = '0';
+
+        setTimeout(() => {
+            overlay.style.display = 'none';
+            document.body.style.overflow = 'auto'; // 恢复背景滚动
+        }, 300);
+    }
+
+    isRulesVisible() {
+        const overlay = document.getElementById('gameRulesOverlay');
+        return overlay.style.display === 'flex';
+    }
+
+    startGame() {
+        document.getElementById('startOverlay').style.display = 'none';
+        document.getElementById('game-container').style.display = 'block';
+        gameState.startGame();
+
+        // 显示欢迎消息
+        this.showWelcomeMessage();
+    }
+
+    showWelcomeMessage() {
+        const welcomeToast = document.createElement('div');
+        welcomeToast.className = 'welcome-toast';
+        welcomeToast.innerHTML = `
+            <div style="text-align: center; padding: 1rem;">
+                <h3 style="color: var(--primary-color); margin-bottom: 0.5rem;">🕵️ 欢迎来到金叶咖啡馆</h3>
+                <p style="margin: 0; color: #ddd;">使用四大功能开始你的推理之旅！</p>
+            </div>
+        `;
+
+        welcomeToast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            z-index: 1000;
+            border: 2px solid var(--primary-color);
+            animation: slideDownFade 4s ease-out;
+        `;
+
+        document.body.appendChild(welcomeToast);
+
+        setTimeout(() => {
+            welcomeToast.remove();
+        }, 4000);
+    }
+}
+
 // 游戏初始化
 function initializeGame() {
     // 创建系统实例
@@ -1490,15 +1614,14 @@ function initializeGame() {
     const interrogationSystem = new InterrogationSystem();
     const notesSystem = new NotesSystem();
     const verificationSystem = new VerificationSystem();
+    const gameRulesManager = new GameRulesManager();
 
     // 设置全局引用以便GameState访问
     window.interrogationSystem = interrogationSystem;
 
     // 开始游戏按钮
     document.getElementById('startBtn').addEventListener('click', () => {
-        document.getElementById('startOverlay').style.display = 'none';
-        document.getElementById('game-container').style.display = 'block';
-        gameState.startGame();
+        gameRulesManager.startGame();
     });
 
     // 功能按钮事件
