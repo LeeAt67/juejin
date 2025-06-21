@@ -97,7 +97,7 @@ const gameStory = {
 
 // AI API配置
 const AI_CONFIG = {
-    apiKey: 'apikey',
+    apiKey: '894dcbf9-7049-4cbe-9053-9f47b7aa8a52',
     endpoint: 'https://ark.cn-beijing.volces.com/api/v3/chat/completions',
     model: 'doubao-1-5-pro-32k-250115'
 };
@@ -336,107 +336,13 @@ ${historyContext}
             return aiResponse;
         } catch (error) {
             console.error('AI API调用错误:', error);
-            return this.getFallbackAnswer(question);
+            throw error; // 直接抛出错误，不再使用本地回答
         }
-    }
-
-    // 备用本地回答（当API不可用时）- 提供详细信息版本
-    getFallbackAnswer(question) {
-        if (!this.isQuestionRelevant(question)) {
-            const responses = [
-                "请问与案件相关的问题，我可以帮你分析嫌疑人动机、时间线等。",
-                "让我们专注于调查比尔的死亡案件吧。",
-                "请询问案件相关信息，比如嫌疑人背景、死因分析等。"
-            ];
-            return responses[Math.floor(Math.random() * responses.length)];
-        }
-
-        // 如果明确指控汤姆是凶手，承认败北
-        if (this.checkMurdererMention(question)) {
-            const victoryResponses = [
-                "恭喜你，找到真凶了！汤姆·威尔逊确实是凶手。🎉",
-                "破案成功！汤姆利用医学知识下毒杀害了比尔。",
-                "正确！汤姆因为学术造假被发现，所以杀死了比尔。",
-                "你赢了！真凶就是服务员汤姆·威尔逊。"
-            ];
-            return victoryResponses[Math.floor(Math.random() * victoryResponses.length)];
-        }
-
-        // 基础案件信息
-        if (question.includes('死因') || question.includes('怎么死') || question.includes('中毒')) {
-            return "比尔死于氰化物中毒，毒物被下在他的特制拿铁咖啡中。面色发紫，呼吸急促，没有外伤。";
-        }
-
-        if (question.includes('时间') || question.includes('什么时候') || question.includes('几点')) {
-            return "比尔在晚上8:30突然倒下死亡。他8点到咖啡馆，8:28喝下咖啡，两分钟后出现中毒症状。";
-        }
-
-        if (question.includes('地点') || question.includes('咖啡馆') || question.includes('现场')) {
-            return "案发地点是雾霾市中心的'金叶咖啡馆'。比尔坐在他的固定座位，是咖啡馆的常客。";
-        }
-
-        if (question.includes('谁') || question.includes('嫌疑人') || question.includes('都有谁')) {
-            return "当晚在场的有：咖啡馆老板艾米丽，编辑马克，前妻律师瑞秋，演员杰克，书迷萨拉，还有服务员汤姆。";
-        }
-
-        // 详细嫌疑人信息
-        if (question.includes('艾米丽') || question.includes('老板')) {
-            return "艾米丽·陈，35岁，咖啡馆老板。面临房租上涨压力，曾暗恋比尔但从未表白。有机会接触比尔的咖啡。";
-        }
-
-        if (question.includes('马克') || question.includes('编辑') || question.includes('汤普森')) {
-            return "马克·汤普森，40岁，比尔的编辑。因版税分成有争议，公司财务困难急需比尔新书。当晚与比尔讨论合同。";
-        }
-
-        if (question.includes('瑞秋') || question.includes('前妻') || question.includes('律师') || question.includes('格林')) {
-            return "瑞秋·格林，38岁，比尔前妻的律师。处理财产分割，但其实仍然爱着比尔，希望复合。当晚在角落打电话。";
-        }
-
-        if (question.includes('杰克') || question.includes('演员') || question.includes('布朗')) {
-            return "杰克·布朗，28岁，年轻演员。发现比尔'盗用'了他的人生经历写小说，经济拮据急需版权费。当晚在读剧本。";
-        }
-
-        if (question.includes('萨拉') || question.includes('书迷') || question.includes('粉丝') || question.includes('戴维斯')) {
-            return "萨拉·戴维斯，30岁，比尔的书迷。发现比尔抄袭了她投稿的故事，曾被比尔拒绝求爱。当晚在观察。";
-        }
-
-        // 对汤姆的问题要低调处理
-        if (question.includes('汤姆') || question.includes('威尔逊') || question.includes('服务员')) {
-            const tomResponses = [
-                "汤姆·威尔逊，22岁，咖啡馆服务员。看起来是个普通的打工学生，没什么特别的。负责服务比尔区域。",
-                "汤姆就是个老实的服务员，在咖啡馆打工赚学费。当晚负责比尔那边的服务工作。",
-                "服务员汤姆看起来很普通，只是个打工的学生。当晚8:20开始服务比尔所在区域。"
-            ];
-            return tomResponses[Math.floor(Math.random() * tomResponses.length)];
-        }
-
-        // 动机相关
-        if (question.includes('动机') || question.includes('为什么') || question.includes('原因')) {
-            return "每个人都有动机：艾米丽有经济压力，马克有版税争议，瑞秋有感情纠纷，杰克有创意被盗，萨拉有作品被抄袭。";
-        }
-
-        // 线索相关
-        if (question.includes('线索') || question.includes('证据') || question.includes('发现')) {
-            return "关键线索：特制拿铁咖啡被下毒，氰化物中毒，现场无打斗痕迹，需要化学知识才能精确下毒。";
-        }
-
-        // 通用详细回答
-        const generalResponses = [
-            "这是一起复杂的投毒案。比尔在固定座位喝特制拿铁时中毒身亡，凶手需要接触咖啡的机会。",
-            "案件发生在晚上8:30，现场有6个嫌疑人，每个人都有动机和机会，需要仔细分析。",
-            "比尔是著名作家，当晚在咖啡馆写作时被人用氰化物毒死。凶手很可能是熟人。"
-        ];
-        return generalResponses[Math.floor(Math.random() * generalResponses.length)];
     }
 
     // 生成AI回答
     async generateAnswer(question) {
-        // 优先尝试调用AI API
-        if (AI_CONFIG.apiKey !== 'YOUR_DOUBAO_API_KEY') {
-            return await this.callDoubaoAPI(question);
-        } else {
-            return this.getFallbackAnswer(question);
-        }
+        return await this.callDoubaoAPI(question);
     }
 
     // 检查是否提到真凶（需要坚定的回答才算获胜）
@@ -506,59 +412,8 @@ ${question}
             return false;
         } catch (error) {
             console.error('AI判断失败:', error);
-            // 如果AI调用失败，回退到关键词匹配
-            return this.fallbackCheckMurdererMention(question);
+            throw error; // 直接抛出错误，不再使用本地备用逻辑
         }
-    }
-
-    // 备用关键词匹配方法
-    fallbackCheckMurdererMention(question) {
-        const murdererKeywords = ['汤姆', '威尔逊', '汤姆·威尔逊', '服务员汤姆', '汤姆威尔逊'];
-        const definiteCaseKeywords = [
-            '凶手', '杀死了', '杀害了', '真凶', '是凶手', '就是', '是他', '他干的', '他做的',
-            '罪犯', '犯人', '答案', '一定是', '肯定是', '必定是', '绝对是', '确定是',
-            '真正的凶手', '杀手', '元凶', '主犯', '谋杀者', '下毒者', '投毒者',
-            '我找到了', '我发现了', '我明白了', '我知道了', '我确认了',
-            '就是他', '就是他干的', '就是他做的', '就是他杀的',
-            '凶手就是他', '真凶就是他', '罪犯就是他', '犯人就是他'
-        ];
-
-        const uncertainKeywords = [
-            '应该是', '可能是', '怀疑', '觉得是', '也许是', '或许是', '大概是',
-            '似乎是', '好像是', '估计是', '推测是', '猜测是', '感觉是',
-            '倾向于', '不确定', '有点像', '有可能', '疑似', '看起来像',
-            '我猜', '我怀疑', '我认为', '我觉得', '我想', '我估计',
-            '可能', '也许', '大概', '应该', '似乎', '好像',
-            '不确定', '不太确定', '不是很确定', '不太清楚',
-            '需要更多证据', '还需要调查', '有待确认'
-        ];
-
-        const questionLower = question.toLowerCase();
-
-        const hasMurderer = murdererKeywords.some(keyword =>
-            questionLower.includes(keyword.toLowerCase())
-        );
-
-        const hasDefiniteCaseKeyword = definiteCaseKeywords.some(keyword =>
-            questionLower.includes(keyword.toLowerCase())
-        );
-
-        const hasUncertainKeyword = uncertainKeywords.some(keyword =>
-            questionLower.includes(keyword.toLowerCase())
-        );
-
-        const hasEvidence = questionLower.includes('证据') ||
-            questionLower.includes('线索') ||
-            questionLower.includes('原因') ||
-            questionLower.includes('动机') ||
-            questionLower.includes('因为') ||
-            questionLower.includes('所以');
-
-        const hasReasoning = questionLower.includes('因为') &&
-            questionLower.includes('所以') &&
-            questionLower.includes('因此');
-
-        return (hasMurderer && hasDefiniteCaseKeyword && !hasUncertainKeyword && (hasEvidence || hasReasoning));
     }
 
     showAIHelper() {
@@ -971,25 +826,34 @@ async function handleQuestion(question) {
     // 显示AI思考中的提示
     const thinkingMessage = appendMessage('system', '🤖 小助手正在思考中...');
 
-    // 检查是否提到真凶
-    const isCorrect = await doubaoAI.checkMurdererMention(question);
-    if (isCorrect) {
-        thinkingMessage.remove(); // 移除思考提示
-        showGameOver(true);
-        return;
+    try {
+        // 检查是否提到真凶
+        const isCorrect = await doubaoAI.checkMurdererMention(question);
+        if (isCorrect) {
+            thinkingMessage.remove(); // 移除思考提示
+            showGameOver(true);
+            return;
+        }
+
+        // 获取AI回答
+        const answer = await doubaoAI.generateAnswer(question);
+
+        // 移除思考提示
+        thinkingMessage.remove();
+
+        // 添加AI回答到聊天界面
+        appendMessage('assistant', answer);
+
+        // 自动检测和收集线索
+        detectAndCollectClues(question, answer);
+    } catch (error) {
+        // 移除思考提示
+        thinkingMessage.remove();
+
+        // 显示错误消息
+        appendMessage('system', '抱歉，AI助手暂时无法回答。请稍后再试。');
+        console.error('处理问题时出错:', error);
     }
-
-    // 获取AI回答
-    const answer = await doubaoAI.generateAnswer(question);
-
-    // 移除思考提示
-    thinkingMessage.remove();
-
-    // 添加AI回答到聊天界面
-    appendMessage('assistant', answer);
-
-    // 自动检测和收集线索
-    detectAndCollectClues(question, answer);
 }
 
 // 开始游戏
