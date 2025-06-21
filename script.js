@@ -683,59 +683,110 @@ class PanelManager {
 // 探案功能
 class InvestigationSystem {
     constructor() {
+        this.audioContext = null;
+        this.lastClickTime = 0;
+        this.clickCooldown = 200; // 200ms防抖
         this.initializeInvestigation();
     }
 
     initializeInvestigation() {
-        // 为所有可点击物品添加事件监听
-        document.querySelectorAll('.clickable-item').forEach(item => {
-            item.addEventListener('click', (e) => {
-                const itemKey = e.target.dataset.item;
-                this.examineItem(itemKey);
-            });
-        });
+        // 使用事件委托，避免为每个物品单独添加监听器
+        const investigationScene = document.querySelector('.investigation-scene');
+        if (investigationScene) {
+            investigationScene.addEventListener('click', this.handleItemClick.bind(this));
+        }
+    }
+
+    handleItemClick(e) {
+        // 防抖处理
+        const now = Date.now();
+        if (now - this.lastClickTime < this.clickCooldown) {
+            return;
+        }
+        this.lastClickTime = now;
+
+        const clickedItem = e.target.closest('.clickable-item');
+        if (!clickedItem) return;
+
+        const itemKey = clickedItem.dataset.item;
+        if (itemKey) {
+            this.examineItem(itemKey);
+        }
     }
 
     examineItem(itemKey) {
         const item = gameData.sceneItems[itemKey];
         if (!item) return;
 
-        // 显示线索信息
+        // 检查是否已经检查过（避免重复处理）
+        if (gameState.discoveredClues.has(itemKey)) {
+            this.showClueInfo(item);
+            return;
+        }
+
+        // 使用 requestAnimationFrame 优化 DOM 操作
+        requestAnimationFrame(() => {
+            this.showClueInfo(item);
+            this.updateItemVisual(itemKey);
+
+            // 添加到已发现线索
+            gameState.discoveredClues.add(itemKey);
+
+            // 优化音效播放
+            this.playDiscoverySound();
+        });
+    }
+
+    showClueInfo(item) {
         const clueDisplay = document.getElementById('clueDisplay');
+        // 使用模板字符串和更简洁的更新
         clueDisplay.innerHTML = `
             <h4>🔍 ${item.name}</h4>
             <p>${item.description}</p>
             <small>重要性: ${item.importance}</small>
         `;
         clueDisplay.style.display = 'block';
+    }
 
-        // 添加到已发现线索
-        gameState.discoveredClues.add(itemKey);
-
-        // 添加视觉反馈
+    updateItemVisual(itemKey) {
         const clickedItem = document.querySelector(`[data-item="${itemKey}"]`);
-        clickedItem.style.background = 'rgba(255, 102, 0, 0.5)';
-        clickedItem.style.border = '2px solid #ff6600';
-
-        // 播放发现音效（如果需要）
-        this.playDiscoverySound();
+        if (clickedItem && !clickedItem.classList.contains('examined')) {
+            clickedItem.classList.add('examined');
+            // 使用CSS类而不是内联样式，性能更好
+            clickedItem.style.background = 'rgba(255, 102, 0, 0.5)';
+            clickedItem.style.borderColor = '#ff6600';
+        }
     }
 
     playDiscoverySound() {
-        // 简单的音效反馈
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
+        try {
+            // 重用AudioContext，避免重复创建
+            if (!this.audioContext) {
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
 
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
+            // 如果AudioContext被暂停，则恢复
+            if (this.audioContext.state === 'suspended') {
+                this.audioContext.resume();
+            }
 
-        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            // 创建更简单的音效，减少计算量
+            const oscillator = this.audioContext.createOscillator();
+            const gainNode = this.audioContext.createGain();
 
-        oscillator.start();
-        oscillator.stop(audioContext.currentTime + 0.5);
+            oscillator.connect(gainNode);
+            gainNode.connect(this.audioContext.destination);
+
+            oscillator.frequency.value = 800;
+            gainNode.gain.value = 0.05; // 降低音量
+
+            oscillator.start();
+            oscillator.stop(this.audioContext.currentTime + 0.1); // 缩短时间
+
+        } catch (error) {
+            // 音效播放失败时不影响主要功能
+            console.warn('音效播放失败:', error);
+        }
     }
 }
 
@@ -1196,7 +1247,7 @@ class InterrogationSystem {
         // 显示倒计时区域
         this.showCountdownDisplay();
 
-        // 开始倒计时 - 降低更新频率以提升性能
+        // 开始倒计时 - 进一步降低更新频率以提升性能
         this.countdownInterval = setInterval(() => {
             const status = gameState.getInterrogationStatus();
 
@@ -1206,7 +1257,7 @@ class InterrogationSystem {
                 // 审问窗口已结束
                 this.stopInterrogationCountdown();
             }
-        }, 500); // 改为0.5秒更新一次，减少CPU使用
+        }, 1000); // 改为1秒更新一次，大幅减少CPU使用
     }
 
     stopInterrogationCountdown() {
@@ -1381,11 +1432,14 @@ class InterrogationSystem {
     }
 
     startCooldownUpdate() {
-        // 优化定时器频率，减少性能消耗
+        // 进一步优化定时器频率，减少性能消耗
         setInterval(() => {
-            this.updateInterrogationUI();
-            this.updateCooldownDisplay();
-        }, 2000); // 改为2秒更新一次，减少CPU使用
+            // 只在需要时更新UI
+            if (document.getElementById('interrogationPanel').classList.contains('active')) {
+                this.updateInterrogationUI();
+                this.updateCooldownDisplay();
+            }
+        }, 3000); // 改为3秒更新一次，进一步减少CPU使用
     }
 
     updateCooldownDisplay() {
@@ -1677,40 +1731,27 @@ class GameRulesManager {
 
         gameState.startGame();
 
-        // 显示欢迎消息
-        this.showWelcomeMessage();
-    }
-
-    showWelcomeMessage() {
-        const welcomeToast = document.createElement('div');
-        welcomeToast.className = 'welcome-toast';
-        welcomeToast.innerHTML = `
-            <div style="text-align: center; padding: 1rem;">
-                <h3 style="color: var(--primary-color); margin-bottom: 0.5rem;">🕵️ 欢迎来到蓝调咖啡馆</h3>
-                <p style="margin: 0; color: #ddd;">使用四大功能开始你的推理之旅！</p>
-            </div>
-        `;
-
-        welcomeToast.style.cssText = `
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 15px;
-            z-index: 1000;
-            border: 2px solid var(--primary-color);
-            animation: slideDownFade 4s ease-out;
-        `;
-
-        document.body.appendChild(welcomeToast);
-
+        // 统一通过性能管理器显示所有消息，确保队列机制工作
         setTimeout(() => {
-            welcomeToast.remove();
-        }, 4000);
+            if (window.performanceManager) {
+                // 先显示欢迎消息
+                const welcomeMessage = window.innerWidth <= 768
+                    ? '欢迎来到蓝调咖啡馆\n使用四大功能开始推理之旅！'
+                    : '欢迎来到蓝调咖啡馆\n使用四大功能开始你的推理之旅！';
+                window.performanceManager.showCenteredMessage(welcomeMessage, 'welcome');
+
+                // 延迟添加性能提示到队列，确保第一个消息已经开始显示
+                setTimeout(() => {
+                    const performanceMessage = window.innerWidth <= 768
+                        ? '🚀 性能模式已启用\n确保流畅体验\n\n按 Ctrl+P 开启完整效果'
+                        : '🚀 游戏已启用性能模式\n确保流畅体验\n\n按 Ctrl+P 可开启完整视觉效果';
+                    window.performanceManager.showCenteredMessage(performanceMessage, 'info');
+                }, 200); // 确保第一个消息已经开始显示
+            }
+        }, 100);
     }
+
+
 }
 
 // 游戏初始化

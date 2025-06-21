@@ -21,6 +21,109 @@
       --warning-color: #ff9800;
     }
 
+    /* 性能优化模式 - 禁用所有复杂动画和效果 */
+    .performance-mode * {
+      animation: none !important;
+      transition: none !important;
+      backdrop-filter: none !important;
+      transform: none !important;
+      will-change: auto !important;
+    }
+
+    .performance-mode .function-btn:hover {
+      background: var(--hover-color) !important;
+      transform: none !important;
+      box-shadow: 0 4px 15px rgba(255, 102, 0, 0.3) !important;
+    }
+
+    .performance-mode .function-btn .btn-icon {
+      transform: none !important;
+    }
+
+    .performance-mode #game-container {
+      animation: none !important;
+      backdrop-filter: none !important;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .performance-mode #timer {
+      animation: none !important;
+      border-color: rgba(255, 102, 0, 0.6) !important;
+      box-shadow: 0 0 15px rgba(255, 102, 0, 0.3) !important;
+    }
+
+    .performance-mode #timer::before {
+      animation: none !important;
+    }
+
+    .performance-mode h1 {
+      animation: none !important;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    .performance-mode h1::before,
+    .performance-mode h1::after {
+      animation: none !important;
+    }
+
+    .performance-mode #startTitle {
+      animation: none !important;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7) !important;
+    }
+
+    .performance-mode .in-game-rules-btn::before,
+    .performance-mode .function-btn::before,
+    .performance-mode #startBtn::before,
+    .performance-mode .ask-btn::before {
+      display: none !important;
+    }
+
+    .performance-mode .dialogue-message.typing-indicator {
+      animation: none !important;
+    }
+
+    .performance-mode .typing-indicator .typing-dots span {
+      animation: none !important;
+      opacity: 0.7 !important;
+    }
+
+    .performance-mode body::before,
+    .performance-mode body::after {
+      display: none !important;
+    }
+
+    .performance-mode .detective-decoration {
+      display: none !important;
+    }
+
+    /* 简化的悬停效果 */
+    .performance-mode .clickable-item:hover {
+      background: rgba(255, 102, 0, 0.3) !important;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    .performance-mode .suspect-card:hover {
+      background: rgba(255, 102, 0, 0.2) !important;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    .performance-mode .in-game-rules-btn:hover,
+    .performance-mode #music-control:hover {
+      background: var(--primary-color) !important;
+      transform: none !important;
+      box-shadow: 0 2px 8px rgba(255, 102, 0, 0.2) !important;
+    }
+
+    .performance-mode .ask-btn:hover,
+    .performance-mode .verify-btn:hover,
+    .performance-mode .start-game-btn:hover {
+      background: var(--hover-color) !important;
+      transform: none !important;
+      box-shadow: 0 2px 8px rgba(255, 102, 0, 0.3) !important;
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -657,6 +760,18 @@
       transform: scale(1.1);
       box-shadow: 0 4px 15px rgba(255, 102, 0, 0.4);
       color: white;
+    }
+
+    /* 已检查物品的样式 */
+    .clickable-item.examined {
+      background: rgba(255, 102, 0, 0.5) !important;
+      border-color: #ff6600 !important;
+      opacity: 0.8;
+    }
+
+    .clickable-item.examined:hover {
+      background: rgba(255, 102, 0, 0.6) !important;
+      transform: none;
     }
 
     /* 默认桌面端物品位置 */
@@ -1706,7 +1821,7 @@
       border-color: rgba(255, 255, 255, 0.3);
     }
 
-    /* 欢迎消息动画 */
+    /* 欢迎消息动画 - 修复居中问题 */
     @keyframes slideDownFade {
       0% {
         opacity: 0;
@@ -1726,6 +1841,29 @@
       100% {
         opacity: 0;
         transform: translateX(-50%) translateY(-10px);
+      }
+    }
+
+    /* 简化的消息显示动画 - 不影响居中 */
+    @keyframes messageShow {
+      0% {
+        opacity: 0;
+        transform: translateX(-50%) scale(0.9);
+      }
+
+      10% {
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+      }
+
+      90% {
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateX(-50%) scale(0.9);
       }
     }
 
@@ -3693,8 +3831,14 @@
           <div class="shortcuts-grid">
             <div class="shortcut-item"><span class="key">ESC</span> 关闭规则面板</div>
             <div class="shortcut-item"><span class="key">Enter</span> 审问时发送问题</div>
+            <div class="shortcut-item"><span class="key">Ctrl+P</span> 切换性能模式/完整视觉效果</div>
             <div class="shortcut-item"><span class="key">按钮</span> 点击右上角按钮查看规则</div>
           </div>
+        </div>
+
+        <div class="rule-section">
+          <h3>性能提示</h3>
+          <p>游戏默认启用性能模式以确保流畅体验。如果设备性能良好，可以按 <strong>Ctrl+P</strong> 开启完整视觉效果，享受更丰富的动画和特效。</p>
         </div>
       </div>
 
@@ -3912,11 +4056,15 @@
       const messageDiv = document.createElement('div');
       messageDiv.className = `temporary-message ${type}`;
 
+      // 检测是否是移动设备
+      const isMobile = window.innerWidth <= 768;
+
       // 根据类型选择图标
-      let icon = 'ℹ';
+      let icon = '🚀';
       if (type === 'warning') icon = '⚠';
-      else if (type === 'success') icon = '✓';
+      else if (type === 'success') icon = '✨';
       else if (type === 'error') icon = '✗';
+      else if (type === 'info') icon = '🚀';
 
       messageDiv.innerHTML = `
         <span class="message-icon">${icon}</span>
@@ -3929,33 +4077,56 @@
       else if (type === 'error') backgroundColor = 'rgba(244, 67, 54, 0.95)';
       else if (type === 'info') backgroundColor = 'rgba(33, 150, 243, 0.95)';
 
-      // 添加样式
-      messageDiv.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: ${backgroundColor};
-        color: white;
-        padding: 1rem 2rem;
-        border-radius: 25px;
-        font-size: 1rem;
-        font-weight: bold;
-        z-index: 10000;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-        backdrop-filter: blur(10px);
-        animation: messageSlideIn 0.3s ease-out;
-        text-align: center;
-        white-space: pre-line;
-      `;
+      // 根据设备调整样式 - 进一步缩小手机端
+      const padding = isMobile ? '0.6rem 1rem' : '1rem 2rem';
+      const fontSize = isMobile ? '0.8rem' : '1rem';
+      const borderRadius = isMobile ? '15px' : '25px';
+      const maxWidth = isMobile ? '75%' : '80%';
+
+      // 先设置基础样式
+      messageDiv.style.position = 'fixed';
+      messageDiv.style.background = backgroundColor;
+      messageDiv.style.color = 'white';
+      messageDiv.style.padding = padding;
+      messageDiv.style.borderRadius = borderRadius;
+      messageDiv.style.fontSize = fontSize;
+      messageDiv.style.fontWeight = 'bold';
+      messageDiv.style.zIndex = '10000';
+      messageDiv.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.3)';
+      messageDiv.style.backdropFilter = 'blur(10px)';
+      messageDiv.style.textAlign = 'center';
+      messageDiv.style.whiteSpace = 'pre-line';
+      messageDiv.style.maxWidth = maxWidth;
+      messageDiv.style.visibility = 'hidden';
 
       document.body.appendChild(messageDiv);
+
+      // 计算居中位置
+      const rect = messageDiv.getBoundingClientRect();
+      const centerLeft = (window.innerWidth - rect.width) / 2;
+      const centerTop = (window.innerHeight - rect.height) / 2;
+
+      // 设置最终位置
+      messageDiv.style.left = centerLeft + 'px';
+      messageDiv.style.top = centerTop + 'px';
+      messageDiv.style.visibility = 'visible';
+
+      // 添加显示动画
+      messageDiv.style.opacity = '0';
+      messageDiv.style.transform = 'scale(0.9)';
+      setTimeout(() => {
+        messageDiv.style.transition = 'opacity 0.3s ease-in-out, transform 0.3s ease-in-out';
+        messageDiv.style.opacity = '1';
+        messageDiv.style.transform = 'scale(1)';
+      }, 10);
 
       // 根据消息类型调整显示时间
       const displayTime = type === 'success' ? 2000 : 3000;
 
       setTimeout(() => {
-        messageDiv.style.animation = 'messageSlideOut 0.3s ease-in forwards';
+        messageDiv.style.transition = 'opacity 0.3s ease-in-out, transform 0.3s ease-in-out';
+        messageDiv.style.opacity = '0';
+        messageDiv.style.transform = 'scale(0.9)';
         setTimeout(() => {
           if (document.body.contains(messageDiv)) {
             document.body.removeChild(messageDiv);
@@ -4071,6 +4242,249 @@
 
       // 显示适配完成提示
       console.log('🎮 游戏界面已完成全设备适配');
+    });
+
+    // 性能优化管理器
+    class PerformanceManager {
+      constructor() {
+        this.isPerformanceMode = true; // 默认启用性能模式
+        this.messageQueue = []; // 消息队列
+        this.isShowingMessage = false; // 是否正在显示消息
+        this.initPerformanceDetection();
+      }
+
+      initPerformanceDetection() {
+        // 默认启用性能模式以确保流畅体验
+        this.enablePerformanceMode();
+
+        // 性能模式提示将在游戏开始时通过gameRulesManager触发
+
+        // 添加快捷键切换性能模式 (Ctrl+P)
+        document.addEventListener('keydown', (e) => {
+          if (e.ctrlKey && e.key === 'p') {
+            e.preventDefault();
+            this.togglePerformanceMode();
+          }
+        });
+
+        // 监听页面性能问题
+        this.monitorPerformance();
+      }
+
+      detectLowEndDevice() {
+        // 检测低端设备的指标
+        const screenWidth = window.innerWidth;
+        const cores = navigator.hardwareConcurrency || 1;
+        const memory = navigator.deviceMemory || 1;
+
+        return screenWidth <= 768 || cores <= 2 || memory <= 2;
+      }
+
+      monitorPerformance() {
+        // 监听长任务
+        if ('PerformanceObserver' in window) {
+          try {
+            const observer = new PerformanceObserver((list) => {
+              const entries = list.getEntries();
+              entries.forEach(entry => {
+                if (entry.duration > 50) { // 超过50ms的任务
+                  console.warn(`长任务检测: ${entry.duration}ms`);
+                  if (!this.isPerformanceMode && entry.duration > 100) {
+                    this.suggestPerformanceMode();
+                  }
+                }
+              });
+            });
+            observer.observe({ entryTypes: ['longtask'] });
+          } catch (e) {
+            console.log('性能监控不可用');
+          }
+        }
+      }
+
+      suggestPerformanceMode() {
+        // 由于默认已启用性能模式，此方法主要用于提醒用户保持性能模式
+        if (!this.isPerformanceMode) {
+          const message = window.innerWidth <= 768
+            ? '🐌 检测到响应较慢\n建议保持性能模式\n\n按 Ctrl+P 回到性能模式'
+            : '🐌 检测到界面响应较慢\n建议保持性能模式\n\n按 Ctrl+P 可回到性能模式';
+          this.showCenteredMessage(message, 'warning');
+        }
+      }
+
+      enablePerformanceMode() {
+        if (this.isPerformanceMode && document.body.classList.contains('performance-mode')) return;
+
+        document.body.classList.add('performance-mode');
+        this.isPerformanceMode = true;
+
+        // 保存用户选择
+        localStorage.setItem('performance_mode', 'enabled');
+
+        console.log('🚀 性能模式已启用 - 优化流畅度');
+      }
+
+      disablePerformanceMode() {
+        if (!this.isPerformanceMode) return;
+
+        document.body.classList.remove('performance-mode');
+        this.isPerformanceMode = false;
+
+        // 保存用户选择
+        localStorage.setItem('performance_mode', 'disabled');
+
+        console.log('✨ 完整视觉效果已开启 - 丰富动画特效');
+      }
+
+      togglePerformanceMode() {
+        if (this.isPerformanceMode) {
+          this.disablePerformanceMode();
+          const message = window.innerWidth <= 768
+            ? '✨ 完整效果已开启\n丰富动画和特效\n\n按 Ctrl+P 回到性能模式'
+            : '✨ 完整视觉效果已开启\n丰富的动画和特效\n\n按 Ctrl+P 可回到性能模式';
+          this.showCenteredMessage(message, 'success');
+        } else {
+          this.enablePerformanceMode();
+          const message = window.innerWidth <= 768
+            ? '🚀 性能模式已开启\n优化流畅度\n\n按 Ctrl+P 开启完整效果'
+            : '🚀 性能模式已开启\n优化流畅度和响应速度\n\n按 Ctrl+P 可开启完整效果';
+          this.showCenteredMessage(message, 'info');
+        }
+      }
+
+      // 恢复用户的性能模式偏好
+      restoreUserPreference() {
+        const saved = localStorage.getItem('performance_mode');
+        if (saved === 'disabled') {
+          // 用户之前选择关闭性能模式，恢复完整视觉效果
+          this.disablePerformanceMode();
+        }
+        // 如果没有保存过偏好或者保存的是enabled，保持默认的性能模式
+      }
+
+      // 显示居中消息
+      showCenteredMessage(message, type = 'info', duration = 4000) {
+        // 如果正在显示消息，加入队列等待
+        if (this.isShowingMessage) {
+          this.messageQueue.push({ message, type, duration });
+          return;
+        }
+
+        this.isShowingMessage = true;
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `centered-message ${type}`;
+
+        // 检测是否是移动设备
+        const isMobile = window.innerWidth <= 768;
+
+        // 根据类型选择图标
+        let icon = 'ℹ';
+        if (type === 'warning') icon = '⚠';
+        else if (type === 'success') icon = '✓';
+        else if (type === 'error') icon = '✗';
+        else if (type === 'welcome') icon = '🕵️';
+
+        // 根据设备调整内容样式 - 进一步缩小手机端尺寸
+        const iconSize = isMobile ? '1.2rem' : '2rem';
+        const contentPadding = isMobile ? '0.5rem' : '1rem';
+
+        messageDiv.innerHTML = `
+                <div style="text-align: center; padding: ${contentPadding};">
+                    <div style="font-size: ${iconSize}; margin-bottom: ${isMobile ? '0.3rem' : '0.5rem'};">${icon}</div>
+                    <div style="white-space: pre-line; line-height: ${isMobile ? '1.3' : '1.4'}; font-size: ${isMobile ? '0.85rem' : '1rem'};">${message}</div>
+                </div>
+            `;
+
+        // 根据类型选择背景色
+        let backgroundColor = 'rgba(33, 150, 243, 0.95)'; // 默认蓝色
+        if (type === 'warning') backgroundColor = 'rgba(255, 152, 0, 0.95)';
+        else if (type === 'error') backgroundColor = 'rgba(244, 67, 54, 0.95)';
+        else if (type === 'success') backgroundColor = 'rgba(76, 175, 80, 0.95)';
+        else if (type === 'info') backgroundColor = 'linear-gradient(135deg, rgba(255, 102, 0, 0.9) 0%, rgba(255, 133, 51, 0.95) 100%)';
+        else if (type === 'welcome') backgroundColor = 'rgba(0, 0, 0, 0.9)';
+
+        // 根据设备调整样式 - 大幅缩小手机端尺寸
+        const topPosition = isMobile ? '10px' : '20px';
+        const padding = isMobile ? '0.8rem 1rem' : '1.5rem 2.5rem';
+        const fontSize = isMobile ? '0.8rem' : '1rem';
+        const maxWidth = isMobile ? '75%' : '90%';
+        const borderRadius = isMobile ? '12px' : '20px';
+
+        // 先设置基础样式（不包括位置）
+        messageDiv.style.position = 'fixed';
+        messageDiv.style.background = backgroundColor;
+        messageDiv.style.color = 'white';
+        messageDiv.style.padding = padding;
+        messageDiv.style.borderRadius = borderRadius;
+        messageDiv.style.zIndex = '2000';
+        messageDiv.style.border = '2px solid #ff6600';
+        messageDiv.style.boxShadow = '0 10px 40px rgba(0, 0, 0, 0.6)';
+        messageDiv.style.backdropFilter = 'blur(10px)';
+        messageDiv.style.maxWidth = maxWidth;
+        messageDiv.style.textAlign = 'center';
+        messageDiv.style.fontSize = fontSize;
+        messageDiv.style.fontWeight = 'bold';
+        messageDiv.style.margin = '0';
+        messageDiv.style.display = 'block';
+        messageDiv.style.visibility = 'hidden'; // 先隐藏以便计算尺寸
+
+        // 添加到DOM以计算实际尺寸
+        document.body.appendChild(messageDiv);
+
+        // 计算居中位置
+        const rect = messageDiv.getBoundingClientRect();
+        const centerLeft = (window.innerWidth - rect.width) / 2;
+
+        // 设置最终位置
+        messageDiv.style.top = topPosition;
+        messageDiv.style.left = centerLeft + 'px';
+        messageDiv.style.visibility = 'visible';
+
+        // 添加简单的显示动画
+        messageDiv.style.opacity = '0';
+        setTimeout(() => {
+          messageDiv.style.transition = 'opacity 0.3s ease-in-out';
+          messageDiv.style.opacity = '1';
+        }, 10);
+
+        setTimeout(() => {
+          // 淡出动画
+          messageDiv.style.transition = 'opacity 0.3s ease-in-out';
+          messageDiv.style.opacity = '0';
+
+          setTimeout(() => {
+            if (document.body.contains(messageDiv)) {
+              document.body.removeChild(messageDiv);
+            }
+
+            // 消息结束，检查队列
+            this.isShowingMessage = false;
+            this.processMessageQueue();
+          }, 300);
+        }, duration - 300);
+      }
+
+      // 处理消息队列
+      processMessageQueue() {
+        if (this.messageQueue.length > 0) {
+          const nextMessage = this.messageQueue.shift();
+          // 移动设备增加更多间隔时间
+          const delay = window.innerWidth <= 768 ? 800 : 500;
+          setTimeout(() => {
+            this.showCenteredMessage(nextMessage.message, nextMessage.type, nextMessage.duration);
+          }, delay);
+        }
+      }
+    }
+
+    // 初始化性能管理器
+    const performanceManager = new PerformanceManager();
+    window.performanceManager = performanceManager; // 设为全局变量
+
+    // 页面加载完成后恢复用户偏好
+    document.addEventListener('DOMContentLoaded', () => {
+      performanceManager.restoreUserPreference();
     });
 
 
