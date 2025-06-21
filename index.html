@@ -425,11 +425,55 @@
 
     /* 功能按钮区域 */
     .function-buttons {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
       margin-bottom: 2.5rem;
-      padding: 1rem;
+      padding: 2rem;
+    }
+
+    /* 钻石布局 - 中间行样式 */
+    .function-buttons .middle-row {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      width: 100%;
+    }
+
+    /* 中间行按钮宽度调整 */
+    .function-buttons .middle-row .function-btn {
+      width: 280px;
+    }
+
+    /* 响应式设计 - 钻石布局 */
+    @media (max-width: 768px) {
+      .function-buttons {
+        gap: 1.2rem;
+        padding: 1rem;
+      }
+
+      .function-buttons .middle-row {
+        flex-direction: column;
+        gap: 1.2rem;
+        align-items: center;
+      }
+
+      .function-buttons .middle-row .function-btn {
+        width: 100%;
+        max-width: 300px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .function-buttons {
+        gap: 1rem;
+        padding: 0.5rem;
+      }
+
+      .function-buttons .middle-row {
+        gap: 1rem;
+      }
     }
 
     .function-btn {
@@ -1570,11 +1614,6 @@
         padding: 2rem;
       }
 
-      .function-buttons {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1.5rem;
-      }
-
       h1::before,
       h1::after {
         font-size: 1.5rem;
@@ -1587,12 +1626,6 @@
       #game-container {
         padding: 1.5rem;
         margin: 1rem;
-      }
-
-      .function-buttons {
-        grid-template-columns: 1fr;
-        gap: 1.2rem;
-        padding: 0.5rem;
       }
 
       .suspect-grid {
@@ -1855,15 +1888,19 @@
         <span class="btn-icon">●</span>
         开始探案
       </button>
-      <button class="function-btn" id="interrogationBtn">
-        <span class="btn-icon">◆</span>
-        进行审问
-        <div class="cooldown-timer" id="interrogationCooldown" style="display: none;"></div>
-      </button>
-      <button class="function-btn" id="notesBtn">
-        <span class="btn-icon">▲</span>
-        记录推理
-      </button>
+
+      <div class="middle-row">
+        <button class="function-btn" id="interrogationBtn">
+          <span class="btn-icon">◆</span>
+          进行审问
+          <div class="cooldown-timer" id="interrogationCooldown" style="display: none;"></div>
+        </button>
+        <button class="function-btn" id="notesBtn">
+          <span class="btn-icon">▲</span>
+          记录推理
+        </button>
+      </div>
+
       <button class="function-btn" id="verificationBtn">
         <span class="btn-icon">■</span>
         验证推理
