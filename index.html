@@ -30,9 +30,9 @@
     body {
       font-family: 'Microsoft YaHei', Arial, sans-serif;
       background:
-        linear-gradient(135deg, rgba(45, 45, 45, 0.75) 0%, rgba(25, 25, 25, 0.85) 25%, rgba(15, 15, 15, 0.9) 50%, rgba(10, 10, 10, 0.95) 75%, rgba(5, 5, 5, 0.98) 100%),
-        radial-gradient(circle at 20% 80%, rgba(255, 102, 0, 0.1) 0%, rgba(255, 102, 0, 0.03) 30%, transparent 60%),
-        radial-gradient(circle at 80% 20%, rgba(255, 133, 51, 0.08) 0%, rgba(255, 133, 51, 0.02) 40%, transparent 70%),
+        linear-gradient(135deg, rgba(45, 45, 45, 0.4) 0%, rgba(25, 25, 25, 0.5) 25%, rgba(15, 15, 15, 0.6) 50%, rgba(10, 10, 10, 0.7) 75%, rgba(5, 5, 5, 0.8) 100%),
+        radial-gradient(circle at 20% 80%, rgba(255, 102, 0, 0.06) 0%, rgba(255, 102, 0, 0.02) 30%, transparent 60%),
+        radial-gradient(circle at 80% 20%, rgba(255, 133, 51, 0.05) 0%, rgba(255, 133, 51, 0.01) 40%, transparent 70%),
         url('https://qjxdeeko.manus.space/assets/bgp-BzivCZWb.png');
       background-size: cover, cover, cover, cover;
       background-position: center, center, center, center;
@@ -59,9 +59,9 @@
       width: 100%;
       height: 100%;
       background:
-        radial-gradient(circle at 20% 20%, rgba(255, 102, 0, 0.05) 0%, transparent 40%),
-        radial-gradient(circle at 80% 80%, rgba(255, 133, 51, 0.03) 0%, transparent 40%);
-      opacity: 0.4;
+        radial-gradient(circle at 20% 20%, rgba(255, 102, 0, 0.02) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(255, 133, 51, 0.01) 0%, transparent 40%);
+      opacity: 0.2;
       z-index: -1;
     }
 
@@ -73,19 +73,19 @@
       width: 100%;
       height: 100%;
       background:
-        radial-gradient(circle at 25% 25%, rgba(255, 102, 0, 0.02) 0%, transparent 50%),
-        radial-gradient(circle at 75% 75%, rgba(255, 133, 51, 0.01) 0%, transparent 50%);
+        radial-gradient(circle at 25% 25%, rgba(255, 102, 0, 0.01) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(255, 133, 51, 0.005) 0%, transparent 50%);
       z-index: -1;
       animation: pulseGlow 12s ease-in-out infinite alternate;
     }
 
     @keyframes pulseGlow {
       0% {
-        opacity: 0.2;
+        opacity: 0.1;
       }
 
       100% {
-        opacity: 0.4;
+        opacity: 0.2;
       }
     }
 
@@ -113,7 +113,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.9);
+      background-color: rgba(0, 0, 0, 0.6);
       z-index: 1000;
       display: flex;
       justify-content: center;
@@ -209,8 +209,8 @@
     #game-container {
       display: none;
       background:
-        linear-gradient(145deg, rgba(45, 45, 45, 0.85) 0%, rgba(35, 35, 35, 0.9) 50%, rgba(25, 25, 25, 0.95) 100%),
-        radial-gradient(circle at top right, rgba(255, 102, 0, 0.08) 0%, transparent 50%);
+        linear-gradient(145deg, rgba(45, 45, 45, 0.5) 0%, rgba(35, 35, 35, 0.6) 50%, rgba(25, 25, 25, 0.7) 100%),
+        radial-gradient(circle at top right, rgba(255, 102, 0, 0.04) 0%, transparent 50%);
       padding: 2.5rem;
       border-radius: 25px;
       box-shadow:
@@ -560,7 +560,7 @@
     /* 功能面板样式 */
     .function-panel {
       display: none;
-      background-color: rgba(0, 0, 0, 0.3);
+      background-color: rgba(0, 0, 0, 0.2);
       padding: 2rem;
       border-radius: 15px;
       margin-top: 2rem;
@@ -623,7 +623,7 @@
     /* 探案面板样式 */
     .investigation-scene {
       position: relative;
-      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600"><rect width="800" height="600" fill="%23654321"/><rect x="50" y="400" width="700" height="150" fill="%23432818"/><circle cx="400" cy="300" r="80" fill="%238B4513"/><rect x="350" y="280" width="100" height="40" fill="%23654321"/><circle cx="380" cy="290" r="8" fill="%23FFFFFF"/><rect x="100" y="100" width="120" height="180" fill="%238B4513"/><rect x="150" y="120" width="20" height="140" fill="%23654321"/><rect x="600" y="150" width="80" height="200" fill="%238B4513"/><text x="400" y="50" text-anchor="middle" fill="%23FFFFFF" font-size="24">金叶咖啡馆案发现场</text></svg>') no-repeat center;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600"><rect width="800" height="600" fill="%23654321"/><rect x="50" y="400" width="700" height="150" fill="%23432818"/><circle cx="400" cy="300" r="80" fill="%238B4513"/><rect x="350" y="280" width="100" height="40" fill="%23654321"/><circle cx="380" cy="290" r="8" fill="%23FFFFFF"/><rect x="100" y="100" width="120" height="180" fill="%238B4513"/><rect x="150" y="120" width="20" height="140" fill="%23654321"/><rect x="600" y="150" width="80" height="200" fill="%238B4513"/><text x="400" y="50" text-anchor="middle" fill="%23FFFFFF" font-size="24">蓝调咖啡馆案发现场</text></svg>') no-repeat center;
       background-size: contain;
       min-height: 400px;
       border: 2px solid var(--border-color);
@@ -1100,132 +1100,7 @@
       }
     }
 
-    /* 场景模式切换控制区域 */
-    .scene-controls {
-      position: relative;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      padding: 0.8rem 1rem;
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 12px;
-      border: 1px solid rgba(255, 102, 0, 0.3);
-      display: none;
-    }
 
-    @media (max-width: 768px) {
-      .scene-controls {
-        display: flex;
-      }
-
-      .scene-mode-toggle:disabled::after {
-        display: block;
-      }
-    }
-
-    .scene-mode-toggle {
-      background: linear-gradient(135deg, rgba(255, 102, 0, 0.9) 0%, rgba(255, 133, 51, 1) 100%);
-      color: white;
-      border: none;
-      padding: 0.6rem 1.2rem;
-      border-radius: 25px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      font-weight: bold;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 10px rgba(255, 102, 0, 0.3);
-      letter-spacing: 0.5px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .scene-mode-toggle::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-      transition: left 0.6s ease;
-    }
-
-    .scene-mode-toggle:hover::before {
-      left: 100%;
-    }
-
-    .scene-mode-toggle:hover {
-      transform: translateY(-2px) scale(1.05);
-      box-shadow: 0 4px 15px rgba(255, 102, 0, 0.5);
-      background: linear-gradient(135deg, rgba(255, 133, 51, 1) 0%, rgba(255, 102, 0, 1) 100%);
-    }
-
-    .scene-mode-toggle:active {
-      transform: translateY(0) scale(0.98);
-      transition: all 0.1s ease;
-    }
-
-    .scene-mode-toggle:disabled {
-      background: linear-gradient(135deg, rgba(128, 128, 128, 0.4) 0%, rgba(100, 100, 100, 0.6) 100%) !important;
-      color: rgba(255, 255, 255, 0.5) !important;
-      cursor: not-allowed !important;
-      transform: none !important;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
-      opacity: 0.5 !important;
-      position: relative;
-      border-color: rgba(128, 128, 128, 0.4) !important;
-    }
-
-    .scene-mode-toggle:disabled::before {
-      display: none !important;
-    }
-
-    .scene-mode-toggle:disabled:hover {
-      transform: none !important;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
-      background: linear-gradient(135deg, rgba(128, 128, 128, 0.4) 0%, rgba(100, 100, 100, 0.6) 100%) !important;
-      cursor: not-allowed !important;
-    }
-
-    .scene-mode-toggle:disabled:active {
-      transform: none !important;
-    }
-
-    /* 手机端禁用状态的额外提示 */
-    .scene-mode-toggle:disabled::after {
-      content: '仅限桌面端';
-      position: absolute;
-      bottom: -25px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 0.6rem;
-      color: rgba(255, 255, 255, 0.4);
-      white-space: nowrap;
-      display: none;
-    }
-
-    .scene-size-warning {
-      color: #ff9800;
-      font-size: 0.75rem;
-      text-align: right;
-      opacity: 0.8;
-      line-height: 1.3;
-      max-width: 200px;
-    }
-
-    .scene-size-warning .warning-icon {
-      color: #ffab40;
-      margin-right: 0.3rem;
-    }
-
-    .scene-size-warning small {
-      color: rgba(255, 152, 0, 0.8);
-      font-size: 0.65rem;
-      display: block;
-      margin-top: 0.2rem;
-      line-height: 1.2;
-    }
 
     /* 列表模式样式 */
     .investigation-scene.list-mode {
@@ -1459,7 +1334,7 @@
 
     /* 重新设计审问界面布局 - 彻底解决重叠问题 */
     .interrogation-area {
-      background: rgba(0, 0, 0, 0.3);
+      background: rgba(0, 0, 0, 0.2);
       padding: 1.5rem;
       border-radius: 12px;
       margin-top: 2rem;
@@ -1473,7 +1348,7 @@
 
     .interrogation-area.active {
       border-color: rgba(255, 102, 0, 0.5);
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(0, 0, 0, 0.3);
       box-shadow: 0 0 20px rgba(255, 102, 0, 0.2);
     }
 
@@ -1580,7 +1455,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.95);
+      background-color: rgba(0, 0, 0, 0.7);
       z-index: 1001;
       display: flex;
       justify-content: center;
@@ -1590,7 +1465,7 @@
     }
 
     .rules-container {
-      background: linear-gradient(135deg, rgba(45, 45, 45, 0.98) 0%, rgba(30, 30, 30, 0.99) 50%, rgba(20, 20, 20, 1) 100%);
+      background: linear-gradient(135deg, rgba(45, 45, 45, 0.7) 0%, rgba(30, 30, 30, 0.8) 50%, rgba(20, 20, 20, 0.85) 100%);
       border-radius: 20px;
       max-width: 900px;
       width: 100%;
@@ -1921,7 +1796,7 @@
       padding: 1rem;
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      background: rgba(0, 0, 0, 0.3);
+      background: rgba(0, 0, 0, 0.2);
       color: var(--text-color);
       font-family: inherit;
       font-size: 0.95rem;
@@ -1942,7 +1817,7 @@
 
     /* 验证推理面板样式 */
     .verification-form {
-      background: rgba(0, 0, 0, 0.3);
+      background: rgba(0, 0, 0, 0.2);
       padding: 2rem;
       border-radius: 12px;
       max-width: 600px;
@@ -1966,7 +1841,7 @@
       padding: 1rem;
       border: 2px solid var(--border-color);
       border-radius: 8px;
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(0, 0, 0, 0.1);
       color: var(--text-color);
       font-size: 1.1rem;
       box-sizing: border-box;
@@ -2026,7 +1901,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.9);
+      background-color: rgba(0, 0, 0, 0.6);
       z-index: 1000;
       justify-content: center;
       align-items: center;
@@ -2398,10 +2273,7 @@
         max-width: 50px;
       }
 
-      .scene-mode-toggle {
-        padding: 0.7rem 1.4rem;
-        font-size: 0.9rem;
-      }
+
 
       .ask-btn,
       .verify-btn {
@@ -2553,10 +2425,7 @@
         max-width: 45px;
       }
 
-      .scene-mode-toggle {
-        padding: 0.6rem 1.2rem;
-        font-size: 0.85rem;
-      }
+
 
       .ask-btn,
       .verify-btn {
@@ -2771,10 +2640,7 @@
         max-width: 35px;
       }
 
-      .scene-mode-toggle {
-        padding: 0.5rem 1rem;
-        font-size: 0.8rem;
-      }
+
 
       .ask-btn,
       .verify-btn {
@@ -3206,10 +3072,7 @@
         min-height: 44px;
       }
 
-      .scene-mode-toggle {
-        min-height: 44px;
-        padding: 0.7rem 1.3rem;
-      }
+
 
       .ask-btn,
       .verify-btn {
@@ -3239,8 +3102,7 @@
     (min-resolution: 192dpi) {
 
       .clickable-item,
-      .function-btn,
-      .scene-mode-toggle {
+      .function-btn {
         border-width: 1px;
       }
 
@@ -3329,8 +3191,7 @@
       }
 
       .function-btn:hover,
-      .clickable-item:hover,
-      .scene-mode-toggle:hover {
+      .clickable-item:hover {
         transform: none;
         transition: background-color 0.2s ease;
       }
@@ -3341,7 +3202,6 @@
 
       /* 禁用复杂动画 */
       .function-btn::before,
-      .scene-mode-toggle::before,
       .in-game-rules-btn::before,
       .ask-btn::before {
         display: none;
@@ -3382,7 +3242,7 @@
       padding: 1rem;
       border: 2px solid var(--border-color);
       border-radius: 10px;
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(0, 0, 0, 0.1);
       color: var(--text-color);
       font-size: 1.1rem;
       transition: all 0.3s ease;
@@ -3395,7 +3255,7 @@
       outline: none;
       border-color: var(--primary-color);
       box-shadow: 0 0 15px rgba(255, 102, 0, 0.3), 0 0 25px rgba(255, 102, 0, 0.1);
-      background: rgba(0, 0, 0, 0.3);
+      background: rgba(0, 0, 0, 0.2);
       transform: translateY(-2px);
     }
 
@@ -3467,7 +3327,7 @@
       max-height: 400px;
       overflow-y: auto;
       padding: 1rem;
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(0, 0, 0, 0.1);
       border-radius: 10px;
     }
 
@@ -3717,8 +3577,8 @@
   <div id="startOverlay">
     <h1 id="startTitle">谁杀死了比尔？</h1>
     <div style="max-width: 600px; text-align: center; margin-bottom: 2rem; color: #ddd; line-height: 1.6;">
-      <p style="font-size: 1.2rem; color: #ff6600; margin-bottom: 1rem;">■ 氛围推理探案游戏</p>
-      <p>2024年10月15日晚，著名侦探小说家比尔·哈里森在金叶咖啡馆突然身亡...</p>
+      <p style="font-size: 1.2rem; color: #ff6600; margin-bottom: 1rem;">■ 🕵️氛围推理探案游戏</p>
+      <p>2024年10月15日晚，著名侦探小说家比尔·哈里森在蓝调咖啡馆突然身亡...</p>
       <p>现在，你将化身侦探，通过探案、审问、推理，找出真正的凶手！</p>
     </div>
     <div style="display: flex; flex-direction: column; gap: 1.2rem; justify-content: center; align-items: center;">
@@ -3756,7 +3616,7 @@
           <h3>四大功能</h3>
 
           <div class="function-rule">
-            <h4>开始探案</h4>
+            <h4>现场调查</h4>
             <p>点击案发现场的物品获取法医检测信息，每个物品都可能包含重要线索。</p>
           </div>
 
@@ -3804,7 +3664,7 @@
           <ol>
             <li><strong>死因：</strong>准确说出比尔的死因</li>
             <li><strong>凶手：</strong>正确指出真正的凶手</li>
-            <li><strong>动机：</strong>说明杀人的动机</li>
+            <li><strong>动机：</strong>说明凶手的动机</li>
           </ol>
         </div>
 
@@ -3861,7 +3721,7 @@
     <div class="function-buttons">
       <button class="function-btn" id="investigationBtn">
         <span class="btn-icon">●</span>
-        开始探案
+        现场调查
       </button>
 
       <div class="middle-row">
@@ -3889,18 +3749,7 @@
         <button class="close-panel">&times;</button>
       </div>
 
-      <!-- 场景控制区域 -->
-      <div class="scene-controls">
-        <button class="scene-mode-toggle" onclick="toggleSceneMode()">
-          <span id="toggleButtonText">列表模式</span>
-        </button>
-        <div class="scene-size-warning" id="sceneSizeWarning" style="display: none;">
-          <span class="warning-icon">⚠</span>
-          <span>屏幕太小，建议使用列表模式</span>
-        </div>
-      </div>
-
-      <div class="investigation-scene">
+      <div class="investigation-scene list-mode">
         <div class="clickable-item item-coffee" data-item="coffee" title="咖啡杯">C</div>
         <div class="clickable-item item-victim" data-item="victim" title="比尔">B</div>
         <div class="clickable-item item-table" data-item="table" title="桌子">T</div>
@@ -4048,45 +3897,6 @@
   </div>
 
   <script>
-    // 场景模式切换功能
-    function toggleSceneMode() {
-      const scene = document.querySelector('.investigation-scene');
-      const buttonText = document.getElementById('toggleButtonText');
-      const button = document.querySelector('.scene-mode-toggle');
-
-      // 如果按钮被禁用，显示提示信息并返回
-      if (button.disabled) {
-        if (window.innerWidth <= 768) {
-          showTemporaryMessage('手机端仅支持列表模式\n为获得最佳体验', 'info');
-        }
-        return;
-      }
-
-      let newMode;
-      if (scene.classList.contains('list-mode')) {
-        scene.classList.remove('list-mode');
-        buttonText.textContent = '列表模式';
-        button.classList.remove('scene-mode-active');
-        newMode = 'scene';
-        showTemporaryMessage('已切换到场景模式', 'success');
-      } else {
-        scene.classList.add('list-mode');
-        buttonText.textContent = '场景模式';
-        button.classList.add('scene-mode-active');
-        newMode = 'list';
-        showTemporaryMessage('已切换到列表模式', 'success');
-      }
-
-      // 保存用户偏好（仅在非手机端保存）
-      if (window.innerWidth > 768) {
-        localStorage.setItem('sceneMode', newMode);
-      }
-
-      // 触发一个自定义事件，通知模式已改变
-      window.dispatchEvent(new CustomEvent('sceneModeChanged', {
-        detail: { mode: newMode, screenWidth: window.innerWidth }
-      }));
-    }
 
     // 显示临时消息
     function showTemporaryMessage(message, type = 'info') {
@@ -4145,65 +3955,7 @@
       }, displayTime);
     }
 
-    // 更新场景模式状态
-    function updateSceneMode() {
-      const scene = document.querySelector('.investigation-scene');
-      const buttonText = document.getElementById('toggleButtonText');
-      const button = document.querySelector('.scene-mode-toggle');
-      const warning = document.getElementById('sceneSizeWarning');
-      const screenWidth = window.innerWidth;
 
-      // 获取用户偏好（如果有的话）
-      const userPreference = localStorage.getItem('sceneMode');
-
-      if (screenWidth <= 768) {
-        // 手机端：强制禁用场景模式，只能使用列表模式
-        button.disabled = true;
-        warning.style.display = 'block';
-        warning.innerHTML = '<span class="warning-icon">📱</span><span>手机端仅支持列表模式<br><small>为获得最佳体验</small></span>';
-
-        // 强制设置为列表模式
-        if (!scene.classList.contains('list-mode')) {
-          scene.classList.add('list-mode');
-          buttonText.textContent = '场景模式';
-          button.classList.add('scene-mode-active');
-        }
-
-        // 显示禁用状态的按钮样式
-        button.style.opacity = '0.5';
-        button.style.cursor = 'not-allowed';
-        button.title = '手机端不支持场景模式';
-
-      } else {
-        // 桌面端和平板端：可以自由切换
-        button.disabled = false;
-        warning.style.display = 'none';
-        button.style.opacity = '1';
-        button.style.cursor = 'pointer';
-        button.title = '切换显示模式';
-
-        // 只在初始加载时设置默认模式
-        if (!userPreference) {
-          // 默认使用场景模式
-          if (scene.classList.contains('list-mode')) {
-            scene.classList.remove('list-mode');
-            buttonText.textContent = '列表模式';
-            button.classList.remove('scene-mode-active');
-          }
-        }
-      }
-
-      // 确保按钮文本与当前状态一致（仅在非禁用状态下）
-      if (!button.disabled) {
-        if (scene.classList.contains('list-mode')) {
-          buttonText.textContent = '场景模式';
-          button.classList.add('scene-mode-active');
-        } else {
-          buttonText.textContent = '列表模式';
-          button.classList.remove('scene-mode-active');
-        }
-      }
-    }
 
     // 设备检测和优化函数
     function detectDeviceAndOptimize() {
@@ -4229,23 +3981,14 @@
         document.body.classList.add('low-performance');
       }
 
-      // 显示设备信息和场景模式状态
-      const sceneMode = screenWidth <= 768 ? '仅列表模式' : '可自由切换';
-      console.log(`设备适配: 宽度${screenWidth}px, 移动设备:${isMobile}, 场景模式:${sceneMode}`);
+      // 显示设备信息
+      console.log(`设备适配: 宽度${screenWidth}px, 移动设备:${isMobile}, 现场调查:列表模式`);
     }
 
     // 页面加载时初始化
     document.addEventListener('DOMContentLoaded', function () {
       // 设备检测和优化
       detectDeviceAndOptimize();
-
-      // 清除手机端的场景模式偏好设置
-      if (window.innerWidth <= 768) {
-        localStorage.removeItem('sceneMode');
-      }
-
-      // 初始化场景模式
-      updateSceneMode();
 
       // 添加触控优化
       if ('ontouchstart' in window) {
@@ -4277,13 +4020,7 @@
           }
         }
         
-        .scene-mode-toggle.scene-mode-active {
-          background: linear-gradient(135deg, rgba(76, 175, 80, 0.9) 0%, rgba(104, 159, 56, 1) 100%) !important;
-        }
-        
-        .scene-mode-toggle.scene-mode-active:hover {
-          background: linear-gradient(135deg, rgba(104, 159, 56, 1) 0%, rgba(76, 175, 80, 1) 100%) !important;
-        }
+
         
         /* 触控设备优化 */
         .touch-device .function-btn:hover {
@@ -4327,12 +4064,7 @@
       console.log('🎮 游戏界面已完成全设备适配');
     });
 
-    // 监听屏幕尺寸变化
-    let resizeTimeout;
-    window.addEventListener('resize', function () {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(updateSceneMode, 100);
-    });
+
   </script>
   <script src="script.js"></script>
 </body>

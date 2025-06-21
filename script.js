@@ -10,7 +10,7 @@ const gameData = {
     // 案件基本信息
     caseInfo: {
         victim: "比尔·哈里森",
-        location: "金叶咖啡馆",
+        location: "蓝调咖啡馆",
         timeOfDeath: "晚上8:30",
         causeOfDeath: "氰化物中毒",
         murderer: "汤姆·威尔逊"
@@ -107,7 +107,7 @@ const gameData = {
             suspicionLevel: 3, // 1-10，初始可疑程度
             questionsAsked: [], // 已被问过的问题
             keyInfoRevealed: [], // 已透露的关键信息
-            aiPrompt: `你是艾米丽·陈，35岁，金叶咖啡馆的老板。你是一个温和、关心他人但有些敏感的女性。
+            aiPrompt: `你是艾米丽·陈，35岁，蓝调咖啡馆的老板。你是一个温和、关心他人但有些敏感的女性。
 
 角色背景：
 - 经营咖啡馆多年，比尔是你的常客，你们关系不错
@@ -1674,7 +1674,7 @@ class GameRulesManager {
         welcomeToast.className = 'welcome-toast';
         welcomeToast.innerHTML = `
             <div style="text-align: center; padding: 1rem;">
-                <h3 style="color: var(--primary-color); margin-bottom: 0.5rem;">🕵️ 欢迎来到金叶咖啡馆</h3>
+                <h3 style="color: var(--primary-color); margin-bottom: 0.5rem;">🕵️ 欢迎来到蓝调咖啡馆</h3>
                 <p style="margin: 0; color: #ddd;">使用四大功能开始你的推理之旅！</p>
             </div>
         `;
