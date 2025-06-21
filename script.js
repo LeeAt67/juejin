@@ -694,34 +694,16 @@ class InvestigationSystem {
                 this.examineItem(itemKey);
             });
         });
-
-        // 标记重要物品
-        this.markImportantItems();
-    }
-
-    markImportantItems() {
-        const importantItems = ['coffee', 'victim', 'manuscript', 'phone', 'notebook'];
-        importantItems.forEach(itemKey => {
-            const item = document.querySelector(`[data-item="${itemKey}"]`);
-            if (item) {
-                item.classList.add('important');
-            }
-        });
     }
 
     examineItem(itemKey) {
         const item = gameData.sceneItems[itemKey];
         if (!item) return;
 
-        // 标记为已发现
-        const clickedItem = document.querySelector(`[data-item="${itemKey}"]`);
-        clickedItem.classList.add('discovered');
-        clickedItem.classList.remove('important');
-
         // 显示线索信息
         const clueDisplay = document.getElementById('clueDisplay');
         clueDisplay.innerHTML = `
-            <h4>${item.name}</h4>
+            <h4>🔍 ${item.name}</h4>
             <p>${item.description}</p>
             <small>重要性: ${item.importance}</small>
         `;
@@ -730,40 +712,30 @@ class InvestigationSystem {
         // 添加到已发现线索
         gameState.discoveredClues.add(itemKey);
 
+        // 添加视觉反馈
+        const clickedItem = document.querySelector(`[data-item="${itemKey}"]`);
+        clickedItem.style.background = 'rgba(255, 102, 0, 0.5)';
+        clickedItem.style.border = '2px solid #ff6600';
+
         // 播放发现音效（如果需要）
         this.playDiscoverySound();
-
-        // 添加发现动画
-        this.animateDiscovery(clickedItem);
-    }
-
-    animateDiscovery(element) {
-        element.style.animation = 'none';
-        element.offsetHeight; // 触发重排
-        element.style.animation = 'discoveryAnimation 0.6s ease-out';
     }
 
     playDiscoverySound() {
         // 简单的音效反馈
-        try {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
 
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
 
-            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-            oscillator.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.1);
-            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
 
-            oscillator.start();
-            oscillator.stop(audioContext.currentTime + 0.3);
-        } catch (e) {
-            // 音频上下文创建失败时静默处理
-            console.log('音频播放不可用');
-        }
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 0.5);
     }
 }
 

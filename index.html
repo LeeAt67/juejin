@@ -611,229 +611,53 @@
     /* 探案面板样式 */
     .investigation-scene {
       position: relative;
-      background:
-        linear-gradient(135deg,
-          rgba(101, 67, 33, 0.9) 0%,
-          rgba(139, 89, 42, 0.85) 25%,
-          rgba(160, 110, 65, 0.8) 50%,
-          rgba(139, 89, 42, 0.85) 75%,
-          rgba(101, 67, 33, 0.9) 100%),
-        radial-gradient(circle at 40% 40%, rgba(255, 204, 102, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255, 153, 51, 0.2) 0%, transparent 40%);
-      min-height: 500px;
-      border: 3px solid rgba(255, 102, 0, 0.6);
-      border-radius: 20px;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600"><rect width="800" height="600" fill="%23654321"/><rect x="50" y="400" width="700" height="150" fill="%23432818"/><circle cx="400" cy="300" r="80" fill="%238B4513"/><rect x="350" y="280" width="100" height="40" fill="%23654321"/><circle cx="380" cy="290" r="8" fill="%23FFFFFF"/><rect x="100" y="100" width="120" height="180" fill="%238B4513"/><rect x="150" y="120" width="20" height="140" fill="%23654321"/><rect x="600" y="150" width="80" height="200" fill="%238B4513"/><text x="400" y="50" text-anchor="middle" fill="%23FFFFFF" font-size="24">金叶咖啡馆案发现场</text></svg>') no-repeat center;
+      background-size: contain;
+      min-height: 400px;
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
       margin-bottom: 2rem;
-      box-shadow:
-        0 15px 35px rgba(0, 0, 0, 0.5),
-        0 5px 15px rgba(255, 102, 0, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      overflow: hidden;
-      /* GPU加速 */
-      will-change: auto;
-      transform: translateZ(0);
-      /* 兼容性 */
-      -webkit-backdrop-filter: blur(10px);
+      aspect-ratio: 4/3;
     }
 
-    .investigation-scene::before {
-      content: '金叶咖啡馆案发现场';
-      position: absolute;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: rgba(255, 255, 255, 0.9);
-      font-size: 1.5rem;
-      font-weight: bold;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-      z-index: 10;
-      background: rgba(0, 0, 0, 0.3);
-      padding: 0.8rem 2rem;
-      border-radius: 20px;
-      border: 1px solid rgba(255, 102, 0, 0.4);
-    }
-
-    .investigation-scene::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 120px;
-      background: linear-gradient(to top,
-          rgba(67, 40, 24, 0.8) 0%,
-          rgba(67, 40, 24, 0.4) 50%,
-          transparent 100%);
-      z-index: 1;
-    }
-
-    /* 区域划分视觉提示 */
-    .investigation-scene .scene-zones {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    .investigation-scene .scene-zones::before {
-      content: '';
-      position: absolute;
-      top: 30%;
-      left: 30%;
-      width: 40%;
-      height: 35%;
-      border: 2px dashed rgba(255, 102, 0, 0.3);
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255, 102, 0, 0.05) 0%, transparent 70%);
-    }
-
-    /* 确保物品间距 */
     .clickable-item {
       position: absolute;
       cursor: pointer;
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: all 0.3s ease;
       border: 2px solid transparent;
-      border-radius: 12px;
-      padding: 0.8rem;
-      background:
-        linear-gradient(145deg,
-          rgba(255, 102, 0, 0.15) 0%,
-          rgba(255, 133, 51, 0.25) 100%);
-      backdrop-filter: blur(8px);
-      font-weight: bold;
-      font-size: 1.1rem;
-      color: white;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-      box-shadow:
-        0 4px 15px rgba(0, 0, 0, 0.3),
-        0 2px 8px rgba(255, 102, 0, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
-      z-index: 5;
-      user-select: none;
+      border-radius: 8px;
+      padding: 0.4rem;
+      background: rgba(255, 102, 0, 0.1);
       display: flex;
       align-items: center;
       justify-content: center;
-      /* 确保最小间距 */
-      min-width: 25px;
-      min-height: 15px;
-      /* GPU加速 */
-      will-change: transform, box-shadow;
-      transform: translateZ(0);
-      /* 兼容性 */
-      -webkit-backdrop-filter: blur(8px);
-      -webkit-user-select: none;
-    }
-
-    .clickable-item::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(45deg,
-          transparent 30%,
-          rgba(255, 255, 255, 0.1) 50%,
-          transparent 70%);
-      border-radius: inherit;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .clickable-item:hover::before {
-      opacity: 1;
+      font-weight: bold;
+      color: var(--primary-color);
+      font-size: 1rem;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
+      box-shadow: 0 2px 10px rgba(255, 102, 0, 0.2);
     }
 
     .clickable-item:hover {
       border-color: var(--primary-color);
-      background:
-        linear-gradient(145deg,
-          rgba(255, 102, 0, 0.4) 0%,
-          rgba(255, 133, 51, 0.5) 100%);
-      transform: translateY(-8px) scale(1.15);
-      box-shadow:
-        0 12px 30px rgba(255, 102, 0, 0.4),
-        0 6px 20px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-      z-index: 10;
+      background: rgba(255, 102, 0, 0.3);
+      transform: scale(1.1);
+      box-shadow: 0 4px 15px rgba(255, 102, 0, 0.4);
+      color: white;
     }
 
-    .clickable-item:active {
-      transform: translateY(-4px) scale(1.05);
-      transition: all 0.1s ease;
-    }
-
-    /* 物品发现状态 */
-    .clickable-item.discovered {
-      background:
-        linear-gradient(145deg,
-          rgba(76, 175, 80, 0.3) 0%,
-          rgba(139, 195, 74, 0.4) 100%);
-      border-color: rgba(76, 175, 80, 0.6);
-      box-shadow:
-        0 4px 15px rgba(76, 175, 80, 0.3),
-        0 2px 8px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    }
-
-    /* 重要物品样式 */
-    .clickable-item.important {
-      animation: importantPulse 2s ease-in-out infinite;
-    }
-
-    @keyframes importantPulse {
-
-      0%,
-      100% {
-        box-shadow:
-          0 4px 15px rgba(255, 102, 0, 0.3),
-          0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      50% {
-        box-shadow:
-          0 6px 20px rgba(255, 102, 0, 0.5),
-          0 3px 12px rgba(0, 0, 0, 0.4);
-      }
-    }
-
-    /* 发现物品动画 */
-    @keyframes discoveryAnimation {
-      0% {
-        transform: translateY(-8px) scale(1.15);
-      }
-
-      25% {
-        transform: translateY(-12px) scale(1.25) rotate(5deg);
-      }
-
-      50% {
-        transform: translateY(-16px) scale(1.3) rotate(-5deg);
-      }
-
-      75% {
-        transform: translateY(-12px) scale(1.25) rotate(2deg);
-      }
-
-      100% {
-        transform: translateY(-8px) scale(1.15) rotate(0deg);
-      }
-    }
-
+    /* 默认桌面端物品位置 */
     .item-coffee {
-      top: 46%;
-      left: 65%;
-      width: 40px;
-      height: 40px;
+      top: 45%;
+      left: 45%;
+      width: 60px;
+      height: 60px;
     }
 
     .item-victim {
       top: 35%;
-      left: 25%;
+      left: 35%;
       width: 80px;
       height: 100px;
     }
@@ -846,160 +670,583 @@
     }
 
     .item-chair {
-      top: 60%;
-      left: 20%;
+      top: 55%;
+      left: 30%;
       width: 60px;
       height: 60px;
     }
 
     .item-manuscript {
-      top: 36%;
-      left: 54%;
+      top: 42%;
+      left: 52%;
       width: 50px;
       height: 30px;
     }
 
-    .item-pen {
-      top: 41%;
-      left: 58%;
-      width: 25px;
-      height: 25px;
-    }
-
-    .item-glasses {
-      top: 26%;
-      left: 48%;
-      width: 35px;
-      height: 15px;
-    }
-
     .item-phone {
-      top: 50%;
-      left: 62%;
+      top: 48%;
+      left: 58%;
       width: 30px;
       height: 50px;
     }
 
-    .item-ashtray {
-      top: 52%;
-      left: 22%;
-      width: 35px;
-      height: 35px;
-    }
-
     .item-notebook {
-      top: 18%;
-      left: 12%;
+      top: 25%;
+      left: 20%;
       width: 60px;
       height: 40px;
     }
 
+    .item-pen {
+      top: 44%;
+      left: 48%;
+      width: 25px;
+      height: 25px;
+    }
+
     .item-wallet {
-      top: 72%;
-      left: 18%;
+      top: 65%;
+      left: 25%;
       width: 40px;
       height: 25px;
     }
 
+    .item-glasses {
+      top: 38%;
+      left: 42%;
+      width: 35px;
+      height: 15px;
+    }
+
     .item-window {
-      top: 6%;
-      left: 72%;
+      top: 5%;
+      left: 75%;
       width: 80px;
       height: 60px;
     }
 
     .item-door {
-      top: 28%;
-      right: 6%;
+      top: 20%;
+      right: 5%;
       width: 50px;
       height: 100px;
     }
 
     .item-floor {
-      bottom: 8%;
-      left: 58%;
+      bottom: 5%;
+      left: 60%;
       width: 80px;
       height: 40px;
     }
 
+    .item-ashtray {
+      top: 50%;
+      left: 25%;
+      width: 35px;
+      height: 35px;
+    }
+
     .item-lamp {
-      top: 12%;
-      left: 67%;
+      top: 15%;
+      left: 70%;
       width: 40px;
       height: 60px;
     }
 
-    .clue-info {
-      background:
-        linear-gradient(135deg,
-          rgba(0, 0, 0, 0.85) 0%,
-          rgba(20, 20, 20, 0.9) 50%,
-          rgba(0, 0, 0, 0.85) 100%),
-        radial-gradient(circle at top left, rgba(255, 102, 0, 0.1) 0%, transparent 70%);
-      color: var(--text-color);
-      padding: 2rem;
-      border-radius: 15px;
-      margin-top: 2rem;
-      border: 2px solid rgba(255, 102, 0, 0.4);
-      backdrop-filter: blur(15px);
-      box-shadow:
-        0 10px 30px rgba(0, 0, 0, 0.5),
-        0 4px 15px rgba(255, 102, 0, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      position: relative;
-      overflow: hidden;
-      /* GPU加速 */
-      will-change: auto;
-      transform: translateZ(0);
-      /* 兼容性 */
-      -webkit-backdrop-filter: blur(15px);
+    /* 平板端适配 */
+    @media (max-width: 1024px) {
+      .investigation-scene {
+        min-height: 350px;
+      }
+
+      .clickable-item {
+        padding: 0.3rem;
+        font-size: 0.9rem;
+      }
+
+      .item-coffee {
+        width: 50px;
+        height: 50px;
+      }
+
+      .item-victim {
+        width: 70px;
+        height: 85px;
+      }
+
+      .item-table {
+        width: 100px;
+        height: 65px;
+      }
+
+      .item-chair {
+        width: 50px;
+        height: 50px;
+      }
+
+      .item-manuscript {
+        width: 45px;
+        height: 25px;
+      }
+
+      .item-phone {
+        width: 25px;
+        height: 40px;
+      }
+
+      .item-notebook {
+        width: 50px;
+        height: 35px;
+      }
+
+      .item-pen {
+        width: 20px;
+        height: 20px;
+      }
+
+      .item-wallet {
+        width: 35px;
+        height: 20px;
+      }
+
+      .item-glasses {
+        width: 30px;
+        height: 12px;
+      }
+
+      .item-window {
+        width: 65px;
+        height: 50px;
+      }
+
+      .item-door {
+        width: 40px;
+        height: 80px;
+      }
+
+      .item-floor {
+        width: 65px;
+        height: 35px;
+      }
+
+      .item-ashtray,
+      .item-lamp {
+        width: 30px;
+        height: 30px;
+      }
     }
 
-    .clue-info::before {
+    /* 手机端适配 */
+    @media (max-width: 768px) {
+      .investigation-scene {
+        min-height: 300px;
+        background-size: cover;
+      }
+
+      .clickable-item {
+        padding: 0.2rem;
+        font-size: 0.8rem;
+        border-radius: 6px;
+      }
+
+      /* 重新调整手机端物品位置，避免重叠 */
+      .item-coffee {
+        top: 48%;
+        left: 48%;
+        width: 40px;
+        height: 40px;
+      }
+
+      .item-victim {
+        top: 38%;
+        left: 32%;
+        width: 55px;
+        height: 65px;
+      }
+
+      .item-table {
+        top: 42%;
+        left: 38%;
+        width: 80px;
+        height: 50px;
+      }
+
+      .item-chair {
+        top: 58%;
+        left: 28%;
+        width: 40px;
+        height: 40px;
+      }
+
+      .item-manuscript {
+        top: 45%;
+        left: 55%;
+        width: 35px;
+        height: 20px;
+      }
+
+      .item-phone {
+        top: 52%;
+        left: 62%;
+        width: 20px;
+        height: 30px;
+      }
+
+      .item-notebook {
+        top: 28%;
+        left: 18%;
+        width: 40px;
+        height: 25px;
+      }
+
+      .item-pen {
+        top: 47%;
+        left: 50%;
+        width: 15px;
+        height: 15px;
+      }
+
+      .item-wallet {
+        top: 68%;
+        left: 22%;
+        width: 30px;
+        height: 18px;
+      }
+
+      .item-glasses {
+        top: 40%;
+        left: 44%;
+        width: 25px;
+        height: 10px;
+      }
+
+      .item-window {
+        top: 8%;
+        left: 72%;
+        width: 50px;
+        height: 35px;
+      }
+
+      .item-door {
+        top: 22%;
+        right: 8%;
+        width: 30px;
+        height: 60px;
+      }
+
+      .item-floor {
+        bottom: 8%;
+        left: 58%;
+        width: 50px;
+        height: 25px;
+      }
+
+      .item-ashtray {
+        top: 53%;
+        left: 22%;
+        width: 25px;
+        height: 25px;
+      }
+
+      .item-lamp {
+        top: 18%;
+        left: 65%;
+        width: 30px;
+        height: 40px;
+      }
+    }
+
+    /* 小屏手机适配 */
+    @media (max-width: 480px) {
+      .investigation-scene {
+        min-height: 250px;
+      }
+
+      .clickable-item {
+        padding: 0.15rem;
+        font-size: 0.7rem;
+        min-width: 30px;
+        min-height: 25px;
+      }
+
+      /* 进一步优化小屏幕物品位置 */
+      .item-coffee {
+        top: 50%;
+        left: 50%;
+        width: 35px;
+        height: 35px;
+      }
+
+      .item-victim {
+        top: 40%;
+        left: 30%;
+        width: 45px;
+        height: 55px;
+      }
+
+      .item-table {
+        top: 44%;
+        left: 36%;
+        width: 65px;
+        height: 40px;
+      }
+
+      .item-chair {
+        top: 60%;
+        left: 25%;
+        width: 35px;
+        height: 35px;
+      }
+
+      .item-manuscript {
+        top: 47%;
+        left: 58%;
+        width: 30px;
+        height: 18px;
+      }
+
+      .item-phone {
+        top: 55%;
+        left: 65%;
+        width: 18px;
+        height: 25px;
+      }
+
+      .item-notebook {
+        top: 30%;
+        left: 15%;
+        width: 35px;
+        height: 22px;
+      }
+
+      .item-pen {
+        top: 49%;
+        left: 52%;
+        width: 12px;
+        height: 12px;
+      }
+
+      .item-wallet {
+        top: 70%;
+        left: 20%;
+        width: 25px;
+        height: 15px;
+      }
+
+      .item-glasses {
+        top: 42%;
+        left: 46%;
+        width: 20px;
+        height: 8px;
+      }
+
+      .item-window {
+        top: 10%;
+        left: 68%;
+        width: 40px;
+        height: 28px;
+      }
+
+      .item-door {
+        top: 25%;
+        right: 10%;
+        width: 25px;
+        height: 45px;
+      }
+
+      .item-floor {
+        bottom: 10%;
+        left: 55%;
+        width: 40px;
+        height: 20px;
+      }
+
+      .item-ashtray {
+        top: 56%;
+        left: 18%;
+        width: 22px;
+        height: 22px;
+      }
+
+      .item-lamp {
+        top: 20%;
+        left: 62%;
+        width: 25px;
+        height: 32px;
+      }
+    }
+
+    /* 横屏模式适配 */
+    @media (max-height: 600px) and (orientation: landscape) {
+      .investigation-scene {
+        min-height: 200px;
+      }
+
+      .clickable-item {
+        font-size: 0.6rem;
+        padding: 0.1rem;
+      }
+    }
+
+    /* 场景模式切换控制区域 */
+    .scene-controls {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding: 0.8rem 1rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 102, 0, 0.3);
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .scene-controls {
+        display: flex;
+      }
+    }
+
+    .scene-mode-toggle {
+      background: linear-gradient(135deg, rgba(255, 102, 0, 0.9) 0%, rgba(255, 133, 51, 1) 100%);
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(255, 102, 0, 0.3);
+      letter-spacing: 0.5px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .scene-mode-toggle::before {
       content: '';
       position: absolute;
       top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: linear-gradient(90deg,
-          var(--primary-color) 0%,
-          var(--secondary-color) 50%,
-          var(--hover-color) 100%);
-      z-index: 1;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.6s ease;
     }
 
-    .clue-info h4 {
-      color: var(--primary-color);
-      font-size: 1.4rem;
-      margin-bottom: 1rem;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    .scene-mode-toggle:hover::before {
+      left: 100%;
+    }
+
+    .scene-mode-toggle:hover {
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 4px 15px rgba(255, 102, 0, 0.5);
+      background: linear-gradient(135deg, rgba(255, 133, 51, 1) 0%, rgba(255, 102, 0, 1) 100%);
+    }
+
+    .scene-mode-toggle:active {
+      transform: translateY(0) scale(0.98);
+      transition: all 0.1s ease;
+    }
+
+    .scene-mode-toggle:disabled {
+      background: linear-gradient(135deg, rgba(128, 128, 128, 0.4) 0%, rgba(100, 100, 100, 0.6) 100%) !important;
+      color: rgba(255, 255, 255, 0.5) !important;
+      cursor: not-allowed !important;
+      transform: none !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+      opacity: 0.6;
+      position: relative;
+    }
+
+    .scene-mode-toggle:disabled::before {
+      display: none !important;
+    }
+
+    .scene-mode-toggle:disabled:hover {
+      transform: none !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+      background: linear-gradient(135deg, rgba(128, 128, 128, 0.4) 0%, rgba(100, 100, 100, 0.6) 100%) !important;
+    }
+
+    .scene-mode-toggle:disabled:active {
+      transform: none !important;
+    }
+
+    .scene-size-warning {
+      color: #ff9800;
+      font-size: 0.75rem;
+      text-align: right;
+      opacity: 0.8;
+      line-height: 1.3;
+      max-width: 200px;
+    }
+
+    .scene-size-warning .warning-icon {
+      color: #ffab40;
+      margin-right: 0.3rem;
+    }
+
+    .scene-size-warning small {
+      color: rgba(255, 152, 0, 0.8);
+      font-size: 0.65rem;
+      display: block;
+      margin-top: 0.2rem;
+      line-height: 1.2;
+    }
+
+    /* 列表模式样式 */
+    .investigation-scene.list-mode {
+      background: none;
+      min-height: auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    .investigation-scene.list-mode .clickable-item {
+      position: static;
+      width: auto !important;
+      height: 60px !important;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 0.8rem;
+      justify-content: center;
+      gap: 0.5rem;
+      border: 2px solid rgba(255, 102, 0, 0.3);
+      background: rgba(255, 102, 0, 0.1);
+      border-radius: 10px;
+      font-size: 0.8rem;
+      text-align: center;
     }
 
-    .clue-info h4::before {
-      content: '🔍';
-      font-size: 1.2rem;
+    .investigation-scene.list-mode .clickable-item::before {
+      content: attr(title);
+      font-size: 0.7rem;
+      color: #ccc;
     }
 
-    .clue-info p {
-      line-height: 1.8;
-      margin-bottom: 1rem;
-      color: #ddd;
-      text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+    @media (max-width: 480px) {
+      .investigation-scene.list-mode {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.8rem;
+      }
+
+      .investigation-scene.list-mode .clickable-item {
+        height: 50px !important;
+        font-size: 0.7rem;
+      }
     }
 
-    .clue-info small {
-      display: inline-block;
-      background: rgba(255, 102, 0, 0.2);
-      color: var(--primary-color);
-      padding: 0.4rem 1rem;
-      border-radius: 20px;
-      font-weight: bold;
-      border: 1px solid rgba(255, 102, 0, 0.3);
-      margin-top: 0.5rem;
+    .clue-info {
+      background: rgba(0, 0, 0, 0.8);
+      color: var(--text-color);
+      padding: 1rem;
+      border-radius: 10px;
+      margin-top: 1rem;
+      border-left: 4px solid var(--primary-color);
     }
 
     /* 审问面板样式 */
@@ -1951,35 +2198,6 @@
         margin: 1rem;
       }
 
-      .investigation-scene {
-        min-height: 400px;
-        margin-bottom: 1.5rem;
-      }
-
-      .investigation-scene::before {
-        font-size: 1.2rem;
-        padding: 0.6rem 1.5rem;
-      }
-
-      .clickable-item {
-        padding: 0.6rem;
-        font-size: 1rem;
-        border-radius: 10px;
-      }
-
-      .clickable-item:hover {
-        transform: translateY(-4px) scale(1.1);
-      }
-
-      .clue-info {
-        padding: 1.5rem;
-        margin-top: 1.5rem;
-      }
-
-      .clue-info h4 {
-        font-size: 1.2rem;
-      }
-
       .suspect-grid {
         grid-template-columns: repeat(2, 1fr);
       }
@@ -2040,25 +2258,6 @@
       #game-container {
         padding: 1rem;
         margin: 0.5rem;
-      }
-
-      .investigation-scene {
-        min-height: 350px;
-      }
-
-      .investigation-scene::before {
-        font-size: 1rem;
-        padding: 0.5rem 1rem;
-      }
-
-      .clickable-item {
-        padding: 0.4rem;
-        font-size: 0.9rem;
-        border-radius: 8px;
-      }
-
-      .clue-info {
-        padding: 1rem;
       }
 
       .suspect-grid {
@@ -2284,8 +2483,19 @@
         <h3 class="panel-title">案发现场调查</h3>
         <button class="close-panel">&times;</button>
       </div>
+
+      <!-- 场景控制区域 -->
+      <div class="scene-controls">
+        <button class="scene-mode-toggle" onclick="toggleSceneMode()">
+          <span id="toggleButtonText">列表模式</span>
+        </button>
+        <div class="scene-size-warning" id="sceneSizeWarning" style="display: none;">
+          <span class="warning-icon">⚠</span>
+          <span>屏幕太小，建议使用列表模式</span>
+        </div>
+      </div>
+
       <div class="investigation-scene">
-        <div class="scene-zones"></div>
         <div class="clickable-item item-coffee" data-item="coffee" title="咖啡杯">C</div>
         <div class="clickable-item item-victim" data-item="victim" title="比尔">B</div>
         <div class="clickable-item item-table" data-item="table" title="桌子">T</div>
@@ -2431,6 +2641,165 @@
     <span id="aiStatusText">AI就绪</span>
   </div>
 
+  <script>
+    // 场景模式切换功能
+    function toggleSceneMode() {
+      const scene = document.querySelector('.investigation-scene');
+      const buttonText = document.getElementById('toggleButtonText');
+      const button = document.querySelector('.scene-mode-toggle');
+
+      // 如果按钮被禁用，不执行任何操作
+      if (button.disabled) {
+        return;
+      }
+
+      if (scene.classList.contains('list-mode')) {
+        scene.classList.remove('list-mode');
+        buttonText.textContent = '列表模式';
+        button.classList.remove('scene-mode-active');
+      } else {
+        scene.classList.add('list-mode');
+        buttonText.textContent = '场景模式';
+        button.classList.add('scene-mode-active');
+      }
+
+      // 切换后重新检查状态（防止在极小屏幕上意外启用场景模式）
+      setTimeout(updateSceneMode, 50);
+    }
+
+    // 显示临时消息
+    function showTemporaryMessage(message, type = 'info') {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `temporary-message ${type}`;
+      messageDiv.innerHTML = `
+        <span class="message-icon">${type === 'warning' ? '⚠' : 'ℹ'}</span>
+        <span>${message}</span>
+      `;
+
+      // 添加样式
+      messageDiv.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: ${type === 'warning' ? 'rgba(255, 152, 0, 0.95)' : 'rgba(76, 175, 80, 0.95)'};
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 25px;
+        font-size: 1rem;
+        font-weight: bold;
+        z-index: 10000;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+        animation: messageSlideIn 0.3s ease-out;
+      `;
+
+      document.body.appendChild(messageDiv);
+
+      // 3秒后自动消失
+      setTimeout(() => {
+        messageDiv.style.animation = 'messageSlideOut 0.3s ease-in forwards';
+        setTimeout(() => {
+          document.body.removeChild(messageDiv);
+        }, 300);
+      }, 3000);
+    }
+
+    // 更新场景模式状态
+    function updateSceneMode() {
+      const scene = document.querySelector('.investigation-scene');
+      const buttonText = document.getElementById('toggleButtonText');
+      const button = document.querySelector('.scene-mode-toggle');
+      const warning = document.getElementById('sceneSizeWarning');
+      const screenWidth = window.innerWidth;
+
+      if (screenWidth <= 400) {
+        // 极小屏幕：强制列表模式，完全禁用场景模式
+        if (!scene.classList.contains('list-mode')) {
+          scene.classList.add('list-mode');
+          buttonText.textContent = '场景模式';
+          button.classList.add('scene-mode-active');
+        }
+        // 如果当前是列表模式，禁用按钮防止切换到场景模式
+        if (scene.classList.contains('list-mode')) {
+          button.disabled = true;
+          buttonText.textContent = '场景不可用';
+        } else {
+          button.disabled = false; // 允许从场景模式切换回列表模式
+        }
+        warning.style.display = 'block';
+        warning.innerHTML = '<span class="warning-icon">📱</span><span>屏幕太小，场景模式不可用<br><small>可尝试横屏或放大窗口</small></span>';
+
+      } else if (screenWidth <= 480) {
+        // 小屏幕：默认列表模式，但允许切换
+        if (!scene.classList.contains('list-mode')) {
+          scene.classList.add('list-mode');
+          buttonText.textContent = '场景模式';
+          button.classList.add('scene-mode-active');
+        }
+        button.disabled = false;
+        warning.style.display = 'block';
+        warning.innerHTML = '<span class="warning-icon">💡</span><span>推荐使用列表模式</span>';
+
+      } else {
+        // 大屏幕：默认场景模式
+        button.disabled = false;
+        warning.style.display = 'none';
+        if (scene.classList.contains('list-mode')) {
+          scene.classList.remove('list-mode');
+          buttonText.textContent = '列表模式';
+          button.classList.remove('scene-mode-active');
+        }
+      }
+    }
+
+    // 页面加载时初始化
+    document.addEventListener('DOMContentLoaded', function () {
+      updateSceneMode();
+
+      // 添加消息动画样式
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes messageSlideIn {
+          from {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.8);
+          }
+          to {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+          }
+        }
+        
+        @keyframes messageSlideOut {
+          from {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+          }
+          to {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.8);
+          }
+        }
+        
+        .scene-mode-toggle.scene-mode-active {
+          background: linear-gradient(135deg, rgba(76, 175, 80, 0.9) 0%, rgba(104, 159, 56, 1) 100%) !important;
+        }
+        
+        .scene-mode-toggle.scene-mode-active:hover {
+          background: linear-gradient(135deg, rgba(104, 159, 56, 1) 0%, rgba(76, 175, 80, 1) 100%) !important;
+        }
+      `;
+      document.head.appendChild(style);
+    });
+
+    // 监听屏幕尺寸变化
+    let resizeTimeout;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(updateSceneMode, 100);
+    });
+  </script>
   <script src="script.js"></script>
 </body>
 
